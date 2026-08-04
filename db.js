@@ -1,3 +1,4 @@
+
 // db.js — connexion SQLite + schéma
 //
 // Utilise le module natif node:sqlite (disponible nativement depuis Node 22)
@@ -7,7 +8,13 @@
 const { DatabaseSync } = require("node:sqlite");
 const path = require("path");
 
-const db = new DatabaseSync(path.join(__dirname, "agrisecur.db"));
+// Emplacement du fichier de base de données — réglable via DB_PATH pour
+// pointer vers un volume persistant en hébergement (ex. Railway : montez un
+// volume sur /app/data, puis lancez avec DB_PATH=/app/data/agrisecur.db).
+// Sans cette variable, reste à côté du code comme avant (usage local).
+const dbPath = process.env.DB_PATH || path.join(__dirname, "agrisecur.db");
+const db = new DatabaseSync(dbPath);
+console.log(`[db] Base de données : ${dbPath}`);
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS sellers (
