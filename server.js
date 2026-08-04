@@ -875,8 +875,28 @@ function send(res, status, body) {
   res.end(json);
 }
 
+// Verrou d'accès au site entier — utile pendant la phase de test avant
+// lancement réel (le lien Railway est public dès sa création). Séparé des
+// comptes vendeur/acheteur/admin de l'app : c'est une porte devant tout le
+// reste. Désactivé par défaut ; s'active dès que SITE_PASSWORD est réglé.
+const SITE_USER = process.env.SITE_USER || "agrisecur";
+const SITE_PASSWORD = process.env.SITE_PASSWORD || null;
+
+function verifierAccesSite(req, res) {
+  if (!SITE_PASSWORD) return true; // verrou désactivé
+  const header = req.headers.authorization || "";
+  if (header.startsWith("Basic ")) {
+    const [user, pass] = Buffer.from(header.slice(6), "base64").toString().split(":");
+    if (user === SITE_USER && pass === SITE_PASSWORD) return true;
+  }
+  res.writeHead(401, { "WWW-Authenticate": 'Basic realm="AgriSecur - acces restreint"', "Content-Type": "text/plain; charset=utf-8" });
+  res.end("Accès restreint — identifiants requis.");
+  return false;
+}
+
 const server = http.createServer((req, res) => {
   if (req.method === "OPTIONS") return send(res, 204, {});
+  if (!verifierAccesSite(req, res)) return;
 
   const url = new URL(req.url, `http://${req.headers.host}`);
 
