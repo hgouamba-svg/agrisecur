@@ -991,6 +991,41 @@ router.get("/api/orders", (req, res) => {
   send(res, 200, db.prepare(`SELECT * FROM orders WHERE ${col} = ? ORDER BY created_at DESC`).all(auth.id));
 });
 
+// Signalements — accessible même sans connexion (un utilisateur qui n'arrive
+// pas à se connecter doit pouvoir signaler le problème malgré tout). Limité
+// en fréquence pour éviter le spam sur un point d'entrée public non protégé
+// par mot de passe.
+router.post("/api/signalements", (req, res, params, body) => {
+  if (!limiterTentatives(req, res, "signalement")) return;
+  const { type, description, contexte, contact } = body;
+  if (!["bug", "suggestion", "connexion"].includes(type)) return send(res, 400, { error: "type invalide" });
+  if (!description || description.trim().length < 5) return send(res, 400, { error: "description trop courte" });
+  if (description.length > 2000) return send(res, 400, { error: "description trop longue (2000 caractères max)" });
+
+  const auth = getAuth(req);
+  const info = db.prepare(`
+    INSERT INTO signalements (type, description, contexte, contact, user_type, user_id)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `).run(type, description.trim(), contexte || null, contact || null, auth ? auth.type : null, auth ? auth.id : null);
+  send(res, 201, { ok: true, id: info.lastInsertRowid });
+});
+
+router.get("/api/admin/signalements", (req, res) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const rows = db.prepare(`SELECT * FROM signalements ORDER BY created_at DESC`).all();
+  send(res, 200, rows);
+});
+
+router.post("/api/admin/signalements/:id/statut", (req, res, params, body) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const { statut } = body;
+  if (!["nouveau", "en_cours", "resolu"].includes(statut)) return send(res, 400, { error: "statut invalide" });
+  const existe = db.prepare(`SELECT id FROM signalements WHERE id = ?`).get(params.id);
+  if (!existe) return send(res, 404, { error: "signalement introuvable" });
+  db.prepare(`UPDATE signalements SET statut = ? WHERE id = ?`).run(statut, params.id);
+  send(res, 200, { ok: true });
+});
+
 router.get("/api/health", (req, res) => send(res, 200, { ok: true, filiere_v1: "cacao", commission: COMMISSION_TAUX }));
 
 // ---------- Plomberie HTTP ----------
