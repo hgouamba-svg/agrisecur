@@ -50,6 +50,20 @@ function getSession(token) {
 // Clé admin "temporaire" pour les actions de back-office (validation KYC,
 // médiation de litige) — le temps qu'un vrai panneau d'administration avec
 // ses propres comptes existe. Change tout le temps qu'on la garde par défaut.
-const ADMIN_KEY = process.env.ADMIN_KEY || "changez-cette-cle-admin";
+const ADMIN_KEY_DEFAUT = "changez-cette-cle-admin";
+const ADMIN_KEY = process.env.ADMIN_KEY || ADMIN_KEY_DEFAUT;
+
+// Filet de sécurité : si NODE_ENV=production est réglé (à ajouter comme
+// variable d'environnement sur votre hébergeur, en plus d'ADMIN_KEY) et que
+// la clé est restée à sa valeur par défaut, le serveur refuse de démarrer
+// plutôt que de tourner avec un accès admin ouvert à tous.
+if (process.env.NODE_ENV === "production" && ADMIN_KEY === ADMIN_KEY_DEFAUT) {
+  console.error(
+    "ERREUR CRITIQUE : NODE_ENV=production est réglé mais ADMIN_KEY n'a pas été " +
+    "défini (ou est resté à sa valeur par défaut). Définissez une vraie clé " +
+    "secrète dans les variables d'environnement avant de redémarrer."
+  );
+  process.exit(1);
+}
 
 module.exports = { hashPassword, verifyPassword, createSession, getSession, ADMIN_KEY };
