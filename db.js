@@ -1,4 +1,3 @@
-
 // db.js — connexion SQLite + schéma
 //
 // Utilise le module natif node:sqlite (disponible nativement depuis Node 22)
@@ -28,6 +27,10 @@ CREATE TABLE IF NOT EXISTS sellers (
   abonnement_pro_jusqua TEXT,
   vendeur_fondateur INTEGER NOT NULL DEFAULT 0,
   kyc_statut TEXT NOT NULL DEFAULT 'en_attente' CHECK(kyc_statut IN ('en_attente','valide','rejete')),
+  kyc_document_identite_url TEXT,
+  kyc_document_rccm_url TEXT,
+  kyc_soumis_le TEXT,
+  kyc_motif_rejet TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -110,6 +113,21 @@ CREATE TABLE IF NOT EXISTS app_config (
 -- Suivi léger des dépenses opérationnelles (hébergement, marketing, etc.)
 -- Ne remplace pas une vraie comptabilité SYSCOHADA — sert de journal interne
 -- et de base d'export pour votre comptable.
+-- Signalements des utilisateurs (bug rencontré, suggestion, ou problème de
+-- connexion) — remontés directement au back-office pour un suivi rapide,
+-- sans dépendre d'un canal externe (WhatsApp, email) pour être vus.
+CREATE TABLE IF NOT EXISTS signalements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  type TEXT NOT NULL CHECK(type IN ('bug','suggestion','connexion')),
+  description TEXT NOT NULL,
+  contexte TEXT,
+  contact TEXT,
+  user_type TEXT,
+  user_id INTEGER,
+  statut TEXT NOT NULL DEFAULT 'nouveau' CHECK(statut IN ('nouveau','en_cours','resolu')),
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS depenses (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   categorie TEXT NOT NULL,
@@ -165,6 +183,10 @@ ensureColumn("products", "parcelle_longitude", "REAL");
 ensureColumn("products", "declaration_non_deforestation", "INTEGER DEFAULT 0");
 ensureColumn("sellers", "abonnement_pro_jusqua", "TEXT");
 ensureColumn("sellers", "vendeur_fondateur", "INTEGER DEFAULT 0");
+ensureColumn("sellers", "kyc_document_identite_url", "TEXT");
+ensureColumn("sellers", "kyc_document_rccm_url", "TEXT");
+ensureColumn("sellers", "kyc_soumis_le", "TEXT");
+ensureColumn("sellers", "kyc_motif_rejet", "TEXT");
 ensureColumn("orders", "avec_transport", "INTEGER DEFAULT 0");
 ensureColumn("orders", "mode_paiement", "TEXT DEFAULT 'mobile_money'");
 ensureColumn("orders", "virement_reference", "TEXT");
