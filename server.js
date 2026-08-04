@@ -43,6 +43,75 @@ function isAdmin(req) {
   return req.headers["x-admin-key"] === ADMIN_KEY;
 }
 
+function isAdminAvecLimite(req, res) {
+  if (isAdmin(req)) {
+    reinitialiserTentatives(req, "admin");
+    return true;
+  }
+  if (!limiterTentatives(req, res, "admin")) return false; // réponse 429 déjà envoyée
+  send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  return false;
+}
+
+// Variante pour les routes mixtes (utilisées à la fois par l'admin et par de
+// simples vendeurs/acheteurs, ex. GET /api/orders). Ne compte comme
+// "tentative" que si une clé admin a été fournie et qu'elle est fausse —
+// son absence pure et simple est le cas normal d'un utilisateur classique,
+// et ne doit jamais faire compter/bloquer sur le rate-limit admin.
+// Renvoie : true (admin confirmé) ; false (pas admin, l'appelant retombe sur
+// sa logique normale) ; "blocked" (429 déjà envoyé, l'appelant doit arrêter
+// immédiatement sans rien renvoyer d'autre).
+function estAdminSansBloquerFlux(req, res) {
+  if (!req.headers["x-admin-key"]) return false;
+  if (isAdmin(req)) {
+    reinitialiserTentatives(req, "admin");
+    return true;
+  }
+  if (!limiterTentatives(req, res, "admin")) return "blocked"; // 429 déjà envoyé
+  return false;
+}
+
+// ---------- Anti brute-force (rate-limiting) ----------
+// Protège les points d'entrée sensibles (connexion, admin, changement de mot
+// de passe) contre les tentatives répétées. Compteur en mémoire, par IP —
+// suffisant pour un serveur mono-instance ; à remplacer par Redis/base
+// partagée si vous passez un jour à plusieurs réplicas.
+const RATE_LIMIT_MAX = 5;          // tentatives autorisées
+const RATE_LIMIT_FENETRE_MS = 15 * 60 * 1000;  // fenêtre de 15 minutes
+const rateLimitStore = new Map();  // clé "ip:route" -> { count, premiereTentative }
+
+function limiterTentatives(req, res, cle) {
+  const ip = req.socket.remoteAddress || "inconnu";
+  const key = `${ip}:${cle}`;
+  const maintenant = Date.now();
+  const entree = rateLimitStore.get(key);
+
+  if (entree && maintenant - entree.premiereTentative < RATE_LIMIT_FENETRE_MS) {
+    if (entree.count >= RATE_LIMIT_MAX) {
+      const attenteMin = Math.ceil((RATE_LIMIT_FENETRE_MS - (maintenant - entree.premiereTentative)) / 60000);
+      send(res, 429, { error: `Trop de tentatives. Réessayez dans ${attenteMin} minute${attenteMin > 1 ? "s" : ""}.` });
+      return false;
+    }
+    entree.count++;
+  } else {
+    rateLimitStore.set(key, { count: 1, premiereTentative: maintenant });
+  }
+  return true;
+}
+
+function reinitialiserTentatives(req, cle) {
+  const ip = req.socket.remoteAddress || "inconnu";
+  rateLimitStore.delete(`${ip}:${cle}`);
+}
+
+// Purge périodique pour ne pas accumuler indéfiniment des entrées expirées en mémoire
+setInterval(() => {
+  const maintenant = Date.now();
+  for (const [key, entree] of rateLimitStore) {
+    if (maintenant - entree.premiereTentative > RATE_LIMIT_FENETRE_MS) rateLimitStore.delete(key);
+  }
+}, 10 * 60 * 1000);
+
 const COMMISSION_TAUX = 0.04; // Article 6 des CGU/CGV — 4% HT flat
 
 // Frais de traitement des paiements, estimés — à ajuster dès que les vrais
@@ -126,13 +195,30 @@ router.post("/api/auth/register-seller", (req, res, params, body) => {
   const info = db.prepare(
     `INSERT INTO sellers (nom, type, localisation, rccm, email, password_hash, vendeur_fondateur) VALUES (?, ?, ?, ?, ?, ?, ?)`
   ).run(nom, type, localisation || null, rccm || null, email, hashPassword(password), estFondateur);
-  const seller = db.prepare(`SELECT id, nom, type, localisation, rccm, email, kyc_statut, abonnement_pro_jusqua, vendeur_fondateur, created_at FROM sellers WHERE id = ?`).get(info.lastInsertRowid);
+  const seller = db.prepare(`SELECT id, nom, type, localisation, rccm, email, kyc_statut, kyc_document_identite_url, kyc_document_rccm_url, kyc_soumis_le, kyc_motif_rejet, abonnement_pro_jusqua, vendeur_fondateur, created_at FROM sellers WHERE id = ?`).get(info.lastInsertRowid);
   const token = createSession("seller", seller.id);
   send(res, 201, { token, user: seller });
 });
 
 function photoValide(dataUrl) {
   return typeof dataUrl === "string" && dataUrl.startsWith("data:image/") && dataUrl.length <= 900000;
+}
+
+// node:sqlite (contrairement à better-sqlite3) n'a pas de méthode
+// .transaction() intégrée — on l'implémente à la main avec BEGIN/COMMIT/
+// ROLLBACK. Protège les opérations financières à plusieurs étapes (ex.
+// déduction d'un crédit de parrainage + création de la commande) contre un
+// état incohérent si le serveur s'interrompt en plein milieu.
+function executerEnTransaction(fn) {
+  db.exec("BEGIN");
+  try {
+    const resultat = fn();
+    db.exec("COMMIT");
+    return resultat;
+  } catch (err) {
+    db.exec("ROLLBACK");
+    throw err;
+  }
 }
 
 function genererCodeParrainage() {
@@ -168,6 +254,7 @@ router.post("/api/auth/register-buyer", (req, res, params, body) => {
 });
 
 router.post("/api/auth/login", (req, res, params, body) => {
+  if (!limiterTentatives(req, res, "login")) return;
   const { role, email, password } = body;
   if (!["seller", "buyer"].includes(role) || !email || !password) return send(res, 400, { error: "role, email, password requis" });
   const table = role === "seller" ? "sellers" : "buyers";
@@ -175,6 +262,7 @@ router.post("/api/auth/login", (req, res, params, body) => {
   if (!user || !user.password_hash || !verifyPassword(password, user.password_hash)) {
     return send(res, 401, { error: "identifiants invalides" });
   }
+  reinitialiserTentatives(req, "login"); // connexion réussie : on repart à zéro
   const token = createSession(role, user.id);
   delete user.password_hash;
   send(res, 200, { token, user });
@@ -183,6 +271,7 @@ router.post("/api/auth/login", (req, res, params, body) => {
 router.post("/api/auth/change-password", (req, res, params, body) => {
   const auth = getAuth(req);
   if (!auth) return send(res, 401, { error: "connexion requise" });
+  if (!limiterTentatives(req, res, "change-password")) return;
   const { currentPassword, newPassword } = body;
   if (!currentPassword || !newPassword) return send(res, 400, { error: "mot de passe actuel et nouveau mot de passe requis" });
   if (newPassword.length < 6) return send(res, 400, { error: "le nouveau mot de passe doit faire au moins 6 caractères" });
@@ -192,6 +281,7 @@ router.post("/api/auth/change-password", (req, res, params, body) => {
   if (!user.password_hash || !verifyPassword(currentPassword, user.password_hash)) {
     return send(res, 401, { error: "mot de passe actuel incorrect" });
   }
+  reinitialiserTentatives(req, "change-password");
   db.prepare(`UPDATE ${table} SET password_hash = ? WHERE id = ?`).run(hashPassword(newPassword), auth.id);
   send(res, 200, { ok: true });
 });
@@ -200,17 +290,38 @@ router.post("/api/auth/change-password", (req, res, params, body) => {
 
 
 router.post("/api/sellers/:id/kyc", (req, res, params, body) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
-  const { statut } = body;
+  if (!isAdminAvecLimite(req, res)) return;
+  const { statut, motif_rejet } = body;
   if (!["valide", "rejete"].includes(statut)) return send(res, 400, { error: "statut invalide" });
-  db.prepare(`UPDATE sellers SET kyc_statut = ? WHERE id = ?`).run(statut, params.id);
-  send(res, 200, db.prepare(`SELECT id, nom, type, localisation, kyc_statut FROM sellers WHERE id = ?`).get(params.id));
+  if (statut === "rejete" && !motif_rejet) return send(res, 400, { error: "un motif de rejet est requis, pour que le vendeur sache quoi corriger" });
+  db.prepare(`UPDATE sellers SET kyc_statut = ?, kyc_motif_rejet = ? WHERE id = ?`).run(statut, statut === "rejete" ? motif_rejet : null, params.id);
+  send(res, 200, db.prepare(`SELECT id, nom, type, localisation, kyc_statut, kyc_motif_rejet FROM sellers WHERE id = ?`).get(params.id));
+});
+
+router.post("/api/sellers/me/kyc-documents", (req, res, params, body) => {
+  const auth = getAuth(req);
+  if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
+  const { document_identite_url, document_rccm_url } = body;
+  if (!document_identite_url) return send(res, 400, { error: "la pièce d'identité (ou attestation de coopérative) est obligatoire" });
+  if (!photoValide(document_identite_url)) return send(res, 400, { error: "document d'identité invalide ou trop volumineux (compressez avant envoi)" });
+  if (document_rccm_url && !photoValide(document_rccm_url)) return send(res, 400, { error: "document RCCM invalide ou trop volumineux (compressez avant envoi)" });
+
+  const seller = db.prepare(`SELECT kyc_statut FROM sellers WHERE id = ?`).get(auth.id);
+  // Un nouveau dépôt de documents relance l'examen si le dossier avait été rejeté
+  const nouveauStatut = seller.kyc_statut === "rejete" ? "en_attente" : seller.kyc_statut;
+
+  db.prepare(`
+    UPDATE sellers SET kyc_document_identite_url = ?, kyc_document_rccm_url = ?, kyc_soumis_le = ?, kyc_statut = ?
+    WHERE id = ?
+  `).run(document_identite_url, document_rccm_url || null, new Date().toISOString(), nouveauStatut, auth.id);
+
+  send(res, 200, { ok: true, kyc_statut: nouveauStatut });
 });
 
 router.get("/api/sellers/me", (req, res) => {
   const auth = getAuth(req);
   if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
-  const seller = db.prepare(`SELECT id, nom, type, localisation, rccm, email, kyc_statut, abonnement_pro_jusqua, vendeur_fondateur, created_at FROM sellers WHERE id = ?`).get(auth.id);
+  const seller = db.prepare(`SELECT id, nom, type, localisation, rccm, email, kyc_statut, kyc_document_identite_url, kyc_document_rccm_url, kyc_soumis_le, kyc_motif_rejet, abonnement_pro_jusqua, vendeur_fondateur, created_at FROM sellers WHERE id = ?`).get(auth.id);
   const tarifFondateurActif = promoEnrolementOuvert() && seller.vendeur_fondateur;
   send(res, 200, { ...seller, taux_commission_actuel: tarifFondateurActif ? PROMO_COMMISSION_TAUX : COMMISSION_TAUX, tarif_fondateur_actif: !!tarifFondateurActif });
 });
@@ -232,14 +343,14 @@ router.get("/api/sellers/:id", (req, res, params) => {
 // ---------- Back-office (admin) ----------
 
 router.get("/api/admin/sellers", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   send(res, 200, db.prepare(
-    `SELECT id, nom, type, localisation, rccm, email, kyc_statut, created_at FROM sellers ORDER BY created_at DESC`
+    `SELECT id, nom, type, localisation, rccm, email, kyc_statut, kyc_document_identite_url, kyc_document_rccm_url, kyc_soumis_le, kyc_motif_rejet, created_at FROM sellers ORDER BY created_at DESC`
   ).all());
 });
 
 router.get("/api/admin/buyers", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   send(res, 200, db.prepare(
     `SELECT id, nom, type, email, created_at FROM buyers ORDER BY created_at DESC`
   ).all());
@@ -253,7 +364,7 @@ function genererMotDePasseTemporaire() {
 }
 
 router.post("/api/admin/sellers/:id/reset-password", (req, res, params) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const seller = db.prepare(`SELECT id FROM sellers WHERE id = ?`).get(params.id);
   if (!seller) return send(res, 404, { error: "vendeur introuvable" });
   const temp = genererMotDePasseTemporaire();
@@ -262,7 +373,7 @@ router.post("/api/admin/sellers/:id/reset-password", (req, res, params) => {
 });
 
 router.post("/api/admin/buyers/:id/reset-password", (req, res, params) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const buyer = db.prepare(`SELECT id FROM buyers WHERE id = ?`).get(params.id);
   if (!buyer) return send(res, 404, { error: "acheteur introuvable" });
   const temp = genererMotDePasseTemporaire();
@@ -271,7 +382,7 @@ router.post("/api/admin/buyers/:id/reset-password", (req, res, params) => {
 });
 
 router.get("/api/admin/virements-en-attente", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const rows = db.prepare(`
     SELECT o.*, p.nom AS produit_nom, b.nom AS acheteur_nom, s.nom AS vendeur_nom
     FROM orders o
@@ -285,7 +396,7 @@ router.get("/api/admin/virements-en-attente", (req, res) => {
 });
 
 router.post("/api/admin/orders/:id/confirmer-virement", (req, res, params) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const order = db.prepare(`SELECT * FROM orders WHERE id = ?`).get(params.id);
   if (!order) return send(res, 404, { error: "commande introuvable" });
   if (order.statut !== "attente_virement") return send(res, 409, { error: "cette commande n'est pas en attente de virement" });
@@ -297,14 +408,14 @@ router.post("/api/admin/orders/:id/confirmer-virement", (req, res, params) => {
 });
 
 router.get("/api/admin/depenses", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const rows = db.prepare(`SELECT * FROM depenses ORDER BY date_depense DESC, id DESC`).all();
   const total = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM depenses`).get().total;
   send(res, 200, { depenses: rows, total_fcfa: total });
 });
 
 router.post("/api/admin/depenses", (req, res, params, body) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const { categorie, description, montant_fcfa, date_depense } = body;
   if (!categorie || !montant_fcfa || !date_depense) return send(res, 400, { error: "categorie, montant_fcfa, date_depense requis" });
   const info = db.prepare(`INSERT INTO depenses (categorie, description, montant_fcfa, date_depense) VALUES (?, ?, ?, ?)`)
@@ -313,7 +424,7 @@ router.post("/api/admin/depenses", (req, res, params, body) => {
 });
 
 router.post("/api/admin/depenses/:id/supprimer", (req, res, params) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const existe = db.prepare(`SELECT id FROM depenses WHERE id = ?`).get(params.id);
   if (!existe) return send(res, 404, { error: "dépense introuvable" });
   db.prepare(`DELETE FROM depenses WHERE id = ?`).run(params.id);
@@ -331,7 +442,7 @@ function genererCsv(colonnes, lignes) {
 }
 
 router.get("/api/admin/export/commandes.csv", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const rows = db.prepare(`
     SELECT o.id, o.created_at, o.cloture_at, o.statut, o.mode_paiement, p.nom AS produit, p.filiere,
       b.nom AS acheteur, s.nom AS vendeur, o.montant_total_fcfa, o.frais_paiement_fcfa,
@@ -351,7 +462,7 @@ router.get("/api/admin/export/commandes.csv", (req, res) => {
 });
 
 router.get("/api/admin/export/depenses.csv", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const rows = db.prepare(`SELECT * FROM depenses ORDER BY date_depense DESC`).all();
   const csv = genererCsv(
     ["ID", "Date", "Catégorie", "Description", "Montant FCFA"],
@@ -362,7 +473,7 @@ router.get("/api/admin/export/depenses.csv", (req, res) => {
 });
 
 router.get("/api/admin/marge-nette", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
 
   const parMode = db.prepare(`
     SELECT mode_paiement,
@@ -414,7 +525,7 @@ router.get("/api/admin/marge-nette", (req, res) => {
 });
 
 router.get("/api/admin/revenue-sva", (req, res) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const total = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total, COUNT(*) AS n FROM sva_achats`).get();
   const parType = db.prepare(`SELECT type, COUNT(*) AS n, COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats GROUP BY type`).all();
   const recents = db.prepare(`
@@ -681,24 +792,31 @@ router.post("/api/orders", (req, res, params, body) => {
 
   // Crédit de parrainage : appliqué automatiquement en réduction des frais
   // mobile money de l'acheteur, jusqu'à épuisement du crédit disponible.
+  // Toute la séquence (déduction du crédit, création de la commande,
+  // réservation du produit) est atomique : si une étape échoue, rien n'est
+  // appliqué — pas de crédit débité sans commande créée en contrepartie.
   let creditUtilise = 0;
-  if (fraisPaiement > 0) {
-    const acheteur = db.prepare(`SELECT credit_parrainage_fcfa FROM buyers WHERE id = ?`).get(auth.id);
-    if (acheteur.credit_parrainage_fcfa > 0) {
-      creditUtilise = Math.min(acheteur.credit_parrainage_fcfa, fraisPaiement);
-      fraisPaiement -= creditUtilise;
-      db.prepare(`UPDATE buyers SET credit_parrainage_fcfa = credit_parrainage_fcfa - ? WHERE id = ?`).run(creditUtilise, auth.id);
+  const info = executerEnTransaction(() => {
+    if (fraisPaiement > 0) {
+      const acheteur = db.prepare(`SELECT credit_parrainage_fcfa FROM buyers WHERE id = ?`).get(auth.id);
+      if (acheteur.credit_parrainage_fcfa > 0) {
+        creditUtilise = Math.min(acheteur.credit_parrainage_fcfa, fraisPaiement);
+        fraisPaiement -= creditUtilise;
+        db.prepare(`UPDATE buyers SET credit_parrainage_fcfa = credit_parrainage_fcfa - ? WHERE id = ?`).run(creditUtilise, auth.id);
+      }
     }
-  }
 
-  const info = db.prepare(`
-    INSERT INTO orders (product_id, buyer_id, seller_id, quantite_kg, montant_total_fcfa, avec_transport,
-      mode_paiement, virement_reference, frais_paiement_fcfa, commission_taux, commission_fcfa, montant_net_vendeur_fcfa, statut)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(product_id, auth.id, product.seller_id, quantite_kg, montant_total, wantsTransport ? 1 : 0,
-         paiement, virement_reference || null, fraisPaiement, tauxApplique, commission, net_vendeur, statutInitial);
+    const resultat = db.prepare(`
+      INSERT INTO orders (product_id, buyer_id, seller_id, quantite_kg, montant_total_fcfa, avec_transport,
+        mode_paiement, virement_reference, frais_paiement_fcfa, commission_taux, commission_fcfa, montant_net_vendeur_fcfa, statut)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(product_id, auth.id, product.seller_id, quantite_kg, montant_total, wantsTransport ? 1 : 0,
+           paiement, virement_reference || null, fraisPaiement, tauxApplique, commission, net_vendeur, statutInitial);
 
-  db.prepare(`UPDATE products SET statut = 'reserve' WHERE id = ?`).run(product_id);
+    db.prepare(`UPDATE products SET statut = 'reserve' WHERE id = ?`).run(product_id);
+    return resultat;
+  });
+
   if (creditUtilise > 0) {
     logEvent(info.lastInsertRowid, "creation", `Crédit de parrainage appliqué : ${creditUtilise} FCFA déduits des frais de traitement.`);
   }
@@ -767,6 +885,22 @@ router.post("/api/orders/:id/reclamer", (req, res, params, body) => {
 // Récompense le parrain quand son filleul clôture son tout premier achat.
 // Le crédit versé est appliqué automatiquement (cf. création de commande)
 // sur les frais mobile money de la prochaine commande du parrain.
+// Séquence critique partagée par les 3 points de clôture d'une commande
+// (validation acheteur, expiration automatique du délai, médiation de
+// litige) : mise à jour du statut de la commande, du produit, et récompense
+// de parrainage éventuelle — le tout atomique, pour ne jamais se retrouver
+// avec un statut à moitié mis à jour si le serveur s'interrompt en cours de
+// route.
+function cloturerCommandeAtomique(order, statutFinal) {
+  const now = new Date().toISOString();
+  executerEnTransaction(() => {
+    db.prepare(`UPDATE orders SET statut = ?, cloture_at = ? WHERE id = ?`).run(statutFinal, now, order.id);
+    db.prepare(`UPDATE products SET statut = ? WHERE id = ?`).run(statutFinal === "cloture" ? "vendu" : "disponible", order.product_id);
+    if (statutFinal === "cloture") recompenserParrainageSiPremierAchat(order.buyer_id);
+  });
+  return now;
+}
+
 function recompenserParrainageSiPremierAchat(buyerId) {
   const buyer = db.prepare(`SELECT parraine_par FROM buyers WHERE id = ?`).get(buyerId);
   if (!buyer || !buyer.parraine_par) return;
@@ -786,18 +920,15 @@ function recompenserParrainageSiPremierAchat(buyerId) {
 }
 
 router.post("/api/orders/:id/trancher-litige", (req, res, params, body) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const { resolution, note } = body;
   const order = db.prepare(`SELECT * FROM orders WHERE id = ?`).get(params.id);
   if (!order) return send(res, 404, { error: "commande introuvable" });
   if (order.statut !== "litige") return send(res, 409, { error: "aucun litige en cours sur cette commande" });
   if (!["rembourse", "cloture"].includes(resolution)) return send(res, 400, { error: "resolution invalide" });
 
-  const now = new Date().toISOString();
-  db.prepare(`UPDATE orders SET statut = ?, cloture_at = ? WHERE id = ?`).run(resolution, now, order.id);
-  db.prepare(`UPDATE products SET statut = ? WHERE id = ?`).run(resolution === "cloture" ? "vendu" : "disponible", order.product_id);
+  cloturerCommandeAtomique(order, resolution);
   logEvent(order.id, "mediation", `Litige tranché : ${resolution}${note ? " — " + note : ""}`);
-  if (resolution === "cloture") recompenserParrainageSiPremierAchat(order.buyer_id);
   send(res, 200, getOrder(order.id));
 });
 
@@ -809,11 +940,8 @@ router.post("/api/orders/:id/cloturer", (req, res, params) => {
   if (order.buyer_id !== auth.id) return send(res, 403, { error: "cette commande n'appartient pas à cet acheteur" });
   if (!["expedie", "en_controle"].includes(order.statut)) return send(res, 409, { error: `clôture impossible depuis l'état '${order.statut}'` });
 
-  const now = new Date().toISOString();
-  db.prepare(`UPDATE orders SET statut = 'cloture', cloture_at = ? WHERE id = ?`).run(now, order.id);
-  db.prepare(`UPDATE products SET statut = 'vendu' WHERE id = ?`).run(order.product_id);
+  cloturerCommandeAtomique(order, "cloture");
   logEvent(order.id, "liberation_fonds", `Fonds nets (${order.montant_net_vendeur_fcfa} FCFA) libérés au vendeur — validation acheteur`);
-  recompenserParrainageSiPremierAchat(order.buyer_id);
   send(res, 200, getOrder(order.id));
 });
 
@@ -826,17 +954,14 @@ function cloturerSiDelaiExpire(order) {
   const limite = new Date(ouverture.getTime() + order.delai_contestation_heures * 3600 * 1000);
   if (new Date() < limite) return false;
 
-  const now = new Date().toISOString();
-  db.prepare(`UPDATE orders SET statut = 'cloture', cloture_at = ? WHERE id = ?`).run(now, order.id);
-  db.prepare(`UPDATE products SET statut = 'vendu' WHERE id = ?`).run(order.product_id);
+  cloturerCommandeAtomique(order, "cloture");
   logEvent(order.id, "liberation_fonds",
     `Fonds nets (${order.montant_net_vendeur_fcfa} FCFA) libérés au vendeur — délai de contestation expiré (vérification automatique)`);
-  recompenserParrainageSiPremierAchat(order.buyer_id);
   return true;
 }
 
 router.post("/api/orders/:id/verifier-delai", (req, res, params) => {
-  if (!isAdmin(req)) return send(res, 403, { error: "réservé au back-office / job planifié (clé admin requise)" });
+  if (!isAdminAvecLimite(req, res)) return;
   const order = db.prepare(`SELECT * FROM orders WHERE id = ?`).get(params.id);
   if (!order) return send(res, 404, { error: "commande introuvable" });
   cloturerSiDelaiExpire(order);
@@ -848,13 +973,19 @@ router.get("/api/orders/:id", (req, res, params) => {
   const order = getOrder(params.id);
   if (!order) return send(res, 404, { error: "commande introuvable" });
   const owns = auth && ((auth.type === "seller" && auth.id === order.seller_id) || (auth.type === "buyer" && auth.id === order.buyer_id));
-  if (!owns && !isAdmin(req)) return send(res, 403, { error: "accès réservé aux parties de la commande" });
+  if (!owns) {
+    const adminCheck = estAdminSansBloquerFlux(req, res);
+    if (adminCheck === "blocked") return;
+    if (!adminCheck) return send(res, 403, { error: "accès réservé aux parties de la commande" });
+  }
   send(res, 200, order);
 });
 
 router.get("/api/orders", (req, res) => {
   const auth = getAuth(req);
-  if (isAdmin(req)) return send(res, 200, db.prepare(`SELECT * FROM orders ORDER BY created_at DESC`).all());
+  const adminCheck = estAdminSansBloquerFlux(req, res);
+  if (adminCheck === "blocked") return;
+  if (adminCheck === true) return send(res, 200, db.prepare(`SELECT * FROM orders ORDER BY created_at DESC`).all());
   if (!auth) return send(res, 401, { error: "connexion requise" });
   const col = auth.type === "seller" ? "seller_id" : "buyer_id";
   send(res, 200, db.prepare(`SELECT * FROM orders WHERE ${col} = ? ORDER BY created_at DESC`).all(auth.id));
