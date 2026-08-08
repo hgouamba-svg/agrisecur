@@ -60,6 +60,11 @@ CREATE TABLE IF NOT EXISTS products (
   parcelle_latitude REAL,
   parcelle_longitude REAL,
   declaration_non_deforestation INTEGER NOT NULL DEFAULT 0,
+  whisp_statut TEXT DEFAULT 'non_verifie' CHECK(whisp_statut IN ('non_verifie','en_cours','termine','erreur')),
+  whisp_token TEXT,
+  whisp_risque TEXT CHECK(whisp_risque IN ('faible','eleve','indetermine') OR whisp_risque IS NULL),
+  whisp_soumis_le TEXT,
+  whisp_verifie_le TEXT,
   statut TEXT NOT NULL DEFAULT 'disponible' CHECK(statut IN ('disponible','reserve','vendu','retire')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
@@ -181,6 +186,11 @@ ensureColumn("products", "photo_url", "TEXT");
 ensureColumn("products", "parcelle_latitude", "REAL");
 ensureColumn("products", "parcelle_longitude", "REAL");
 ensureColumn("products", "declaration_non_deforestation", "INTEGER DEFAULT 0");
+ensureColumn("products", "whisp_statut", "TEXT DEFAULT 'non_verifie'");
+ensureColumn("products", "whisp_token", "TEXT");
+ensureColumn("products", "whisp_risque", "TEXT");
+ensureColumn("products", "whisp_soumis_le", "TEXT");
+ensureColumn("products", "whisp_verifie_le", "TEXT");
 ensureColumn("sellers", "abonnement_pro_jusqua", "TEXT");
 ensureColumn("sellers", "vendeur_fondateur", "INTEGER DEFAULT 0");
 ensureColumn("sellers", "kyc_document_identite_url", "TEXT");
