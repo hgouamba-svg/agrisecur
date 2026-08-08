@@ -15,7 +15,7 @@ const { router, match } = require("./router");
 const { hashPassword, verifyPassword, createSession, getSession, ADMIN_KEY } = require("./auth");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
 
 function serveStatic(req, res, pathname) {
   const filePath = pathname === "/" ? "index.html" : pathname.slice(1);
@@ -166,6 +166,122 @@ const TAUX_IMPOT_ESTIME = Number(process.env.TAUX_IMPOT_ESTIME || 0.05);
 const BOOST_TARIFS = { 3: 5000, 7: 9000, 14: 15000 }; // jours -> FCFA
 const ABONNEMENT_PRO_FCFA = 10000; // par mois
 const ABONNEMENT_PRO_DUREE_JOURS = 30;
+
+// ---------- Analyse satellite de risque de déforestation (WHISP / FAO) ----------
+// Intégration avec l'API publique WHISP (Forest Data Partnership / FAO),
+// hébergée à whisp.openforis.org — pas d'infrastructure Google Earth Engine
+// à gérer nous-mêmes. Fournit une INDICATION automatisée de risque de
+// déforestation basée sur des données satellite publiques, PAS une
+// certification de conformité RDUE. Le badge affiché au public doit
+// toujours refléter cette nuance (cf. affichage front-end).
+//
+// IMPORTANT : le format exact de la réponse de /api/status/{token} n'a pas
+// pu être vérifié en conditions réelles au moment de l'écriture de ce code
+// (pas d'accès réseau sortant depuis l'environnement de développement).
+// La fonction extraireNiveauRisque() ci-dessous essaie plusieurs noms de
+// champs plausibles. Si le premier test réel échoue à détecter le risque,
+// consultez les logs Railway (la réponse brute y est journalisée) pour
+// ajuster cette fonction en conséquence.
+const WHISP_API_KEY = process.env.WHISP_API_KEY || null;
+const WHISP_API_BASE = "https://whisp.openforis.org/api";
+const WHISP_ACTIF = !!WHISP_API_KEY;
+
+if (!WHISP_ACTIF) {
+  console.log("[whisp] WHISP_API_KEY non définie — vérification satellite désactivée.");
+}
+
+async function soumettreAnalyseWhisp(lat, lng) {
+  const geojson = {
+    type: "FeatureCollection",
+    features: [{
+      type: "Feature",
+      geometry: { type: "Point", coordinates: [lng, lat] }, // GeoJSON: [longitude, latitude]
+      properties: {},
+    }],
+  };
+
+  const res = await fetch(`${WHISP_API_BASE}/submit/geojson`, {
+    method: "POST",
+    headers: { "x-api-key": WHISP_API_KEY, "Content-Type": "application/json" },
+    body: JSON.stringify(geojson),
+  });
+
+  if (!res.ok) {
+    const texte = await res.text().catch(() => "");
+    throw new Error(`WHISP submit a échoué (${res.status}) : ${texte.slice(0, 300)}`);
+  }
+
+  const data = await res.json();
+  // Le nom exact du champ contenant le jeton peut varier (token, id, jobId...) —
+  // on essaie les variantes les plus probables d'après la documentation.
+  const token = data.token || data.id || data.jobId || data.job_id;
+  if (!token) {
+    console.error("[whisp] Réponse de soumission sans jeton reconnaissable :", JSON.stringify(data));
+    throw new Error("WHISP submit : jeton d'analyse introuvable dans la réponse");
+  }
+  return token;
+}
+
+// Renvoie { termine: bool, risque: 'faible'|'eleve'|'indetermine'|null, erreur: bool }
+async function verifierStatutWhisp(token) {
+  const res = await fetch(`${WHISP_API_BASE}/status/${token}`, {
+    headers: { "x-api-key": WHISP_API_KEY },
+  });
+
+  if (!res.ok) {
+    const texte = await res.text().catch(() => "");
+    console.error(`[whisp] status a échoué (${res.status}) pour le jeton ${token} :`, texte.slice(0, 300));
+    return { termine: true, risque: null, erreur: true };
+  }
+
+  const data = await res.json();
+
+  // Statut du job — on tolère plusieurs formats possibles (status/state).
+  const statutBrut = (data.status || data.state || "").toLowerCase();
+  const enCours = ["pending", "processing", "queued", "running", "en_cours"].includes(statutBrut);
+  if (enCours) return { termine: false, risque: null, erreur: false };
+
+  const echoue = ["failed", "error", "erreur"].includes(statutBrut);
+  if (echoue) {
+    console.error(`[whisp] job ${token} terminé en échec :`, JSON.stringify(data).slice(0, 500));
+    return { termine: true, risque: null, erreur: true };
+  }
+
+  const risque = extraireNiveauRisque(data);
+  if (risque === null) {
+    // Le job semble complet mais on n'a pas su lire le niveau de risque —
+    // on journalise la réponse complète pour pouvoir ajuster le code.
+    console.error(`[whisp] job ${token} complet mais niveau de risque non reconnu. Réponse brute :`, JSON.stringify(data).slice(0, 1000));
+  }
+  return { termine: true, risque, erreur: false };
+}
+
+function extraireNiveauRisque(data) {
+  // Cherche une propriété de risque à plusieurs emplacements plausibles de
+  // la réponse GeoJSON (features[0].properties.xxx), selon la convention
+  // habituelle des exports du package openforis-whisp.
+  const proprietes =
+    data?.features?.[0]?.properties ||
+    data?.result?.features?.[0]?.properties ||
+    data?.properties ||
+    null;
+  if (!proprietes) return null;
+
+  const candidats = ["risk", "whisp_risk", "deforestation_risk", "risque"];
+  let valeurBrute = null;
+  for (const cle of candidats) {
+    if (proprietes[cle] !== undefined && proprietes[cle] !== null) {
+      valeurBrute = String(proprietes[cle]).toLowerCase();
+      break;
+    }
+  }
+  if (!valeurBrute) return null;
+
+  if (valeurBrute.includes("low")) return "faible";
+  if (valeurBrute.includes("high")) return "eleve";
+  if (valeurBrute.includes("more_info") || valeurBrute.includes("information")) return "indetermine";
+  return "indetermine";
+}
 
 function logEvent(orderId, type, detail = null) {
   db.prepare(`INSERT INTO order_events (order_id, type, detail) VALUES (?, ?, ?)`).run(orderId, type, detail);
@@ -582,6 +698,46 @@ router.post("/api/products/:id/retirer", (req, res, params) => {
   if (product.statut !== "disponible") return send(res, 409, { error: "seul un lot disponible peut être retiré" });
   db.prepare(`UPDATE products SET statut = 'retire' WHERE id = ?`).run(product.id);
   send(res, 200, db.prepare(`SELECT * FROM products WHERE id = ?`).get(product.id));
+});
+
+// Déclenche une analyse satellite de risque de déforestation (WHISP/FAO) pour
+// un lot géolocalisé. Asynchrone : la soumission renvoie immédiatement, le
+// résultat est récupéré plus tard par la tâche planifiée (cf. fin du fichier).
+// Indication automatisée uniquement — jamais présentée comme une
+// certification de conformité RDUE (cf. affichage front-end du badge).
+router.post("/api/products/:id/verifier-deforestation", (req, res, params) => {
+  const auth = getAuth(req);
+  if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
+  if (!WHISP_ACTIF) return send(res, 503, { error: "service d'analyse satellite indisponible pour le moment" });
+
+  const product = db.prepare(`SELECT * FROM products WHERE id = ?`).get(params.id);
+  if (!product) return send(res, 404, { error: "lot introuvable" });
+  if (product.seller_id !== auth.id) return send(res, 403, { error: "ce lot n'appartient pas à ce vendeur" });
+  if (product.parcelle_latitude === null || product.parcelle_longitude === null) {
+    return send(res, 400, { error: "ce lot n'a pas de géolocalisation de parcelle renseignée" });
+  }
+  if (product.whisp_statut === "en_cours") {
+    return send(res, 409, { error: "une analyse est déjà en cours pour ce lot" });
+  }
+
+  soumettreAnalyseWhisp(product.parcelle_latitude, product.parcelle_longitude)
+    .then((token) => {
+      db.prepare(`
+        UPDATE products SET whisp_statut = 'en_cours', whisp_token = ?, whisp_soumis_le = ?
+        WHERE id = ?
+      `).run(token, new Date().toISOString(), product.id);
+    })
+    .catch((err) => {
+      console.error(`[whisp] échec de soumission pour le lot ${product.id} :`, err.message);
+      db.prepare(`UPDATE products SET whisp_statut = 'erreur' WHERE id = ?`).run(product.id);
+    });
+
+  // On répond immédiatement "en_cours" à l'appelant sans attendre la
+  // confirmation réseau de la soumission, pour ne pas bloquer l'interface —
+  // le vrai statut se met à jour en arrière-plan (cf. ci-dessus et le
+  // vérificateur périodique).
+  db.prepare(`UPDATE products SET whisp_statut = 'en_cours' WHERE id = ?`).run(product.id);
+  send(res, 202, { ok: true, whisp_statut: "en_cours" });
 });
 
 // ---------- SVA : mise en avant de lots & abonnement Vendeur Pro ----------
@@ -1139,5 +1295,53 @@ function executerVerificationDelais() {
   }
 }
 
+// Vérifie les analyses satellite WHISP en cours et récupère leur résultat
+// dès qu'elles sont terminées. Marque en erreur toute analyse restée
+// bloquée plus de 30 minutes (timeout de sécurité — évite un lot coincé
+// indéfiniment en "en_cours" si WHISP ne répond jamais).
+const WHISP_TIMEOUT_MINUTES = 30;
+
+async function executerVerificationWhisp() {
+  if (!WHISP_ACTIF) return;
+
+  const enCours = db.prepare(`SELECT * FROM products WHERE whisp_statut = 'en_cours' AND whisp_token IS NOT NULL`).all();
+  if (enCours.length === 0) return;
+
+  let termines = 0, erreurs = 0;
+  for (const product of enCours) {
+    const soumisDepuisMin = (Date.now() - new Date(product.whisp_soumis_le).getTime()) / 60000;
+    if (soumisDepuisMin > WHISP_TIMEOUT_MINUTES) {
+      db.prepare(`UPDATE products SET whisp_statut = 'erreur' WHERE id = ?`).run(product.id);
+      erreurs++;
+      continue;
+    }
+
+    try {
+      const resultat = await verifierStatutWhisp(product.whisp_token);
+      if (!resultat.termine) continue; // toujours en cours, on revérifiera au prochain passage
+
+      if (resultat.erreur) {
+        db.prepare(`UPDATE products SET whisp_statut = 'erreur' WHERE id = ?`).run(product.id);
+        erreurs++;
+      } else {
+        db.prepare(`
+          UPDATE products SET whisp_statut = 'termine', whisp_risque = ?, whisp_verifie_le = ?
+          WHERE id = ?
+        `).run(resultat.risque, new Date().toISOString(), product.id);
+        termines++;
+      }
+    } catch (err) {
+      console.error(`[whisp] erreur de vérification pour le lot ${product.id} :`, err.message);
+    }
+  }
+
+  if (termines > 0 || erreurs > 0) {
+    console.log(`[whisp] ${enCours.length} analyse(s) vérifiée(s) : ${termines} terminée(s), ${erreurs} en erreur.`);
+  }
+}
+
 setInterval(executerVerificationDelais, CRON_INTERVAL_MINUTES * 60 * 1000);
 executerVerificationDelais(); // premier passage immédiat au démarrage
+
+setInterval(executerVerificationWhisp, CRON_INTERVAL_MINUTES * 60 * 1000);
+executerVerificationWhisp();
