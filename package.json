@@ -1,0 +1,15 @@
+{
+  "name": "agrisecur-mvp",
+  "version": "0.1.0",
+  "description": "MVP AgriSecur — marketplace agricole B2B/B2C, filière cacao, tunnel séquestre.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.14"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  }
+}
