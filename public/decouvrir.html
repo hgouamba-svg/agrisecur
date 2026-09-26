@@ -209,6 +209,16 @@ body{background:#FFFFFF}
 .cta .btn{background:#FFF}
 .cta .btn.primary{background:#111; color:#FFF; box-shadow:4px 4px 0 #FFF}
 @media (max-width:600px){ .vo{box-shadow:4px 4px 0 #111} .stage{box-shadow:6px 6px 0 var(--accent)} }
+
+.start{position:absolute; inset:0; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:0; cursor:pointer; background:rgba(8,34,24,.84); color:#FFF; font:inherit}
+.start[hidden]{display:none}
+.start-ico{width:calc(9*var(--u)); height:calc(9*var(--u)); min-width:64px; min-height:64px; display:grid; place-items:center; background:var(--accent); color:#111; border:2px solid #111; box-shadow:5px 5px 0 #111}
+.start-ico svg{width:40%; height:40%}
+.start-txt{font-family:var(--stencil); font-weight:900; font-size:clamp(28px,4.4cqw,56px); letter-spacing:.04em; text-transform:uppercase; line-height:1}
+.start-sub{font-family:var(--mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:#D6E4DA}
+.start:hover .start-ico{box-shadow:7px 7px 0 #111; transform:translate(-2px,-2px)}
+.start:focus-visible{outline:3px solid var(--accent); outline-offset:-6px}
+#voiceBtn[aria-pressed="false"]{color:#5C5C5C}
 </style>
 
 <div class="flagbar" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -354,6 +364,7 @@ body{background:#FFFFFF}
         </div>
 
         <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+        <button class="start" id="startBtn" type="button" aria-label="Lancer le film avec la voix off"><span class="start-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg></span><span class="start-txt">Lancer le film</span><span class="start-sub" id="startSub">avec voix off · 51 s</span></button>
       </div>
     </div>
 
@@ -363,6 +374,9 @@ body{background:#FFFFFF}
       </button>
       <button class="btn" id="replayBtn" type="button">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.6-3.7"/><path d="M3 2.5v2.8h2.8"/></svg>Rejouer
+      </button>
+      <button class="btn" id="voiceBtn" type="button" aria-pressed="true" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="voiceWaves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span id="voiceTxt">Voix off</span>
       </button>
       <div class="bar" aria-hidden="true"><i id="bar"></i></div>
       <span class="time" id="time">0:00 / 0:51</span>
@@ -412,7 +426,8 @@ body{background:#FFFFFF}
     {name:'Impact', dur:8000,
      vo:"Le producteur est payé. La coopérative vend en volume. L'acheteur reçoit des lots vérifiés et traçables."},
     {name:'Contact', dur:7000,
-     vo:"AgriSecur. Vendez, achetez, en confiance. www.agrisecur.com"}
+     vo:"AgriSecur. Vendez, achetez, en confiance. www.agrisecur.com",
+     say:"AgriSecur. Vendez, achetez, en confiance. Rendez-vous sur agrisecur point com."}
   ];
   const total = S.reduce((a,s)=>a+s.dur,0);
   const stage = document.getElementById('stage');
@@ -427,11 +442,44 @@ body{background:#FFFFFF}
   S.forEach((s,i)=>{
     const li = document.createElement('li');
     li.innerHTML = `<button type="button"><span class="mono">${i+1}</span>${s.name}</button>`;
-    li.firstChild.addEventListener('click', ()=>{ go(i, true); if(!playing) play(); });
+    li.firstChild.addEventListener('click', ()=>{ playing = true; go(i, true); play(); });
     chips.appendChild(li);
   });
 
   let idx = 0, elapsed = 0, playing = false, last = 0, ended = false;
+
+  // ---- Voix off : synthèse vocale française du navigateur du visiteur ----
+  const synth = window.speechSynthesis;
+  const voiceBtn = document.getElementById('voiceBtn'), voiceTxt = document.getElementById('voiceTxt'), voiceWaves = document.getElementById('voiceWaves');
+  let voixFr = null, voiceOn = !!synth, parle = false, finParole = 0;
+  function choisirVoix(){
+    if(!synth) return;
+    const fr = synth.getVoices().filter(v => /^fr(-|_|$)/i.test(v.lang));
+    const pref = ['Google français','Amélie','Amelie','Thomas','Denise','Henri','Audrey','Marie','Microsoft'];
+    voixFr = fr.find(v => pref.some(n => v.name.includes(n)) && /fr-FR/i.test(v.lang)) || fr.find(v => /fr-FR/i.test(v.lang)) || fr[0] || null;
+    if(voixFr){ voiceBtn.hidden = false; }
+  }
+  if(synth){ choisirVoix(); synth.addEventListener?.('voiceschanged', choisirVoix); }
+  function majBoutonVoix(){
+    voiceBtn.setAttribute('aria-pressed', voiceOn ? 'true' : 'false');
+    voiceTxt.textContent = voiceOn ? 'Voix off' : 'Voix coupée';
+    voiceWaves.style.display = voiceOn ? '' : 'none';
+  }
+  function parler(i){
+    if(!synth) return;
+    synth.cancel(); parle = false;
+    if(!voiceOn || !voixFr) return;
+    const u = new SpeechSynthesisUtterance(S[i].say || S[i].vo);
+    u.voice = voixFr; u.lang = voixFr.lang; u.rate = 1; u.pitch = 1;
+    u.onstart = () => { parle = true; };
+    u.onend = u.onerror = () => { parle = false; };
+    parle = true; finParole = performance.now() + S[i].dur + 9000; // garde-fou si la fin n'est jamais signalée
+    synth.speak(u);
+  }
+  voiceBtn.addEventListener('click', () => {
+    voiceOn = !voiceOn; majBoutonVoix();
+    if(voiceOn && playing) parler(idx); else if(synth){ synth.cancel(); parle = false; }
+  });
   const before = i => S.slice(0,i).reduce((a,s)=>a+s.dur,0);
 
   function go(i, animate){
@@ -441,6 +489,7 @@ body{background:#FFFFFF}
     [...chips.children].forEach((li,j)=>li.firstChild.setAttribute('aria-current', j===i ? 'true':'false'));
     voLab.textContent = 'Sous-titres · ' + (i+1) + '/' + S.length;
     voTxt.textContent = S[i].vo;
+    if(animate && playing) parler(i);
     paint();
   }
   function paint(){
@@ -455,8 +504,9 @@ body{background:#FFFFFF}
   }
   function tick(t){
     if(!playing) return;
-    elapsed += t - last; last = t;
-    if(elapsed >= S[idx].dur){
+    elapsed = Math.min(elapsed + (t - last), S[idx].dur); last = t;
+    const voixEnCours = parle && performance.now() < finParole;
+    if(elapsed >= S[idx].dur && !voixEnCours){
       if(idx < S.length-1){ go(idx+1, true); }
       else { elapsed = S[idx].dur; paint(); playing = false; ended = true; setBtn(); return; }
     }
@@ -464,19 +514,27 @@ body{background:#FFFFFF}
     requestAnimationFrame(tick);
   }
   function play(){
+    startBtn.hidden = true;
+    const reprise = !ended && scenes[idx].classList.contains('play');
+    playing = true;
     if(ended){ go(0, true); }
-    else if(!scenes[idx].classList.contains('play')){ go(idx, true); }
-    playing = true; stage.classList.remove('paused'); last = performance.now(); setBtn();
+    else if(!reprise){ go(idx, true); }
+    else if(synth && synth.paused){ synth.resume(); }
+    else if(!parle && elapsed < S[idx].dur * .5){ parler(idx); }
+    stage.classList.remove('paused'); last = performance.now(); setBtn();
     requestAnimationFrame(tick);
   }
-  function pause(){ playing = false; stage.classList.add('paused'); setBtn(); }
+  function pause(){ playing = false; stage.classList.add('paused'); if(synth && parle) synth.pause(); setBtn(); }
 
   playBtn.addEventListener('click', ()=> playing ? pause() : play());
-  document.getElementById('replayBtn').addEventListener('click', ()=>{ stage.classList.remove('paused'); go(0, true); if(!playing) play(); });
+  document.getElementById('replayBtn').addEventListener('click', ()=>{ stage.classList.remove('paused'); playing = true; go(0, true); play(); });
 
-  go(0, false); // complete still frame at rest
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduce){ setTimeout(()=>{ go(0, true); play(); }, 900); }
+  const startBtn = document.getElementById('startBtn');
+  startBtn.addEventListener('click', () => { choisirVoix(); playing = true; go(0, true); play(); });
+  majBoutonVoix();
+  setTimeout(() => { if(!voixFr) document.getElementById('startSub').textContent = 'sous-titré · 51 s'; }, 1200);
+  go(0, false); // image fixe complète en attendant le clic
+  window.addEventListener('pagehide', () => synth && synth.cancel());
 })();
 </script>
 
