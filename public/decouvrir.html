@@ -418,7 +418,8 @@ body{background:#FFFFFF}
     {name:'Le problème', dur:8000,
      vo:"À Soubré, un producteur vient de récolter trois tonnes de cacao. À Abidjan, un acheteur est prêt à les prendre. Entre les deux, une question bloque tout : qui garantit le paiement ?"},
     {name:'La plateforme', dur:9000,
-     vo:"AgriSecur réunit producteurs, coopératives et acheteurs sur une seule plateforme. Chaque vendeur est vérifié avant de publier une annonce."},
+     vo:"AgriSecur réunit producteurs, coopératives et acheteurs sur une seule plateforme. Chaque vendeur est vérifié avant de publier une annonce.",
+     say:"Agri-Sécure réunit producteurs, coopératives et acheteurs sur une seule plateforme. Chaque vendeur est vérifié avant de publier une annonce."},
     {name:'Paiement', dur:10000,
      vo:"Les fonds sont déposés et bloqués. La marchandise est expédiée. L'argent n'est versé au producteur qu'une fois la réception confirmée par l'acheteur."},
     {name:'Traçabilité', dur:9000,
@@ -427,7 +428,7 @@ body{background:#FFFFFF}
      vo:"Le producteur est payé. La coopérative vend en volume. L'acheteur reçoit des lots vérifiés et traçables."},
     {name:'Contact', dur:7000,
      vo:"AgriSecur. Vendez, achetez, en confiance. www.agrisecur.com",
-     say:"AgriSecur. Vendez, achetez, en confiance. Rendez-vous sur agrisecur point com."}
+     say:"Agri-Sécure. Vendez, achetez, en confiance. Rendez-vous sur agri-sécure point com."}
   ];
   const total = S.reduce((a,s)=>a+s.dur,0);
   const stage = document.getElementById('stage');
@@ -469,7 +470,7 @@ body{background:#FFFFFF}
     if(!synth) return;
     synth.cancel(); parle = false;
     if(!voiceOn || !voixFr) return;
-    const u = new SpeechSynthesisUtterance(S[i].say || S[i].vo);
+    const u = new SpeechSynthesisUtterance((S[i].say || S[i].vo).replace(/AgriSecur/gi, 'Agri-Sécure'));
     u.voice = voixFr; u.lang = voixFr.lang; u.rate = 1; u.pitch = 1;
     u.onstart = () => { parle = true; };
     u.onend = u.onerror = () => { parle = false; };
