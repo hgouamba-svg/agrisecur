@@ -531,6 +531,49 @@
     .fab-top { bottom:118px; }
   }
   @media (prefers-reduced-motion: reduce) { .fab { transition:none; } }
+
+  /* Prix du jour */
+  .ls-px { display:flex; flex-direction:column; gap:48px; }
+  .ls-px-head { display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:16px; font-family:var(--ls-mono); }
+  .ls-px-head b { font-size:14px; letter-spacing:.14em; }
+  .ls-px-head span { font-size:13px; color:var(--ls-mute); }
+  .ls-px-live { display:inline-flex; align-items:center; gap:8px; color:var(--ls-ok) !important; font-weight:600; }
+  .ls-px-live i { width:10px; height:10px; border-radius:50%; background:#1F9D55; box-shadow:0 0 0 0 rgba(31,157,85,.6); animation:ls-pulse 1.8s infinite; }
+  @keyframes ls-pulse { 0%{box-shadow:0 0 0 0 rgba(31,157,85,.55)} 70%{box-shadow:0 0 0 10px rgba(31,157,85,0)} 100%{box-shadow:0 0 0 0 rgba(31,157,85,0)} }
+  .ls-px-cards { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:20px; }
+  .ls-px-card { border:2px solid var(--ls-ink); background:#FFFFFF; display:flex; flex-direction:column; }
+  .ls-px-card-head { padding:10px 18px; font-family:var(--ls-stencil); font-weight:900; font-size:30px; letter-spacing:.05em; text-transform:uppercase; line-height:1; }
+  .ls-px-card-body { padding:16px 18px 18px; display:flex; flex-direction:column; gap:6px; }
+  .ls-px-price { font-family:var(--ls-mono); font-weight:600; font-size:34px; line-height:1.1; }
+  .ls-px-price small { font-size:14px; color:var(--ls-mute); font-weight:500; }
+  .ls-px-detail { font-size:14px; font-weight:600; }
+  .ls-px-meta { font-family:var(--ls-mono); font-size:12px; color:var(--ls-mute); }
+  .ls-px-table { border:2px solid var(--ls-ink); }
+  .ls-px-row { display:grid; grid-template-columns:1.5fr 1.2fr .8fr 1fr; gap:12px; align-items:center; padding:16px 22px; border-top:1px dashed #9A9A9A; }
+  .ls-px-thead { border-top:0; border-bottom:2px solid var(--ls-ink); font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ls-mute); }
+  .ls-px-thead + .ls-px-row { border-top:0; }
+  .ls-px-mkt b { display:block; font-size:16px; }
+  .ls-px-mkt small { display:block; font-family:var(--ls-mono); font-size:12px; color:var(--ls-mute); }
+  .ls-px-num { font-family:var(--ls-mono); font-weight:600; font-size:16px; }
+  .ls-px-num small { font-size:12px; color:var(--ls-mute); font-weight:500; }
+  .ls-px-fcfa { color:var(--ls-green); }
+  .ls-px-var { font-family:var(--ls-mono); font-weight:600; font-size:15px; }
+  .ls-px-up { color:#1B7A3E; } .ls-px-down { color:#B42318; } .ls-px-flat { color:var(--ls-mute); }
+  .ls-px-note { margin:12px 0 0; font-size:14px; color:var(--ls-mute); max-width:60em; }
+  .ls-px-wait { border:2px dashed var(--ls-ink); padding:28px 22px; font-family:var(--ls-mono); font-size:14px; color:var(--ls-mute); }
+  @media (max-width: 900px) {
+    .ls-px { gap:36px; }
+    .ls-px-cards { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .ls-px-card-head { font-size:24px; padding:8px 12px; }
+    .ls-px-card-body { padding:12px; }
+    .ls-px-price { font-size:24px; }
+    .ls-px-row { grid-template-columns:1.3fr 1fr; padding:14px 16px; row-gap:6px; }
+    .ls-px-thead { display:none; }
+    .ls-px-row > span:nth-child(2) small { display:block; }
+    .ls-px-row > span:nth-child(3) { text-align:left; }
+    .ls-px-row > span:nth-child(2), .ls-px-row > span:nth-child(4) { text-align:right; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ls-px-live i { animation:none; } }
 </style>
 </head>
 <body>
@@ -722,9 +765,9 @@
           <p class="ls-eyebrow" data-i18n="prices.eyebrow">Prix du jour</p>
           <h2 class="ls-h2" data-i18n="prices.title">Les vrais prix, filière par filière</h2>
         </div>
-        <p class="ls-body ls-sec-note" data-i18n="prices.lead">Calculés en direct à partir des lots publiés sur AgriSecur.</p>
+        <p class="ls-body ls-sec-note" data-i18n="prices.lead">Prix officiels fixés par l'État et cours des bourses mondiales, actualisés en continu.</p>
       </div>
-      <div id="market-ticker" class="ls-ticker">
+      <div id="market-ticker" class="ls-px" aria-live="polite">
         <div class="empty-state" data-i18n="prices.loading">Chargement des prix du marché…</div>
       </div>
     </div>
@@ -1383,6 +1426,16 @@
           <button class="outline" onclick="telechargerBase()">Télécharger une sauvegarde de la base</button>
         </div>
       </div>
+      <div class="card" style="margin-top:16px;">
+        <strong>Prix officiels bord champ (page d'accueil)</strong>
+        <p class="sub" style="margin:8px 0 14px;">À mettre à jour à chaque annonce officielle (Conseil Café-Cacao, Conseil du Coton et de l'Anacarde). Les cours mondiaux, eux, se mettent à jour tout seuls.</p>
+        <div id="admin-prix-officiels"></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;">
+          <button class="outline" onclick="ajouterLignePrixOfficiel()">Ajouter une filière</button>
+          <button class="dark" onclick="enregistrerPrixOfficiels()">Enregistrer les prix</button>
+        </div>
+        <div id="admin-prix-msg" style="margin-top:12px;"></div>
+      </div>
     </section>
 
     <section id="admin-panel-depenses" class="panel">
@@ -1552,7 +1605,7 @@ Object.assign(TRADUCTIONS.en, {
   "filieres.lead": "8 sectors — click to see the lots",
   "prices.eyebrow": "Today's prices",
   "prices.title": "Real prices, sector by sector",
-  "prices.lead": "Calculated live from lots published on AgriSecur.",
+  "prices.lead": "Official prices set by the State and world exchange quotes, updated continuously.",
   "field.title": "From the field<br><span>to the truck</span>",
   "field.lead": "Every published lot comes from a seller whose identity has been verified, with the GPS position of their plot.",
   "field.c1": "Drying beans on racks",
@@ -1804,32 +1857,87 @@ landingSectionIds.forEach((id) => {
 async function loadMarketTicker() {
   const el = document.getElementById("market-ticker");
   if (!el) return;
-  const lang = localStorage.getItem("agrisecur_lang") || "fr";
+  const en = (localStorage.getItem("agrisecur_lang") || "fr") === "en";
+  const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const heure = (iso) => { try { return new Date(iso).toLocaleTimeString(en ? "en-GB" : "fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
+  const dateCourte = (iso) => { try { return new Date(iso).toLocaleDateString(en ? "en-GB" : "fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
+  const nb = (v, d = 0) => Number(v).toLocaleString(en ? "en-US" : "fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const couleurs = { cacao:"#5A3A22", anacarde:"#C9A36A", cafe:"#3B2A1E", coton:"#E9E4D6", hevea:"#2F5D3A", palmier:"#B8860B", riz:"#E8D9A8", vivrier:"#1F3D2E" };
+  const clairs = ["anacarde","coton","riz"];
+  let d;
   try {
-    const res = await fetch("/api/market-prices");
-    const rows = await res.json();
-    if (!rows.length) {
-      el.innerHTML = `<div class="empty-state">${lang === "en" ? "Not enough published lots yet to establish a market average." : "Pas encore assez de lots publiés pour établir une moyenne de marché."}</div>`;
-      return;
-    }
-    const entetes = lang === "en"
-      ? ["Sector", "Average price", "Min", "Max", "Active lots"]
-      : ["Filière", "Prix moyen", "Min", "Max", "Lots actifs"];
-    el.innerHTML =
-      `<div class="ticker-row ticker-head"><span>${entetes[0]}</span><span>${entetes[1]}</span><span>${entetes[2]}</span><span>${entetes[3]}</span><span>${entetes[4]}</span></div>` +
-      rows.map((r) => `
-        <div class="ticker-row">
-          <span><strong>${filiereLabel(r.filiere)}</strong></span>
-          <span class="ticker-price">${fmt(r.prix_moyen_fcfa)} F/kg</span>
-          <span class="ticker-price" style="color:var(--ink-soft);font-size:12.5px;">${fmt(r.prix_min_fcfa)} F</span>
-          <span class="ticker-price" style="color:var(--ink-soft);font-size:12.5px;">${fmt(r.prix_max_fcfa)} F</span>
-          <span>${r.nb_lots}</span>
-        </div>
-      `).join("");
+    const res = await fetch("/api/prix-du-jour");
+    if (!res.ok) throw new Error("http " + res.status);
+    d = await res.json();
   } catch (e) {
-    el.innerHTML = `<div class="empty-state">${lang === "en" ? "Unable to load market prices right now." : "Impossible de charger les prix du marché pour le moment."}</div>`;
+    if (!el.dataset.charge) el.innerHTML = `<div class="ls-px-wait">${en ? "Connecting to the markets…" : "Connexion aux marchés…"}</div>`;
+    clearTimeout(window._pxRetry); window._pxRetry = setTimeout(loadMarketTicker, 20000);
+    return;
   }
+  el.dataset.charge = "1";
+
+  const officiels = (d.officiels || []).map((o) => {
+    const fond = couleurs[o.filiere] || "#1F3D2E", txt = clairs.includes(o.filiere) ? "#111111" : "#FFFFFF";
+    return `<article class="ls-px-card">
+      <div class="ls-px-card-head" style="background:${fond};color:${txt};">${esc(filiereLabel(o.filiere))}</div>
+      <div class="ls-px-card-body">
+        <div class="ls-px-price">${nb(o.prix_fcfa_kg)} <small>FCFA/kg</small></div>
+        ${o.detail ? `<div class="ls-px-detail">${esc(o.detail)}</div>` : ""}
+        <div class="ls-px-meta">${esc(o.campagne)}${o.depuis ? ` · ${en ? "since" : "depuis le"} ${esc(dateCourte(o.depuis))}` : ""}</div>
+        <div class="ls-px-meta">${en ? "Source" : "Source"} : ${esc(o.source)}</div>
+      </div>
+    </article>`;
+  }).join("");
+
+  const mondiaux = d.mondiaux || [];
+  let blocMondial;
+  if (!mondiaux.length) {
+    blocMondial = `<div class="ls-px-wait">${en ? "Connecting to the exchanges — quotes will appear in a moment." : "Connexion aux bourses en cours — les cours s'afficheront dans un instant."}</div>`;
+    clearTimeout(window._pxRetry); window._pxRetry = setTimeout(loadMarketTicker, 20000);
+  } else {
+    const lignes = mondiaux.map((m) => {
+      const v = m.variation_pct;
+      const sens = v == null ? "" : v > 0 ? "up" : v < 0 ? "down" : "flat";
+      const fleche = v == null ? "" : v > 0 ? "▲" : v < 0 ? "▼" : "■";
+      const decimales = m.cours >= 1000 ? 0 : 2;
+      return `<div class="ls-px-row">
+        <span class="ls-px-mkt"><b>${esc(filiereLabel(m.filiere))}</b><small>${esc(m.marche)}</small></span>
+        <span class="ls-px-num">${nb(m.cours, decimales)} <small>${esc(m.unite)}</small></span>
+        <span class="ls-px-var ls-px-${sens}">${v == null ? "—" : `${fleche} ${nb(Math.abs(v), 2)} %`}</span>
+        <span class="ls-px-num ls-px-fcfa">${m.fcfa_kg ? `≈ ${nb(m.fcfa_kg)} <small>FCFA/kg</small>` : "—"}</span>
+      </div>`;
+    }).join("");
+    const taux = d.xof_par_usd ? (en ? `1 USD = ${nb(d.xof_par_usd, 2)} FCFA` : `1 USD = ${nb(d.xof_par_usd, 2)} FCFA`) : "";
+    blocMondial = `<div class="ls-px-table">
+      <div class="ls-px-row ls-px-thead"><span>${en ? "Market" : "Marché"}</span><span>${en ? "Quote" : "Cours"}</span><span>${en ? "Change" : "Variation"}</span><span>${en ? "≈ in FCFA/kg" : "≈ en FCFA/kg"}</span></div>
+      ${lignes}
+    </div>
+    <p class="ls-px-note">${en
+      ? `International futures prices, converted at today's rate (${taux}). These are not farm-gate prices: they show the direction of world markets.`
+      : `Cours à terme des bourses internationales, convertis au taux du jour (${taux}). Ce ne sont pas des prix bord champ : ils indiquent la tendance des marchés mondiaux.`}</p>`;
+  }
+
+  const lots = d.lots || [];
+  const blocLots = lots.length ? `<div class="ls-px-block">
+      <div class="ls-px-head"><b>${en ? "ON AGRISECUR" : "SUR AGRISECUR"}</b><span>${en ? "Average of lots currently published" : "Moyenne des lots publiés en ce moment"}</span></div>
+      <div class="ls-px-table">
+        <div class="ls-px-row ls-px-thead"><span>${en ? "Sector" : "Filière"}</span><span>${en ? "Average" : "Prix moyen"}</span><span>Min – max</span><span>${en ? "Lots" : "Lots"}</span></div>
+        ${lots.map((r) => `<div class="ls-px-row"><span class="ls-px-mkt"><b>${esc(filiereLabel(r.filiere))}</b></span><span class="ls-px-num">${nb(r.prix_moyen_fcfa)} <small>FCFA/kg</small></span><span class="ls-px-num">${nb(r.prix_min_fcfa)} – ${nb(r.prix_max_fcfa)}</span><span class="ls-px-num">${r.nb_lots}</span></div>`).join("")}
+      </div>
+    </div>` : "";
+
+  el.innerHTML = `
+    <div class="ls-px-block">
+      <div class="ls-px-head"><b>${en ? "OFFICIAL FARM-GATE PRICES" : "PRIX OFFICIELS BORD CHAMP"}</b><span>${en ? "Set by the State · Côte d'Ivoire" : "Fixés par l'État · Côte d'Ivoire"}</span></div>
+      <div class="ls-px-cards">${officiels}</div>
+    </div>
+    <div class="ls-px-block">
+      <div class="ls-px-head"><b>${en ? "WORLD MARKETS" : "COURS MONDIAUX"}</b>${mondiaux.length ? `<span class="ls-px-live"><i></i>${en ? "LIVE" : "EN DIRECT"} · ${en ? "updated at" : "mis à jour à"} ${heure(d.mondiaux_calcules_le)}</span>` : ""}</div>
+      ${blocMondial}
+    </div>
+    ${blocLots}`;
 }
+
 // Bouton "retour en haut" — apparaît après un défilement significatif,
 // pour ne pas encombrer l'écran dès l'arrivée sur la page.
 const btnRetourHaut = document.getElementById("btn-retour-haut");
@@ -3346,6 +3454,7 @@ async function confirmerVirement(id) {
 const MODE_PAIEMENT_LABEL = { mobile_money: "📱 Mobile money", virement: "🏦 Virement bancaire" };
 
 async function loadAdminRentabilite() {
+  loadAdminPrixOfficiels();
   const kpis = document.getElementById("rentabilite-kpis");
   const params = document.getElementById("rentabilite-parametres");
   const list = document.getElementById("rentabilite-detail-list");
@@ -3531,6 +3640,46 @@ async function telechargerBonCommande(id) {
   } catch (e) {
     alert("Impossible de télécharger le bon de commande : " + e.message);
   }
+}
+
+
+// ---- Back-office : prix officiels bord champ ----
+const FILIERES_PRIX_ADMIN = ["cacao","cafe","anacarde","coton","hevea","palmier","riz","vivrier"];
+function lignePrixOfficiel(o = {}) {
+  const opts = FILIERES_PRIX_ADMIN.map((f) => `<option value="${f}" ${o.filiere === f ? "selected" : ""}>${filiereLabel(f)}</option>`).join("");
+  const v = (x) => String(x == null ? "" : x).replace(/"/g, "&quot;");
+  return `<div class="prix-off-ligne" style="display:grid; grid-template-columns:120px 110px 1.2fr 1.2fr 140px 1.2fr 36px; gap:8px; align-items:center; margin-bottom:8px;">
+    <select data-k="filiere">${opts}</select>
+    <input data-k="prix_fcfa_kg" type="number" min="1" placeholder="FCFA/kg" value="${v(o.prix_fcfa_kg)}">
+    <input data-k="campagne" placeholder="Campagne (ex. 2026-2027)" value="${v(o.campagne)}">
+    <input data-k="detail" placeholder="Détail (facultatif)" value="${v(o.detail)}">
+    <input data-k="depuis" type="date" value="${v(o.depuis)}">
+    <input data-k="source" placeholder="Source" value="${v(o.source)}">
+    <button class="danger-outline" style="padding:6px 0;" title="Retirer" aria-label="Retirer cette ligne" onclick="this.parentElement.remove()">×</button>
+  </div>`;
+}
+async function loadAdminPrixOfficiels() {
+  const el = document.getElementById("admin-prix-officiels");
+  if (!el) return;
+  try {
+    const d = await (await fetch("/api/prix-du-jour")).json();
+    el.innerHTML = (d.officiels || []).map(lignePrixOfficiel).join("");
+  } catch (e) { el.innerHTML = `<div class="msg err">Impossible de charger les prix.</div>`; }
+}
+function ajouterLignePrixOfficiel() {
+  document.getElementById("admin-prix-officiels").insertAdjacentHTML("beforeend", lignePrixOfficiel({}));
+}
+async function enregistrerPrixOfficiels() {
+  const msgEl = document.getElementById("admin-prix-msg");
+  const prix = [...document.querySelectorAll("#admin-prix-officiels .prix-off-ligne")].map((ligne) => {
+    const o = {};
+    ligne.querySelectorAll("[data-k]").forEach((c) => { o[c.dataset.k] = c.value.trim(); });
+    return o;
+  });
+  try {
+    await adminApi("/api/admin/prix-officiels", { method: "POST", body: JSON.stringify({ prix }) });
+    msg(msgEl, "Prix enregistrés — ils s'affichent déjà sur la page d'accueil.", true);
+  } catch (e) { msg(msgEl, "Enregistrement impossible. " + e.message, false); }
 }
 
 async function telechargerBase() {

@@ -929,6 +929,151 @@ router.get("/api/sellers/me/dashboard", (req, res) => {
 // Pas de flux de données externe (aucune API de prix agricoles librement
 // disponible en Côte d'Ivoire) : ce sont les vrais prix constatés sur la
 // plateforme, filière par filière.
+// ---------- Prix du jour : prix officiels bord champ + cours mondiaux ----------
+// Les prix officiels sont fixés par l'État (Conseil Café-Cacao, Conseil du Coton
+// et de l'Anacarde). Valeurs par défaut vérifiées le 26/09/2026, modifiables
+// depuis le back-office (onglet Rentabilité) à chaque nouvelle campagne.
+const PRIX_OFFICIELS_DEFAUT = [
+  { filiere: "cacao", prix_fcfa_kg: 1200, detail: "", campagne: "Campagne principale 2026-2027", depuis: "2026-09-01", source: "Conseil Café-Cacao" },
+  { filiere: "cafe", prix_fcfa_kg: 1300, detail: "", campagne: "Campagne principale 2026-2027", depuis: "2026-09-01", source: "Conseil Café-Cacao" },
+  { filiere: "anacarde", prix_fcfa_kg: 400, detail: "", campagne: "Campagne 2026", depuis: "2026-02-09", source: "Conseil du Coton et de l'Anacarde" },
+  { filiere: "coton", prix_fcfa_kg: 310, detail: "1er choix · 2e choix : 285 FCFA/kg", campagne: "Campagne 2025-2026", depuis: "2025-07-31", source: "Conseil du Coton et de l'Anacarde" },
+];
+
+function lirePrixOfficiels() {
+  const ligne = db.prepare(`SELECT valeur FROM app_config WHERE cle = 'prix_officiels'`).get();
+  if (!ligne) return PRIX_OFFICIELS_DEFAUT;
+  try { const v = JSON.parse(ligne.valeur); return Array.isArray(v) && v.length ? v : PRIX_OFFICIELS_DEFAUT; }
+  catch { return PRIX_OFFICIELS_DEFAUT; }
+}
+
+// Cours des bourses internationales (contrats à terme). Deux fournisseurs
+// gratuits sans clé : Yahoo Finance, puis Stooq en secours.
+const XOF_PAR_EUR = 655.957; // parité fixe FCFA / euro
+const LIVRE_KG = 0.45359237;
+const COURS_MONDIAUX = [
+  { filiere: "cacao", marche: "Cacao · ICE New York", yahoo: "CC=F", stooq: "cc.f", unite: "USD/t", versKg: (p) => p / 1000 },
+  { filiere: "cafe", marche: "Café arabica · ICE New York", yahoo: "KC=F", stooq: "kc.f", unite: "cents US/lb", versKg: (p) => p / 100 / LIVRE_KG },
+  { filiere: "coton", marche: "Coton fibre · ICE New York", yahoo: "CT=F", stooq: "ct.f", unite: "cents US/lb", versKg: (p) => p / 100 / LIVRE_KG },
+  { filiere: "riz", marche: "Riz paddy · CBOT Chicago", yahoo: "ZR=F", stooq: "zr.f", unite: "USD/quintal US", versKg: (p) => p / 45.359237 },
+];
+
+async function coursYahoo(symbole) {
+  const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbole)}?range=5d&interval=1d`, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; AgriSecur/1.0)" }, signal: AbortSignal.timeout(8000),
+  });
+  if (!r.ok) throw new Error(`yahoo ${r.status}`);
+  const m = (await r.json())?.chart?.result?.[0]?.meta;
+  if (!m || typeof m.regularMarketPrice !== "number") throw new Error("yahoo vide");
+  const precedent = m.chartPreviousClose ?? m.previousClose;
+  return { prix: m.regularMarketPrice, precedent: typeof precedent === "number" ? precedent : null,
+    maj: m.regularMarketTime ? new Date(m.regularMarketTime * 1000).toISOString() : new Date().toISOString(), fournisseur: "Yahoo Finance" };
+}
+
+async function coursStooq(symbole) {
+  const r = await fetch(`https://stooq.com/q/l/?s=${encodeURIComponent(symbole)}&f=sd2t2ohlc&h&e=csv`, { signal: AbortSignal.timeout(8000) });
+  if (!r.ok) throw new Error(`stooq ${r.status}`);
+  const lignes = (await r.text()).trim().split(/\r?\n/);
+  const v = (lignes[1] || "").split(",");
+  const ouverture = parseFloat(v[3]), cloture = parseFloat(v[6]);
+  if (!isFinite(cloture)) throw new Error("stooq vide");
+  const maj = v[1] && v[2] ? new Date(`${v[1]}T${v[2]}Z`).toISOString() : new Date().toISOString();
+  return { prix: cloture, precedent: isFinite(ouverture) ? ouverture : null, maj, fournisseur: "Stooq" };
+}
+
+async function unCours(yahoo, stooq) {
+  try { return await coursYahoo(yahoo); } catch (e1) {
+    try { return await coursStooq(stooq); } catch (e2) { return null; }
+  }
+}
+
+const PRIX_DU_JOUR_TTL_MS = 10 * 60 * 1000;
+let cachePrixMondiaux = { at: 0, data: null, enCours: null };
+
+async function rafraichirPrixMondiaux() {
+  const [fx, ...cotations] = await Promise.all([unCours("EURUSD=X", "eurusd"), ...COURS_MONDIAUX.map((c) => unCours(c.yahoo, c.stooq))]);
+  const xofParUsd = fx && fx.prix > 0 ? XOF_PAR_EUR / fx.prix : null;
+  const resultats = COURS_MONDIAUX.map((c, i) => {
+    const q = cotations[i];
+    if (!q) return null;
+    const variation = q.precedent ? ((q.prix - q.precedent) / q.precedent) * 100 : null;
+    return {
+      filiere: c.filiere, marche: c.marche, cours: q.prix, unite: c.unite,
+      variation_pct: variation === null ? null : Math.round(variation * 100) / 100,
+      fcfa_kg: xofParUsd ? Math.round(c.versKg(q.prix) * xofParUsd) : null,
+      maj: q.maj, fournisseur: q.fournisseur,
+    };
+  });
+  return { mondiaux: resultats.filter(Boolean), xof_par_usd: xofParUsd ? Math.round(xofParUsd * 100) / 100 : null, calcule_le: new Date().toISOString() };
+}
+
+async function prixMondiaux() {
+  const frais = cachePrixMondiaux.data && Date.now() - cachePrixMondiaux.at < PRIX_DU_JOUR_TTL_MS;
+  if (frais) return cachePrixMondiaux.data;
+  if (!cachePrixMondiaux.enCours) {
+    cachePrixMondiaux.enCours = rafraichirPrixMondiaux()
+      .then((d) => {
+        if (d.mondiaux.length) cachePrixMondiaux = { at: Date.now(), data: d, enCours: null };
+        // Échec complet : on garde les anciens cours s'il y en a, et on réessaie dans 2 minutes.
+        else cachePrixMondiaux = { at: Date.now() - PRIX_DU_JOUR_TTL_MS + 2 * 60 * 1000, data: cachePrixMondiaux.data || d, enCours: null };
+        return cachePrixMondiaux.data;
+      })
+      .catch(() => { cachePrixMondiaux.enCours = null; return cachePrixMondiaux.data; });
+  }
+  // Données déjà en cache : servies tout de suite, le rafraîchissement continue en arrière-plan.
+  // Premier appel : on attend au plus 5 s pour ne jamais bloquer la page d'accueil.
+  if (cachePrixMondiaux.data) return cachePrixMondiaux.data;
+  return Promise.race([cachePrixMondiaux.enCours, new Promise((ok) => setTimeout(() => ok(null), 5000))]);
+}
+// Préchauffe au démarrage, puis toutes les 10 minutes.
+setTimeout(() => prixMondiaux().catch(() => {}), 2000);
+setInterval(() => prixMondiaux().catch(() => {}), PRIX_DU_JOUR_TTL_MS);
+
+router.get("/api/prix-du-jour", (req, res) => {
+  envoyerPrixDuJour(res).catch((err) => {
+    console.error("prix-du-jour:", err.message);
+    if (!res.headersSent) send(res, 500, { error: "prix indisponibles" });
+  });
+});
+
+async function envoyerPrixDuJour(res) {
+  const lots = db.prepare(`
+    SELECT filiere, ROUND(AVG(prix_unitaire_fcfa)) AS prix_moyen_fcfa, MIN(prix_unitaire_fcfa) AS prix_min_fcfa,
+      MAX(prix_unitaire_fcfa) AS prix_max_fcfa, COUNT(*) AS nb_lots
+    FROM products WHERE statut = 'disponible' GROUP BY filiere ORDER BY nb_lots DESC
+  `).all();
+  let marches = null;
+  try { marches = await prixMondiaux(); } catch { marches = null; }
+  send(res, 200, {
+    officiels: lirePrixOfficiels(),
+    mondiaux: marches?.mondiaux || [],
+    xof_par_usd: marches?.xof_par_usd || null,
+    mondiaux_calcules_le: marches?.calcule_le || null,
+    lots,
+  });
+}
+
+router.post("/api/admin/prix-officiels", (req, res, params, body) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const liste = Array.isArray(body?.prix) ? body.prix : null;
+  if (!liste || !liste.length || liste.length > 12) return send(res, 400, { error: "liste de prix invalide" });
+  const propres = [];
+  for (const p of liste) {
+    const prix = Number(p.prix_fcfa_kg);
+    if (!p.filiere || !FILIERES_VALIDES_PRIX.includes(p.filiere) || !Number.isFinite(prix) || prix <= 0 || prix > 100000) {
+      return send(res, 400, { error: `prix invalide pour ${p.filiere || "une filière"}` });
+    }
+    propres.push({
+      filiere: p.filiere, prix_fcfa_kg: Math.round(prix),
+      detail: String(p.detail || "").slice(0, 120), campagne: String(p.campagne || "").slice(0, 80),
+      depuis: String(p.depuis || "").slice(0, 10), source: String(p.source || "").slice(0, 80),
+    });
+  }
+  db.prepare(`INSERT INTO app_config (cle, valeur) VALUES ('prix_officiels', ?) ON CONFLICT(cle) DO UPDATE SET valeur = excluded.valeur`).run(JSON.stringify(propres));
+  send(res, 200, { ok: true, officiels: propres });
+});
+const FILIERES_VALIDES_PRIX = ["cacao", "anacarde", "cafe", "coton", "hevea", "palmier", "riz", "vivrier"];
+
 router.get("/api/market-prices", (req, res) => {
   const rows = db.prepare(`
     SELECT filiere,
