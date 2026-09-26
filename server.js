@@ -925,10 +925,6 @@ router.get("/api/sellers/me/dashboard", (req, res) => {
   });
 });
 
-// Prix du marché — public, calculé en temps réel à partir des lots actifs.
-// Pas de flux de données externe (aucune API de prix agricoles librement
-// disponible en Côte d'Ivoire) : ce sont les vrais prix constatés sur la
-// plateforme, filière par filière.
 // ---------- Prix du jour : prix officiels bord champ + cours mondiaux ----------
 // Les prix officiels sont fixés par l'État (Conseil Café-Cacao, Conseil du Coton
 // et de l'Anacarde). Valeurs par défaut vérifiées le 26/09/2026, modifiables
@@ -940,11 +936,26 @@ const PRIX_OFFICIELS_DEFAUT = [
   { filiere: "coton", prix_fcfa_kg: 310, detail: "1er choix · 2e choix : 285 FCFA/kg", campagne: "Campagne 2025-2026", depuis: "2025-07-31", source: "Conseil du Coton et de l'Anacarde" },
 ];
 
+// Fichier du dépôt (tenu à jour par l'agent de veille), relu à chaque appel.
+function prixOfficielsFichier() {
+  try {
+    const d = JSON.parse(fs.readFileSync(path.join(__dirname, "data", "prix-officiels.json"), "utf8"));
+    return Array.isArray(d.prix) && d.prix.length ? d.prix : PRIX_OFFICIELS_DEFAUT;
+  } catch { return PRIX_OFFICIELS_DEFAUT; }
+}
+
+// Fusion par filière : la saisie du back-office l'emporte si elle est plus récente.
 function lirePrixOfficiels() {
+  const base = prixOfficielsFichier();
+  let saisis = [];
   const ligne = db.prepare(`SELECT valeur FROM app_config WHERE cle = 'prix_officiels'`).get();
-  if (!ligne) return PRIX_OFFICIELS_DEFAUT;
-  try { const v = JSON.parse(ligne.valeur); return Array.isArray(v) && v.length ? v : PRIX_OFFICIELS_DEFAUT; }
-  catch { return PRIX_OFFICIELS_DEFAUT; }
+  if (ligne) { try { const v = JSON.parse(ligne.valeur); if (Array.isArray(v)) saisis = v; } catch {} }
+  const parFiliere = new Map(base.map((p) => [p.filiere, p]));
+  for (const p of saisis) {
+    const actuel = parFiliere.get(p.filiere);
+    if (!actuel || String(p.depuis || "") >= String(actuel.depuis || "")) parFiliere.set(p.filiere, p);
+  }
+  return [...parFiliere.values()];
 }
 
 // Cours des bourses internationales (contrats à terme). Deux fournisseurs
@@ -1074,6 +1085,7 @@ router.post("/api/admin/prix-officiels", (req, res, params, body) => {
 });
 const FILIERES_VALIDES_PRIX = ["cacao", "anacarde", "cafe", "coton", "hevea", "palmier", "riz", "vivrier"];
 
+// Prix moyens constatés sur les lots publiés (ancienne adresse, gardée pour compatibilité).
 router.get("/api/market-prices", (req, res) => {
   const rows = db.prepare(`
     SELECT filiere,

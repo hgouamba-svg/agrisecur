@@ -1,0 +1,10 @@
+{
+  "_lisez_moi": "Prix officiels bord champ affichés dans « Prix du jour ». Mis à jour automatiquement par l'agent de veille (tâche planifiée) ou à la main. Un prix saisi dans le back-office remplace celui-ci s'il est plus récent (champ « depuis »).",
+  "verifie_le": "2026-09-26",
+  "prix": [
+    { "filiere": "cacao", "prix_fcfa_kg": 1200, "detail": "", "campagne": "Campagne principale 2026-2027", "depuis": "2026-09-01", "source": "Conseil Café-Cacao", "source_url": "https://www.aip.ci/cote-divoire-aip-jncc-2026-le-prix-bord-champ-du-cacao-fixe-a-1-200-fcfa-kg-et-celui-du-cafe-a-1-300-fcfa-kg-pour-la-campagne-2026-2027/" },
+    { "filiere": "cafe", "prix_fcfa_kg": 1300, "detail": "", "campagne": "Campagne principale 2026-2027", "depuis": "2026-09-01", "source": "Conseil Café-Cacao", "source_url": "https://www.aip.ci/cote-divoire-aip-jncc-2026-le-prix-bord-champ-du-cacao-fixe-a-1-200-fcfa-kg-et-celui-du-cafe-a-1-300-fcfa-kg-pour-la-campagne-2026-2027/" },
+    { "filiere": "anacarde", "prix_fcfa_kg": 400, "detail": "", "campagne": "Campagne 2026", "depuis": "2026-02-09", "source": "Conseil du Coton et de l'Anacarde", "source_url": "https://www.aip.ci/316084/cote-divoire-aip-le-prix-bord-champ-de-lanacarde-fixe-a-400-fcfa-kg-pour-la-campagne-2026-ministre/" },
+    { "filiere": "coton", "prix_fcfa_kg": 310, "detail": "1er choix · 2e choix : 285 FCFA/kg", "campagne": "Campagne 2025-2026", "depuis": "2025-07-31", "source": "Conseil du Coton et de l'Anacarde", "source_url": "https://www.aip.ci/228182/cote-divoire-aip-le-prix-du-coton-1er-choix-fixe-a-310-fcfa-kg-et-celui-du-2e-choix-a-285-fcfa-kg-pour-la-campagne-2025-2026/" }
+  ]
+}
