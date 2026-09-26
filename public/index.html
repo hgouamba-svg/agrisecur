@@ -1273,9 +1273,9 @@
         </p>
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <a href="mailto:contact@agrisecur.com" style="text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; background:var(--green); color:var(--paper); border:2px solid var(--green);">✉️ Nous écrire par email</a>
-          <a href="https://wa.me/2250000000000" target="_blank" rel="noopener" style="text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; background:var(--paper); color:#1B8A4C; border:2px solid #25D366;">💬 WhatsApp Pro</a>
+          <!-- Bouton WhatsApp Pro retiré tant que le numéro n'est pas confirmé :
+               le remettre avec href="https://wa.me/225XXXXXXXXXX" (indicatif + numéro, sans espaces ni +). -->
         </div>
-        <p class="sub" style="margin:10px 0 0; font-size:11px;">Numéro WhatsApp Pro à confirmer — remplacez <code>2250000000000</code> dans le lien par votre vrai numéro (indicatif 225 + numéro, sans espaces ni signe +).</p>
       </div>
     </section>
 
@@ -1678,6 +1678,13 @@ function ajouterMicroSurChamp(champ) {
   wrapper.style.cssText = "position:relative; display:inline-block; width:100%; vertical-align:top;";
   champ.parentNode.insertBefore(wrapper, champ);
   wrapper.appendChild(champ);
+  // Un champ déjà masqué au chargement (ex. code de parrainage, visible
+  // seulement côté acheteur) : c'est désormais l'enveloppe qui porte le
+  // masquage, sinon le bouton micro reste affiché seul, sans champ.
+  if (champ.style.display === "none") {
+    wrapper.style.display = "none";
+    champ.style.display = "";
+  }
 
   const estTextarea = champ.tagName === "TEXTAREA";
   const btn = document.createElement("button");
