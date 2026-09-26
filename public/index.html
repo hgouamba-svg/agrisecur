@@ -844,6 +844,10 @@
           <p>AgriSecur n'organise pas le transport physique des marchandises. Le vendeur précise pour chaque lot si le transport est à la charge de l'acheteur, inclus et organisé par le vendeur, ou à convenir entre les parties. La responsabilité d'un dommage survenu pendant le transport incombe à la partie qui en avait la charge.</p>
         </details>
         <details class="help-item">
+          <summary>Article 4 ter — Indication de risque de déforestation</summary>
+          <p>Pour les lots géolocalisés, AgriSecur peut afficher une indication automatisée de risque de déforestation, générée par l'API WHISP (FAO / Forest Data Partnership) à partir de données satellite publiques. Cette indication ne constitue ni une certification de conformité au Règlement (UE) 2023/1115 relatif à la déforestation (RDUE), ni un audit ou une vérification physique de la parcelle. La géolocalisation renseignée relève de la seule responsabilité du vendeur. Il appartient à tout acheteur soumis à des obligations de diligence raisonnée de procéder à ses propres vérifications ; AgriSecur ne saurait être tenue responsable d'une non-conformité constatée sur cette base.</p>
+        </details>
+        <details class="help-item">
           <summary>Article 5 — Gestion des litiges</summary>
           <p>Toute réclamation doit être motivée et accompagnée de preuves. Le blocage des fonds est prolongé pendant l'instruction ; la médiation interne statue en équité.</p>
         </details>
@@ -1095,6 +1099,7 @@
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button class="outline" onclick="exporterCsv('commandes')">Exporter les commandes (CSV)</button>
           <button class="outline" onclick="exporterCsv('depenses')">Exporter les dépenses (CSV)</button>
+          <button class="outline" onclick="telechargerBase()">Télécharger une sauvegarde de la base</button>
         </div>
       </div>
     </section>
@@ -1972,6 +1977,8 @@ async function loadMesLots() {
   const list = document.getElementById("mes-lots-list");
   try {
     const lots = await api("/api/sellers/me/products");
+    clearTimeout(whispPollTimer);
+    if (lots.some((l) => l.whisp_statut === "en_cours")) whispPollTimer = setTimeout(loadMesLots, 20000);
     if (lots.length === 0) { card.style.display = "none"; return; }
     card.style.display = "block";
     const now = new Date();
@@ -1983,9 +1990,10 @@ async function loadMesLots() {
         <span>${filiereLabel(l.filiere)}</span>
         <span>${fmt(l.quantite_kg)} kg</span>
         <span class="status-pill ${LOT_STATUT_CLASS[l.statut] || ""}">${LOT_STATUT_LABEL[l.statut] || l.statut}</span>
-        <span style="display:flex; gap:6px;">
+        <span style="display:flex; gap:6px; flex-wrap:wrap;">
           ${l.statut === "disponible" ? `<button class="outline" onclick="boosterLot(${l.id})">${enAvant ? "Prolonger" : "Booster"}</button>` : ""}
           ${l.statut === "disponible" ? `<button class="danger-outline" onclick="retirerLot(${l.id})">Retirer</button>` : ""}
+          ${l.parcelle_latitude && l.parcelle_longitude ? boutonWhisp(l) : ""}
         </span>
       </div>
     `;
@@ -2017,6 +2025,39 @@ async function retirerLot(id) {
     loadMesLots();
   } catch (e) {
     msg(msgEl, "Impossible de retirer ce lot. " + e.message, false);
+  }
+}
+
+// ---------- Analyse satellite de risque de déforestation (WHISP/FAO) ----------
+// Formulation prudente : "indication", jamais "certifié conforme".
+var whispPollTimer = null;
+var whispStatutsVus = {}; // id du lot -> dernier statut affiché, pour animer un résultat qui vient d'arriver
+
+function boutonWhisp(l) {
+  const avant = whispStatutsVus[l.id];
+  whispStatutsVus[l.id] = l.whisp_statut;
+  const nouveau = avant === "en_cours" && l.whisp_statut === "termine" ? " as-whisp-new" : "";
+  if (l.whisp_statut === "en_cours") {
+    return `<span class="tag as-whisp-wait" style="background:#F0EAD6;color:#8A6D15;">🛰️ Analyse en cours…</span>`;
+  }
+  if (l.whisp_statut === "termine" && l.whisp_risque) {
+    const labels = { faible: "Risque faible", eleve: "Risque élevé", indetermine: "À approfondir" };
+    return `<button class="outline${nouveau}" onclick="verifierDeforestationLot(${l.id})" title="Relancer une nouvelle analyse">🛰️ ${labels[l.whisp_risque] || l.whisp_risque} · relancer</button>`;
+  }
+  if (l.whisp_statut === "erreur") {
+    return `<button class="outline" onclick="verifierDeforestationLot(${l.id})">🛰️ Analyse échouée · réessayer</button>`;
+  }
+  return `<button class="outline" onclick="verifierDeforestationLot(${l.id})">🛰️ Vérifier le risque de déforestation</button>`;
+}
+
+async function verifierDeforestationLot(id) {
+  const msgEl = document.getElementById("vendeur-msg");
+  try {
+    await api(`/api/products/${id}/verifier-deforestation`, { method: "POST" });
+    msg(msgEl, "Analyse satellite lancée. Le résultat s'affiche ici d'ici quelques minutes.", true);
+    loadMesLots();
+  } catch (e) {
+    msg(msgEl, "Impossible de lancer l'analyse. " + e.message, false);
   }
 }
 
@@ -2061,6 +2102,24 @@ const LIVRAISON_LABELS = {
 };
 function livraisonLabel(m) { return LIVRAISON_LABELS[m] || "Modalités de transport non précisées"; }
 
+// Badge public d'indication de risque de déforestation (WHISP/FAO).
+// Évaluation automatisée sur données publiques, pas un audit de conformité.
+function badgeRisqueWhisp(p) {
+  if (!p.parcelle_latitude || !p.parcelle_longitude) return "";
+  const config = {
+    en_cours:            { style: "background:#F0EAD6;color:#8A6D15;", label: "🛰️ Analyse satellite en cours" },
+    termine_faible:      { style: "background:#E3F0E8;color:#2C6B3F;", label: "🛰️ Risque de déforestation : faible (indication satellite)" },
+    termine_eleve:       { style: "background:#F5E3E3;color:#8A2B2B;", label: "🛰️ Risque de déforestation : élevé (indication satellite)" },
+    termine_indetermine: { style: "background:#EDEDED;color:#5A5A5A;", label: "🛰️ Risque de déforestation : à approfondir (indication satellite)" },
+  };
+  let cle = null;
+  if (p.whisp_statut === "en_cours") cle = "en_cours";
+  else if (p.whisp_statut === "termine" && p.whisp_risque) cle = `termine_${p.whisp_risque}`;
+  if (!cle) return "";
+  const c = config[cle];
+  return `<span class="tag as-whisp-tag" style="${c.style}cursor:help;" title="Indication automatisée basée sur des données satellite publiques (projet WHISP, FAO). Ne constitue pas une certification de conformité au règlement européen sur la déforestation (RDUE), à vérifier par vos propres soins pour toute déclaration officielle.">${c.label}</span>`;
+}
+
 let catalogueFiltre = "tous";
 
 async function loadCatalogue() {
@@ -2087,6 +2146,7 @@ async function loadCatalogue() {
             ${p.vendeur_fondateur ? '<span class="tag" style="background:var(--gold);color:var(--green);">★ Fondateur</span>' : ""}
             ${p.vendeur_reactif ? '<span class="tag" style="background:#E3F0E8;color:var(--green-soft);">⚡ Expédie en &lt;24h</span>' : ""}
             ${p.parcelle_latitude && p.parcelle_longitude ? `<span class="tag" style="background:#E3EEF5;color:#2B5C8A;cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${p.parcelle_latitude},${p.parcelle_longitude}','_blank')">🌍 Parcelle traçable</span>` : ""}
+            ${badgeRisqueWhisp(p)}
           </div>
           <div class="prod-name">${p.nom}</div>
           <div class="sub" style="margin:0;">${p.localisation || "Localisation non précisée"} · ${p.vendeur_nom}</div>
@@ -3097,6 +3157,25 @@ async function telechargerBonCommande(id) {
   }
 }
 
+async function telechargerBase() {
+  if (!adminKey) { alert("Session admin expirée, reconnectez-vous."); return; }
+  try {
+    const res = await fetch("/api/admin/export/base.sqlite", { headers: { "X-Admin-Key": adminKey } });
+    if (!res.ok) throw new Error("sauvegarde impossible");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `agrisecur-${new Date().toISOString().slice(0, 10)}.db`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert("Impossible de télécharger la sauvegarde pour le moment.");
+  }
+}
+
 async function exporterCsv(type) {
   if (!adminKey) { alert("Session admin expirée, reconnectez-vous."); return; }
   try {
@@ -3116,5 +3195,8 @@ async function exporterCsv(type) {
   }
 }
 </script>
+<link rel="stylesheet" href="/agrisecur-micro.css">
+<script src="/agrisecur-micro.js"></script>
+<script src="/agrisecur-branchement.js"></script>
 </body>
 </html>

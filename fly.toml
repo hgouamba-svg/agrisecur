@@ -1,0 +1,36 @@
+# AgriSecur sur Fly.io
+# Si le nom "agrisecur" est déjà pris chez Fly, changez-le ici (ex. agrisecur-ci).
+app = "agrisecur"
+primary_region = "cdg"   # Paris : le plus proche d'Abidjan parmi les régions Fly
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  PORT = "8080"
+  DB_PATH = "/data/agrisecur.db"
+
+# Volume persistant : la base SQLite (comptes, lots, commandes) y est stockée.
+[mounts]
+  source = "agrisecur_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Toujours allumé : les tâches planifiées (délais de contestation,
+  # analyses WHISP) tournent dans le serveur et ne doivent pas s'arrêter.
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "15s"
+    interval = "30s"
+    method = "GET"
+    path = "/api/health"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

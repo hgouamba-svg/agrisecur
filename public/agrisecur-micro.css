@@ -1,0 +1,120 @@
+/* ==========================================================================
+   AgriSecur — micro-interactions
+   À coller dans votre feuille de style (ou à charger après elle).
+   Toutes les classes sont préfixées "as-" pour ne rien casser dans l'existant.
+   ========================================================================== */
+
+:root{
+  --as-green:#1E7A48;      /* succès / bouton principal */
+  --as-teal:#0F7C74;       /* sécurité, paiement, KYC */
+  --as-orange:#F77F00;     /* orange Côte d'Ivoire */
+  --as-danger:#B8352A;
+  --as-ink:#12231A;
+  --as-muted:#55665B;
+  --as-surface:#FFFFFF;
+  --as-line:#D6DFD5;
+  --as-ease:cubic-bezier(.3,.7,.3,1);
+  --as-bounce:cubic-bezier(.3,1.5,.5,1);
+}
+
+/* ---------- 1. Bouton de confirmation (commande) ----------
+   Bouton → cercle 240 ms, chargement, coche tracée 360 ms            */
+.as-confirm{
+  position:relative; overflow:hidden;
+  height:48px; min-width:48px; padding:0 22px;
+  border:0; border-radius:10px;
+  background:var(--as-green); color:#fff;
+  font:inherit; font-weight:700; cursor:pointer;
+  transition:width .24s var(--as-ease), padding .24s var(--as-ease), border-radius .24s, background .24s;
+}
+.as-confirm .as-label{transition:opacity .12s}
+.as-confirm .as-spin,
+.as-confirm .as-check{position:absolute; inset:0; margin:auto; opacity:0}
+.as-confirm .as-spin{
+  width:20px; height:20px; border-radius:50%;
+  border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff;
+}
+.as-confirm .as-check{width:24px; height:24px; fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round}
+.as-confirm .as-check path{stroke-dasharray:1; stroke-dashoffset:1; transition:stroke-dashoffset .36s ease .05s}
+
+.as-confirm.is-loading,
+.as-confirm.is-done{width:48px !important; padding:0; border-radius:24px; pointer-events:none}
+.as-confirm.is-loading .as-label,
+.as-confirm.is-done .as-label{opacity:0}
+.as-confirm.is-loading .as-spin{opacity:1; animation:as-turn .7s linear infinite}
+.as-confirm.is-done .as-check{opacity:1}
+.as-confirm.is-done .as-check path{stroke-dashoffset:0}
+
+/* ---------- 2. Envoi KYC ----------
+   Barre 900 ms, puis tampon "VÉRIFIÉ" 420 ms avec rebond            */
+.as-progress{height:6px; background:var(--as-line); border-radius:9px; overflow:hidden}
+.as-progress > i{display:block; height:100%; width:0; background:var(--as-teal); transition:width .9s cubic-bezier(.4,0,.2,1)}
+.as-progress.is-running > i{width:100%}
+
+.as-stamp{
+  display:inline-grid; place-items:center;
+  width:64px; height:64px; border-radius:50%;
+  border:2.5px solid var(--as-teal); color:var(--as-teal);
+  font-weight:900; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  box-shadow:inset 0 0 0 5px var(--as-surface), inset 0 0 0 6.5px var(--as-teal);
+  opacity:0; transform:scale(1.8) rotate(-20deg);
+}
+.as-stamp.is-on{opacity:1; transform:rotate(-8deg); transition:opacity .15s, transform .42s var(--as-bounce)}
+
+/* ---------- 3. Badge WHISP (risque déforestation) ----------
+   Apparition 320 ms, anneau 700 ms joué une seule fois               */
+.as-whisp{
+  --as-level:var(--as-green);
+  position:relative; display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px 6px 10px; border-radius:99px;
+  background:var(--as-surface); border:1.5px solid var(--as-level);
+  color:var(--as-ink); font-size:14px; font-weight:600;
+}
+.as-whisp::before{content:""; width:11px; height:11px; border-radius:50%; background:var(--as-level)}
+.as-whisp::after{content:""; position:absolute; inset:-2px; border-radius:99px; border:2px solid var(--as-level); opacity:0; pointer-events:none}
+.as-whisp[data-level="moyen"]{--as-level:var(--as-orange)}
+.as-whisp[data-level="eleve"]{--as-level:var(--as-danger)}
+.as-whisp.is-entering{animation:as-pop .32s cubic-bezier(.3,.8,.3,1.3) both}
+.as-whisp.is-entering::after{animation:as-ring .7s ease-out .25s 1}
+
+/* ---------- 3 bis. Badges WHISP déjà présents dans l'app ----------
+   .as-whisp-wait : analyse en cours, respiration lente
+   .as-whisp-new  : résultat qui vient d'arriver, apparition + halo une fois */
+.as-whisp-wait{animation:as-breathe 1.8s ease-in-out infinite}
+.as-whisp-new{animation:as-pop .32s cubic-bezier(.3,.8,.3,1.3) both, as-halo .8s ease-out .3s 1}
+@keyframes as-breathe{50%{opacity:.55}}
+@keyframes as-halo{from{box-shadow:0 0 0 0 rgba(30,122,72,.45)}to{box-shadow:0 0 0 10px rgba(30,122,72,0)}}
+
+/* ---------- 4. Erreur de paiement ----------
+   Secousse 300 ms sur le champ, message qui se déplie en 240 ms       */
+.as-field-error{border-color:var(--as-danger) !important}
+.as-shake{animation:as-shake .3s cubic-bezier(.36,.07,.19,.97)}
+.as-error-msg{
+  margin:6px 0 0; color:var(--as-danger); font-size:14px;
+  max-height:0; opacity:0; overflow:hidden;
+  transition:max-height .24s, opacity .24s;
+}
+.as-error-msg.is-shown{max-height:120px; opacity:1}
+
+/* ---------- Toast (retour après action) ---------- */
+.as-toast{
+  position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom, 0px));
+  transform:translate(-50%, 12px); opacity:0;
+  max-width:min(92vw, 420px); padding:12px 16px; border-radius:10px;
+  background:var(--as-ink); color:#fff; font-size:14px; line-height:1.4;
+  box-shadow:0 8px 24px rgba(0,0,0,.18); z-index:9999;
+  transition:opacity .24s, transform .24s var(--as-ease); pointer-events:none;
+}
+.as-toast.is-shown{opacity:1; transform:translate(-50%, 0)}
+
+/* ---------- keyframes ---------- */
+@keyframes as-turn{to{transform:rotate(360deg)}}
+@keyframes as-pop{0%{opacity:0; transform:scale(.6)}70%{opacity:1; transform:scale(1.06)}100%{opacity:1; transform:none}}
+@keyframes as-ring{from{opacity:.7; transform:scale(1)}to{opacity:0; transform:scale(1.3,1.8)}}
+@keyframes as-shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* Accessibilité : pas de mouvement si l'utilisateur l'a désactivé */
+@media (prefers-reduced-motion: reduce){
+  .as-confirm, .as-confirm *, .as-progress > i, .as-stamp, .as-error-msg, .as-toast{transition:none !important}
+  .as-confirm.is-loading .as-spin, .as-whisp.is-entering, .as-whisp.is-entering::after, .as-shake, .as-whisp-wait, .as-whisp-new{animation:none !important}
+}
