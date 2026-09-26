@@ -1,0 +1,464 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Découvrir AgriSecur en 51 secondes</title>
+<meta name="description" content="Le film AgriSecur : la place de marché agricole sécurisée de Côte d'Ivoire. Paiement bloqué jusqu'à la réception, vendeurs vérifiés, parcelles tracées.">
+<meta property="og:title" content="AgriSecur en 51 secondes">
+<meta property="og:description" content="Vendez. Achetez. En confiance. La place de marché agricole sécurisée de Côte d'Ivoire.">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F5EF; --surface:#FFFFFF; --ink:#12231A; --muted:#55665B; --line:#D6DFD5;
+  --accent:#F77F00; --accent-ink:#A95500; --leaf:#1E7A48; --teal:#0F7C74; --danger:#B8352A;
+  --seal-bg:#F2F5EF;
+  /* stage: one fixed look, like a film frame */
+  --st-bg:#0E3526; --st-bg2:#0A2A1E; --st-ink:#F1F5EE; --st-dim:#A7C0B1; --st-or:#F77F00;
+  --st-teal:#43C7B6; --st-line:rgba(241,245,238,.14); --st-card:#134433;
+  --display:"Archivo", "Arial Narrow", Arial, sans-serif;
+  --body:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0B1410; --surface:#122019; --ink:#E3ECE5; --muted:#9BAEA2; --line:#24372D;
+    --accent-ink:#FF9C3A; --leaf:#4CC27F; --teal:#47C1B3; --danger:#FF7B6E; --seal-bg:#0B1410;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0B1410; --surface:#122019; --ink:#E3ECE5; --muted:#9BAEA2; --line:#24372D;
+  --accent-ink:#FF9C3A; --leaf:#4CC27F; --teal:#47C1B3; --danger:#FF7B6E; --seal-bg:#0B1410;
+}
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55}
+.wrap{max-width:1040px; margin:0 auto; padding-inline:16px; padding-block:28px 64px; display:flex; flex-direction:column; gap:40px}
+@media (min-width:700px){.wrap{padding-inline:28px}}
+.mono{font-family:var(--mono)}
+button{font:inherit; cursor:pointer}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+
+/* header */
+.top{display:flex; gap:16px; align-items:center}
+.top .seal{width:52px; height:52px; color:var(--accent-ink); flex:none; --seal-bg:var(--bg)}
+.top h1{font-family:var(--display); font-stretch:112%; font-weight:850; font-size:clamp(26px,4.4vw,40px); line-height:1.05; margin:0; text-wrap:balance}
+.top p{margin:4px 0 0; color:var(--muted); max-width:62ch}
+
+/* ---------- film ---------- */
+.film{display:flex; flex-direction:column; gap:14px}
+.stage-wrap{container-type:inline-size}
+.stage{
+  --u:1cqw;
+  position:relative; aspect-ratio:16/9; width:100%; overflow:hidden; border-radius:14px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 calc(6*var(--u) - 1px), rgba(241,245,238,.035) calc(6*var(--u) - 1px) calc(6*var(--u))),
+    repeating-linear-gradient(90deg, transparent 0 calc(6*var(--u) - 1px), rgba(241,245,238,.035) calc(6*var(--u) - 1px) calc(6*var(--u))),
+    radial-gradient(120% 90% at 85% 10%, #145139 0%, var(--st-bg) 45%, var(--st-bg2) 100%);
+  color:var(--st-ink); --seal-bg:var(--st-bg);
+}
+.flag{position:absolute; left:0; right:0; bottom:0; height:calc(.55*var(--u)); display:flex; z-index:3}
+.flag i{flex:1}.flag i:nth-child(1){background:#F77F00}.flag i:nth-child(2){background:#F4F6F2}.flag i:nth-child(3){background:#009E60}
+.scene{position:absolute; inset:0; padding:calc(5*var(--u)); padding-bottom:calc(5.6*var(--u)); display:flex; flex-direction:column; gap:calc(2.2*var(--u)); opacity:0; visibility:hidden; transition:opacity .45s ease, visibility 0s linear .45s}
+.scene.on{opacity:1; visibility:visible; transition:opacity .45s ease}
+.split{flex:1; min-height:0; display:grid; grid-template-columns:1.05fr 1fr; gap:calc(3*var(--u)); align-items:center}
+.copy{display:flex; flex-direction:column; gap:calc(1.4*var(--u))}
+.eyebrow{margin:0; font-family:var(--mono); font-size:calc(1.35*var(--u)); letter-spacing:.14em; text-transform:uppercase; color:var(--st-or)}
+.h{margin:0; font-family:var(--display); font-stretch:115%; font-weight:850; font-size:calc(4.3*var(--u)); line-height:1.02; letter-spacing:-.01em; text-wrap:balance}
+.h-or{color:var(--st-or)}
+.sub{margin:0; font-size:calc(1.75*var(--u)); color:var(--st-dim); line-height:1.4; max-width:40ch}
+.fig{margin:0; min-height:0; height:100%; display:flex; align-items:center; justify-content:center}
+.fig svg{width:100%; height:100%; max-height:100%; overflow:visible}
+.svg-label{font-family:var(--mono); font-size:9px; letter-spacing:.12em; fill:var(--st-dim)}
+.svg-strong{font-family:var(--display); font-weight:800; font-size:13px; fill:var(--st-ink)}
+.seal{display:block}
+.seal .rib{stroke:var(--seal-bg); stroke-width:2.2; stroke-linecap:round}
+
+/* scene 2 */
+.brand{display:flex; align-items:center; gap:calc(2*var(--u))}
+.brand .seal{width:calc(11*var(--u)); height:calc(11*var(--u)); color:var(--st-or); flex:none}
+.word{font-family:var(--display); font-stretch:120%; font-weight:900; font-size:calc(5.2*var(--u)); line-height:1; letter-spacing:-.02em}
+.phone{width:100%; max-width:calc(34*var(--u)); margin-inline:auto; border:calc(.35*var(--u)) solid rgba(241,245,238,.22); border-radius:calc(3*var(--u)); padding:calc(1.6*var(--u)); display:flex; flex-direction:column; gap:calc(1.1*var(--u)); background:rgba(10,42,30,.55)}
+.phone-bar{display:flex; justify-content:space-between; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-dim); letter-spacing:.08em}
+.lot{background:var(--st-card); border-radius:calc(1.2*var(--u)); padding:calc(1.2*var(--u)) calc(1.4*var(--u)); display:grid; grid-template-columns:auto 1fr auto; gap:calc(1.2*var(--u)); align-items:center}
+.lot b{display:block; font-size:calc(1.65*var(--u)); font-weight:700; line-height:1.2}
+.lot small{display:block; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-dim)}
+.swatch{width:calc(4*var(--u)); height:calc(4*var(--u)); border-radius:calc(.8*var(--u))}
+.chip{font-family:var(--mono); font-size:calc(1.05*var(--u)); padding:calc(.35*var(--u)) calc(.8*var(--u)); border-radius:99px; border:1px solid var(--st-teal); color:var(--st-teal); white-space:nowrap}
+
+/* scene 3 */
+.rail{position:relative; margin-top:calc(2*var(--u)); display:grid; grid-template-columns:repeat(4,1fr); gap:calc(1*var(--u))}
+.track{position:absolute; left:12.5%; right:12.5%; top:calc(2.2*var(--u)); height:calc(.45*var(--u)); background:var(--st-line); border-radius:9px; overflow:hidden}
+.track-fill{position:absolute; inset:0; background:var(--st-teal); transform-origin:left center}
+.node{position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:calc(1*var(--u))}
+.dot{width:calc(4.8*var(--u)); height:calc(4.8*var(--u)); border-radius:50%; background:var(--st-teal); color:var(--st-bg); display:grid; place-items:center; font-family:var(--mono); font-weight:500; font-size:calc(1.7*var(--u)); box-shadow:0 0 0 calc(.6*var(--u)) var(--st-bg)}
+.node b{font-size:calc(1.6*var(--u)); line-height:1.2}
+.node small{font-family:var(--mono); font-size:calc(1.1*var(--u)); color:var(--st-dim); line-height:1.3}
+.held{align-self:flex-start; display:flex; gap:calc(1*var(--u)); align-items:center; font-family:var(--mono); font-size:calc(1.3*var(--u)); color:var(--st-teal); border:1px dashed var(--st-teal); border-radius:calc(1*var(--u)); padding:calc(.7*var(--u)) calc(1.2*var(--u))}
+.stamp-abs{position:absolute; right:calc(5*var(--u)); bottom:calc(6*var(--u)); width:calc(13*var(--u)); height:calc(13*var(--u)); color:var(--st-or)}
+
+/* scene 4 */
+.badge{display:flex; gap:calc(1.2*var(--u)); align-items:center; background:var(--st-card); border:1px solid rgba(67,199,182,.4); border-radius:calc(1.3*var(--u)); padding:calc(1.1*var(--u)) calc(1.5*var(--u)); align-self:flex-start}
+.badge .led{width:calc(1.6*var(--u)); height:calc(1.6*var(--u)); border-radius:50%; background:#3DDC84; box-shadow:0 0 0 calc(.5*var(--u)) rgba(61,220,132,.2); flex:none}
+.badge b{display:block; font-size:calc(1.7*var(--u)); line-height:1.2}
+.badge small{display:block; font-family:var(--mono); font-size:calc(1.1*var(--u)); color:var(--st-dim); letter-spacing:.06em}
+.chip-or{border-color:var(--st-or); color:var(--st-or); align-self:flex-start; font-size:calc(1.2*var(--u))}
+.parcel{fill:rgba(247,127,0,.16); stroke:var(--st-or); stroke-width:2.2; stroke-linejoin:round}
+.scan{fill:rgba(67,199,182,.18)}
+
+/* scene 5 */
+.trio{flex:1; min-height:0; display:grid; grid-template-columns:repeat(3,1fr); gap:calc(2*var(--u)); align-items:stretch}
+.who{background:var(--st-card); border-radius:calc(1.6*var(--u)); padding:calc(2*var(--u)); display:flex; flex-direction:column; gap:calc(1*var(--u))}
+.who svg{width:calc(5*var(--u)); height:calc(5*var(--u)); color:var(--st-or)}
+.who b{font-family:var(--display); font-stretch:112%; font-weight:800; font-size:calc(2.2*var(--u)); line-height:1.1}
+.who p{margin:0; font-size:calc(1.5*var(--u)); color:var(--st-dim); line-height:1.4}
+.tick{margin-top:auto; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-teal); letter-spacing:.06em}
+
+/* scene 6 */
+.end{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:calc(1.6*var(--u))}
+.end .seal{width:calc(15*var(--u)); height:calc(15*var(--u)); color:var(--st-or)}
+.url{font-family:var(--mono); font-size:calc(1.9*var(--u)); color:var(--st-ink); border-bottom:2px solid var(--st-or); padding-bottom:calc(.3*var(--u))}
+.legal{font-family:var(--mono); font-size:calc(1.05*var(--u)); color:var(--st-dim); letter-spacing:.1em; text-transform:uppercase}
+
+/* narrow stage: vertical 4:5 frame */
+@container (max-width: 560px){
+  .stage{--u:1.9cqw; aspect-ratio:4/5}
+  .split{grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); align-items:stretch; gap:calc(2*var(--u))}
+  .h{font-size:calc(3.6*var(--u))}
+  .sub{font-size:calc(1.6*var(--u))}
+  .lot:nth-child(4){display:none}
+  .brand .seal{width:calc(8*var(--u)); height:calc(8*var(--u))}
+  .word{font-size:calc(4.2*var(--u))}
+  .trio{grid-template-columns:1fr; gap:calc(1.2*var(--u))}
+  .who{flex-direction:row; flex-wrap:wrap; align-items:center; padding:calc(1.3*var(--u))}
+  .who svg{width:calc(3.6*var(--u)); height:calc(3.6*var(--u))}
+  .who p{flex-basis:100%}
+  .tick{display:none}
+  .stamp-abs{width:calc(10*var(--u)); height:calc(10*var(--u)); bottom:calc(5*var(--u))}
+  .node small{display:none}
+}
+
+/* ---------- motion: only while a scene plays ---------- */
+@keyframes rise{from{opacity:0; transform:translateY(.7em)}to{opacity:1; transform:none}}
+@keyframes pop{0%{opacity:0; transform:scale(.55)}70%{opacity:1; transform:scale(1.07)}100%{opacity:1; transform:scale(1)}}
+@keyframes stamp{0%{opacity:0; transform:scale(1.9) rotate(-22deg)}55%{opacity:1; transform:scale(.9) rotate(-5deg)}75%{transform:scale(1.04) rotate(-9deg)}100%{opacity:1; transform:scale(1) rotate(-8deg)}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes sweep{0%{transform:translateY(-40px); opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(200px); opacity:0}}
+@keyframes slide{from{opacity:0; transform:translateX(1.2em)}to{opacity:1; transform:none}}
+.stamped{transform:rotate(-8deg)}
+.draw{stroke-dasharray:1; stroke-dashoffset:0}
+.scan{opacity:0}
+.scene.play .rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
+.scene.play .pop{animation:pop .5s cubic-bezier(.3,.8,.3,1.2) var(--d,0s) both}
+.scene.play .stamped{animation:stamp .6s cubic-bezier(.3,.7,.3,1) var(--d,0s) both}
+.scene.play .draw{animation:draw var(--t,1.6s) cubic-bezier(.5,0,.3,1) var(--d,0s) both}
+.scene.play .grow{animation:grow var(--t,1s) linear var(--d,0s) both}
+.scene.play .fade{animation:fadein .6s ease var(--d,0s) both}
+.scene.play .slide{animation:slide .55s cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
+.scene.play .scan{animation:sweep 1.8s ease-in-out var(--d,0s) both}
+.stage.paused *, .stage.paused *::before{animation-play-state:paused !important}
+@media (prefers-reduced-motion: reduce){
+  .scene.play *{animation:none !important}
+  .scene, .scene.on{transition:none}
+}
+
+/* controls */
+.controls{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.btn{display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 16px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); font-weight:600; font-size:15px}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.btn svg{width:16px; height:16px}
+.bar{flex:1; min-width:140px; height:6px; background:var(--line); border-radius:9px; overflow:hidden}
+.bar i{display:block; height:100%; width:0; background:var(--accent)}
+.time{font-family:var(--mono); font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
+.scenes{display:flex; gap:8px; flex-wrap:wrap; list-style:none; margin:0; padding:0}
+.scenes button{border:1.5px solid var(--line); background:transparent; color:var(--muted); border-radius:99px; padding:6px 12px; font-size:13px; display:flex; gap:8px; align-items:baseline}
+.scenes button .mono{font-size:11px}
+.scenes button[aria-current="true"]{border-color:var(--accent); color:var(--ink); background:var(--surface)}
+.vo{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px; display:grid; gap:6px}
+.vo .lab{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink)}
+.vo p{margin:0; font-size:17px; max-width:68ch}
+.vo .shot{font-size:14px; color:var(--muted)}
+
+a.btn{text-decoration:none}
+.top{flex-wrap:wrap}
+.top > div{flex:1; min-width:0}
+.top a.back{margin-left:auto; color:var(--muted); font-size:14px; white-space:nowrap}
+@media (max-width:600px){.top a.back{order:-1; flex-basis:100%; margin-left:0}}
+.cta{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px}
+.cta h2{margin:0; font-family:var(--display); font-stretch:112%; font-weight:850; font-size:clamp(22px,3vw,28px); line-height:1.1}
+.cta p{margin:0; color:var(--muted)}
+.cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="seal" data-seal="" data-id="sh"></span>
+    <div>
+      <h1>AgriSecur en 51 secondes</h1>
+      <p>Comment producteurs, coopératives et acheteurs échangent sans risquer leur argent.</p>
+    </div>
+    <a class="back" href="/">← agrisecur.com</a>
+  </header>
+
+  <section class="film" aria-label="Film explicatif">
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+
+        <!-- 1 -->
+        <div class="scene" data-i="0">
+          <div class="split">
+            <div class="copy">
+              <p class="eyebrow rise" style="--d:.1s">Le problème</p>
+              <h2 class="h rise" style="--d:.35s">3 tonnes de cacao récoltées à Soubré.</h2>
+              <p class="h h-or rise" style="--d:3.4s">Qui garantit le paiement&nbsp;?</p>
+            </div>
+            <figure class="fig">
+              <svg viewBox="0 0 300 200" aria-hidden="true">
+                <path class="draw" pathLength="1" style="--d:1.1s;--t:2s" d="M50 150 C 120 150, 170 60, 250 50" fill="none" stroke="rgba(241,245,238,.55)" stroke-width="2.4" stroke-linecap="round"/>
+                <g class="pop" style="--d:.6s; transform-origin:50px 150px">
+                  <circle cx="50" cy="150" r="9" fill="#F77F00"/><circle cx="50" cy="150" r="17" fill="none" stroke="#F77F00" stroke-opacity=".35" stroke-width="2"/>
+                  <text x="50" y="182" text-anchor="middle" class="svg-strong">Soubré</text>
+                  <text x="50" y="195" text-anchor="middle" class="svg-label">PRODUCTEUR</text>
+                </g>
+                <g class="pop" style="--d:2.8s; transform-origin:250px 50px">
+                  <circle cx="250" cy="50" r="9" fill="#F1F5EE"/><circle cx="250" cy="50" r="17" fill="none" stroke="#F1F5EE" stroke-opacity=".3" stroke-width="2"/>
+                  <text x="250" y="20" text-anchor="middle" class="svg-strong">Abidjan</text>
+                  <text x="250" y="86" text-anchor="middle" class="svg-label">ACHETEUR</text>
+                </g>
+                <g class="pop" style="--d:3.3s; transform-origin:146px 104px">
+                  <circle cx="146" cy="104" r="17" fill="#0E3526" stroke="#F77F00" stroke-width="2.4"/>
+                  <text x="146" y="111" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="19" fill="#F77F00">?</text>
+                </g>
+              </svg>
+            </figure>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="scene" data-i="1">
+          <div class="split">
+            <div class="copy">
+              <div class="brand">
+                <span class="seal stamped" style="--d:.2s" data-seal="" data-id="s2"></span>
+                <span class="word rise" style="--d:.7s">AgriSecur</span>
+              </div>
+              <p class="h rise" style="--d:1.1s; font-size:calc(3.1*var(--u))">La place de marché agricole de Côte d'Ivoire.</p>
+              <p class="sub rise" style="--d:1.5s">Producteurs, coopératives et acheteurs au même endroit. Chaque vendeur est vérifié avant de publier.</p>
+            </div>
+            <figure class="fig">
+              <div class="phone rise" style="--d:.9s">
+                <div class="phone-bar"><span>CATALOGUE</span><span>FR · EN</span></div>
+                <div class="lot slide" style="--d:2.2s"><span class="swatch" style="background:#7A4A2A"></span><span><b>Cacao, fèves</b><small>3 t · Soubré</small></span><span class="chip">KYC ✓</span></div>
+                <div class="lot slide" style="--d:2.8s"><span class="swatch" style="background:#C9A36A"></span><span><b>Anacarde brut</b><small>12 t · Korhogo</small></span><span class="chip">KYC ✓</span></div>
+                <div class="lot slide" style="--d:3.4s"><span class="swatch" style="background:#E3B83A"></span><span><b>Maïs grain</b><small>8 t · Bouaké</small></span><span class="chip">KYC ✓</span></div>
+              </div>
+            </figure>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="scene" data-i="2">
+          <div class="copy">
+            <p class="eyebrow rise" style="--d:.1s">Paiement sécurisé</p>
+            <h2 class="h rise" style="--d:.3s">Le producteur est payé à la réception confirmée.</h2>
+          </div>
+          <div class="held rise" style="--d:.9s"><span aria-hidden="true">◆</span> Fonds déposés, bloqués jusqu'à la confirmation</div>
+          <div class="rail">
+            <div class="track"><div class="track-fill grow" style="--d:1.3s;--t:5s"></div></div>
+            <div class="node pop" style="--d:1.2s"><span class="dot">1</span><b>Dépôt des fonds</b><small>Mobile Money · carte</small></div>
+            <div class="node pop" style="--d:2.8s"><span class="dot">2</span><b>Expédition</b><small>Suivi du lot</small></div>
+            <div class="node pop" style="--d:4.4s"><span class="dot">3</span><b>Réception confirmée</b><small>Par l'acheteur</small></div>
+            <div class="node pop" style="--d:6s"><span class="dot">4</span><b>Versement</b><small>Au producteur</small></div>
+          </div>
+          <span class="seal stamp-abs stamped" style="--d:6.8s" data-seal="PAYÉ" data-id="s3"></span>
+        </div>
+
+        <!-- 4 -->
+        <div class="scene" data-i="3">
+          <div class="split">
+            <div class="copy">
+              <p class="eyebrow rise" style="--d:.1s">Traçabilité</p>
+              <h2 class="h rise" style="--d:.3s">Chaque parcelle est géolocalisée.</h2>
+              <div class="badge pop" style="--d:4.2s"><span class="led"></span><span><small>WHISP · ANALYSE SATELLITE</small><b>Risque de déforestation&nbsp;: faible</b></span></div>
+              <span class="chip chip-or rise" style="--d:5s">Preuve de géolocalisation · RDUE</span>
+            </div>
+            <figure class="fig">
+              <svg viewBox="0 0 320 220" aria-hidden="true">
+                <g stroke="rgba(241,245,238,.12)" stroke-width="1">
+                  <path d="M0 40H320M0 90H320M0 140H320M0 190H320M60 0V220M130 0V220M200 0V220M270 0V220"/>
+                </g>
+                <text x="4" y="12" class="svg-label">5°47′ N</text>
+                <text x="316" y="214" text-anchor="end" class="svg-label">6°36′ O</text>
+                <polygon class="parcel draw" pathLength="1" style="--d:.7s;--t:2.4s" points="80,62 178,42 252,88 236,168 128,182 66,134"/>
+                <g class="pop" style="--d:3s">
+                  <circle cx="160" cy="112" r="5" fill="#F77F00"/>
+                  <text x="160" y="104" text-anchor="middle" class="svg-strong" style="font-size:11px">P-0317 · 2,4 ha</text>
+                </g>
+                <rect class="scan" style="--d:3.1s" x="60" y="0" width="200" height="16"/>
+              </svg>
+            </figure>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="scene" data-i="4">
+          <div class="copy">
+            <p class="eyebrow rise" style="--d:.1s">Chacun y gagne</p>
+          </div>
+          <div class="trio">
+            <div class="who rise" style="--d:.4s">
+              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 36V18"/><path d="M20 22c-8 0-12-5-12-12 8 0 12 5 12 12z"/><path d="M20 18c0-6 4-10 11-10 0 7-4 10-11 10z"/><path d="M8 36h24"/></svg>
+              <b>Le producteur</b><p>Il est payé, sans avancer sa marchandise à l'aveugle.</p><span class="tick pop" style="--d:1.4s">✓ PAYÉ À LA RÉCEPTION</span>
+            </div>
+            <div class="who rise" style="--d:1.9s">
+              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5 17L20 7l15 10v18H5z"/><path d="M14 35V24h12v11"/></svg>
+              <b>La coopérative</b><p>Elle vend en volume et suit chaque lot.</p><span class="tick pop" style="--d:2.9s">✓ VENTES GROUPÉES</span>
+            </div>
+            <div class="who rise" style="--d:3.4s">
+              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M6 14h28v20H6z"/><path d="M6 14l4-7h20l4 7"/><path d="M16 21h8"/></svg>
+              <b>L'acheteur</b><p>Il reçoit des lots vérifiés, avec la parcelle d'origine.</p><span class="tick pop" style="--d:4.4s">✓ LOTS TRAÇABLES</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6 -->
+        <div class="scene" data-i="5">
+          <div class="end">
+            <span class="seal stamped" style="--d:.2s" data-seal="" data-id="s6"></span>
+            <p class="h rise" style="--d:.9s">Vendez. Achetez. En confiance.</p>
+            <span class="url rise" style="--d:1.5s">www.agrisecur.com</span>
+            <span class="legal fade" style="--d:2.2s">AgriSecur SARL · Abidjan · Cocody</span>
+          </div>
+        </div>
+
+        <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn primary" id="playBtn" type="button" aria-label="Lecture">
+        <svg viewBox="0 0 16 16" fill="currentColor" id="playIco"><path d="M4 2.5v11l9-5.5z"/></svg><span id="playTxt">Lecture</span>
+      </button>
+      <button class="btn" id="replayBtn" type="button">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.6-3.7"/><path d="M3 2.5v2.8h2.8"/></svg>Rejouer
+      </button>
+      <div class="bar" aria-hidden="true"><i id="bar"></i></div>
+      <span class="time" id="time">0:00 / 0:51</span>
+    </div>
+    <ol class="scenes" id="chips"></ol>
+    <div class="vo" aria-live="polite">
+      <span class="lab" id="voLab">Sous-titres · 1/6</span>
+      <p id="voTxt"></p>
+      
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>Prêt à vendre ou acheter en confiance&nbsp;?</h2>
+    <p>L'inscription est gratuite. La commission n'est prélevée que sur les ventes réussies.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="/#register">Créer un compte gratuit</a>
+      <a class="btn" href="/">Retour au site</a>
+    </div>
+  </section>
+</div>
+
+
+<script>
+(function(){
+  // seals
+  let n = 0;
+  document.querySelectorAll('[data-seal]').forEach(el => {
+    const id = 'arc-' + (el.dataset.id || n++);
+    const center = el.dataset.seal;
+    const mid = center
+      ? `<text x="60" y="64.5" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="${center.length > 5 ? 11.5 : 14}" letter-spacing="1" fill="currentColor">${center}</text>`
+      : `<path d="M60 37c15 6 18 25 0 45c-18-20-15-39 0-45z" fill="currentColor"/><path class="rib" d="M60 47v31"/>`;
+    el.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><path id="${id}" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1.4"/><text font-family="IBM Plex Mono, monospace" font-size="9.4" font-weight="500" fill="currentColor"><textPath href="#${id}" textLength="276" lengthAdjust="spacing">AGRISECUR · CÔTE D'IVOIRE · MARCHÉ SÉCURISÉ ·</textPath></text>${mid}</svg>`;
+  });
+
+  // film
+  const S = [
+    {name:'Le problème', dur:8000,
+     vo:"À Soubré, un producteur vient de récolter trois tonnes de cacao. À Abidjan, un acheteur est prêt à les prendre. Entre les deux, une question bloque tout : qui garantit le paiement ?"},
+    {name:'La plateforme', dur:9000,
+     vo:"AgriSecur réunit producteurs, coopératives et acheteurs sur une seule plateforme. Chaque vendeur est vérifié avant de publier une annonce."},
+    {name:'Paiement', dur:10000,
+     vo:"Les fonds sont déposés et bloqués. La marchandise est expédiée. L'argent n'est versé au producteur qu'une fois la réception confirmée par l'acheteur."},
+    {name:'Traçabilité', dur:9000,
+     vo:"Chaque parcelle est géolocalisée et analysée par satellite. Le badge de risque de déforestation aide les acheteurs à répondre aux exigences européennes."},
+    {name:'Impact', dur:8000,
+     vo:"Le producteur est payé. La coopérative vend en volume. L'acheteur reçoit des lots vérifiés et traçables."},
+    {name:'Contact', dur:7000,
+     vo:"AgriSecur. Vendez, achetez, en confiance. www.agrisecur.com"}
+  ];
+  const total = S.reduce((a,s)=>a+s.dur,0);
+  const stage = document.getElementById('stage');
+  const scenes = [...stage.querySelectorAll('.scene')];
+  const bar = document.getElementById('bar'), time = document.getElementById('time');
+  const playBtn = document.getElementById('playBtn'), playIco = document.getElementById('playIco'), playTxt = document.getElementById('playTxt');
+  const chips = document.getElementById('chips');
+  const voLab = document.getElementById('voLab'), voTxt = document.getElementById('voTxt'), voShot = document.getElementById('voShot');
+  const fmt = ms => { const s = Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+  time.textContent = '0:00 / ' + fmt(total);
+
+  S.forEach((s,i)=>{
+    const li = document.createElement('li');
+    li.innerHTML = `<button type="button"><span class="mono">${i+1}</span>${s.name}</button>`;
+    li.firstChild.addEventListener('click', ()=>{ go(i, true); if(!playing) play(); });
+    chips.appendChild(li);
+  });
+
+  let idx = 0, elapsed = 0, playing = false, last = 0, ended = false;
+  const before = i => S.slice(0,i).reduce((a,s)=>a+s.dur,0);
+
+  function go(i, animate){
+    idx = i; elapsed = 0; ended = false;
+    scenes.forEach((sc,j)=>{ sc.classList.toggle('on', j===i); sc.classList.remove('play'); });
+    if(animate){ void scenes[i].offsetWidth; scenes[i].classList.add('play'); }
+    [...chips.children].forEach((li,j)=>li.firstChild.setAttribute('aria-current', j===i ? 'true':'false'));
+    voLab.textContent = 'Sous-titres · ' + (i+1) + '/' + S.length;
+    voTxt.textContent = S[i].vo;
+    paint();
+  }
+  function paint(){
+    const t = Math.min(total, before(idx) + elapsed);
+    bar.style.width = (t/total*100) + '%';
+    time.textContent = fmt(t) + ' / ' + fmt(total);
+  }
+  function setBtn(){
+    playIco.innerHTML = playing ? '<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path d="M4 2.5v11l9-5.5z"/>';
+    playTxt.textContent = playing ? 'Pause' : 'Lecture';
+    playBtn.setAttribute('aria-label', playTxt.textContent);
+  }
+  function tick(t){
+    if(!playing) return;
+    elapsed += t - last; last = t;
+    if(elapsed >= S[idx].dur){
+      if(idx < S.length-1){ go(idx+1, true); }
+      else { elapsed = S[idx].dur; paint(); playing = false; ended = true; setBtn(); return; }
+    }
+    paint();
+    requestAnimationFrame(tick);
+  }
+  function play(){
+    if(ended){ go(0, true); }
+    else if(!scenes[idx].classList.contains('play')){ go(idx, true); }
+    playing = true; stage.classList.remove('paused'); last = performance.now(); setBtn();
+    requestAnimationFrame(tick);
+  }
+  function pause(){ playing = false; stage.classList.add('paused'); setBtn(); }
+
+  playBtn.addEventListener('click', ()=> playing ? pause() : play());
+  document.getElementById('replayBtn').addEventListener('click', ()=>{ stage.classList.remove('paused'); go(0, true); if(!playing) play(); });
+
+  go(0, false); // complete still frame at rest
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){ setTimeout(()=>{ go(0, true); play(); }, 900); }
+})();
+</script>
+
+</body></html>
