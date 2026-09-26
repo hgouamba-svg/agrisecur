@@ -137,9 +137,9 @@ const VIREMENT_FRAIS_FCFA = Number(process.env.VIREMENT_FRAIS_FCFA || 5000); // 
 // Promotion de lancement — commission réduite pour les tout premiers
 // vendeurs, pour construire du volume face à un concurrent déjà installé.
 // Réversible et daté, contrairement à un changement de tarif permanent :
-//   PROMO_ACTIVE=false node server.js   → désactive la promo à tout moment
+//   PROMO_ACTIVE=true node server.js    → réactive la promo (désactivée par défaut depuis le 26/09/2026)
 //   PROMO_SEUIL_VENDEURS=50 PROMO_COMMISSION_TAUX=0 node server.js
-const PROMO_ACTIVE = process.env.PROMO_ACTIVE !== "false"; // activée par défaut
+const PROMO_ACTIVE = process.env.PROMO_ACTIVE === "true"; // désactivée par défaut
 const PROMO_SEUIL_VENDEURS = Number(process.env.PROMO_SEUIL_VENDEURS || 100);
 const PROMO_COMMISSION_TAUX = Number(process.env.PROMO_COMMISSION_TAUX || 0.02);
 const PROMO_JOURS_LIMITE = Number(process.env.PROMO_JOURS_LIMITE || 60);

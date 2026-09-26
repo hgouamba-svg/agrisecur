@@ -1,4 +1,7 @@
-# Mettre AgriSecur en ligne sur Fly.io
+# Mettre AgriSecur en ligne sur Fly.io (option payante)
+
+> Solution gratuite retenue : Oracle Cloud + Railway en secours, voir
+> `deploy/oracle/GUIDE.md`. Ce guide Fly.io reste une alternative payante.
 
 Railway (offre gratuite expirée) est remplacé par Fly.io : environ 4 $ par mois
 pour un serveur toujours allumé (512 Mo) et 1 Go de disque persistant pour la

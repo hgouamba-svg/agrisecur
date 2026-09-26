@@ -366,7 +366,7 @@
   <section class="landing-section" style="padding-top:0; padding-bottom:0;">
     <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:18px; max-width:900px; margin:0 auto; text-align:center;">
       <div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:28px; color:var(--green);">8</div><div class="sub" style="font-size:12.5px;" data-i18n="stats.filieres">Filières couvertes</div></div>
-      <div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:28px; color:var(--gold-dark);">100</div><div class="sub" style="font-size:12.5px;" data-i18n="stats.founder">Places Vendeur Fondateur</div></div>
+      <div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:28px; color:var(--gold-dark);">4%</div><div class="sub" style="font-size:12.5px;" data-i18n="stats.commission">Commission, uniquement sur les ventes réussies</div></div>
       <div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:28px; color:var(--green);">100%</div><div class="sub" style="font-size:12.5px;" data-i18n="stats.escrow">Fonds protégés en séquestre</div></div>
       <div><div style="font-family:'Archivo',sans-serif; font-weight:800; font-size:28px; color:var(--gold-dark);">24-48h</div><div class="sub" style="font-size:12.5px;" data-i18n="stats.delay">Délai de contestation</div></div>
     </div>
@@ -853,11 +853,7 @@
         </details>
         <details class="help-item">
           <summary>Article 6 — Modèle économique et commissions</summary>
-          <p>Commission de 4% HT sur chaque transaction réussie (2% pendant l'offre de lancement, voir ci-dessous). Services à valeur ajoutée optionnels pour les coopératives et grossistes. En cas de paiement par mobile money, des frais de traitement (indicativement 2,5%) s'ajoutent au montant dû par l'acheteur et sont intégralement reversés à l'agrégateur de paiement — ce ne sont pas des frais AgriSecur. Aucun frais de ce type en cas de virement bancaire.</p>
-        </details>
-        <details class="help-item">
-          <summary>Conditions particulières — Offre de lancement</summary>
-          <p>Les 100 premiers vendeurs inscrits bénéficient d'une commission réduite à 2% HT au lieu de 4%. Cette offre est commerciale, temporaire et non contractuelle : elle ne modifie aucune autre clause des CGU/CGV, peut être suspendue à tout moment sans effet sur les commandes déjà conclues, et ne dispense pas des frais de traitement mobile money éventuels.</p>
+          <p>Commission de 4% HT sur chaque transaction réussie. Services à valeur ajoutée optionnels pour les coopératives et grossistes. En cas de paiement par mobile money, des frais de traitement (indicativement 2,5%) s'ajoutent au montant dû par l'acheteur et sont intégralement reversés à l'agrégateur de paiement — ce ne sont pas des frais AgriSecur. Aucun frais de ce type en cas de virement bancaire.</p>
         </details>
         <details class="help-item">
           <summary>Article 7 — Responsabilités</summary>
@@ -1172,7 +1168,7 @@ const TRADUCTIONS = {
     "hero.title": "Sell and buy your agricultural products <em>without ever risking your money</em>",
     "hero.lead": "The agricultural marketplace that holds the buyer's funds until delivery is confirmed — not a simple instant payment with no recourse, real protection against non-payment and non-conformity.",
     "hero.cta1": "Create a free account", "hero.cta2": "How it works",
-    "stats.filieres": "Sectors covered", "stats.founder": "Founding Seller spots", "stats.escrow": "Funds protected in escrow", "stats.delay": "Dispute window",
+    "stats.filieres": "Sectors covered", "stats.commission": "Commission, only on successful sales", "stats.escrow": "Funds protected in escrow", "stats.delay": "Dispute window",
     "diff.title": "The difference with a regular payment",
     "diff.text": "On most platforms, paying means the seller receives the money immediately — whether by mobile money or bank transfer — leaving you no recourse if the delivered lot doesn't match. On AgriSecur, whatever your payment method, your funds stay in an escrow account until you confirm the goods are compliant, or during a 24-to-48-hour dispute window if you say nothing. In case of disagreement, our internal mediation decides before any funds are released.",
     "pro.eyebrow": "For sellers who want to go further", "pro.title": "Pro Seller Subscription",
@@ -1755,7 +1751,7 @@ function showApp() {
   document.getElementById("who-role").textContent = session.role === "seller" ? "Vendeur" : "Acheteur";
   document.querySelector('nav button[data-tab="vendeur"]').style.display = session.role === "seller" ? "" : "none";
   const commissionEl = document.getElementById("who-commission");
-  if (session.role === "seller" && session.user.vendeur_fondateur) {
+  if (session.role === "seller" && session.user.tarif_fondateur_actif) {
     commissionEl.innerHTML = `2% HT <span style="color:var(--gold);font-size:11px;">★ tarif fondateur</span>`;
   } else {
     commissionEl.textContent = "4% HT";
