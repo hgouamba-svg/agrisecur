@@ -6,10 +6,10 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@800;900&family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
-  --bg:#F2F5EF; --surface:#FFFFFF; --ink:#12231A; --muted:#55665B; --line:#D6DFD5;
+  --bg:#FFFFFF; --surface:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:#111111;
   --accent:#F77F00; --accent-ink:#A95500; --leaf:#1E7A48; --teal:#0F7C74; --danger:#B8352A;
   --seal-bg:#F2F5EF;
   /* stage: one fixed look, like a film frame */
@@ -19,19 +19,7 @@
   --body:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --bg:#0B1410; --surface:#122019; --ink:#E3ECE5; --muted:#9BAEA2; --line:#24372D;
-    --accent-ink:#FF9C3A; --leaf:#4CC27F; --teal:#47C1B3; --danger:#FF7B6E; --seal-bg:#0B1410;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#0B1410; --surface:#122019; --ink:#E3ECE5; --muted:#9BAEA2; --line:#24372D;
-  --accent-ink:#FF9C3A; --leaf:#4CC27F; --teal:#47C1B3; --danger:#FF7B6E; --seal-bg:#0B1410;
-}
-*{box-sizing:border-box}
+ *{box-sizing:border-box}
 body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55}
 .wrap{max-width:1040px; margin:0 auto; padding-inline:16px; padding-block:28px 64px; display:flex; flex-direction:column; gap:40px}
 @media (min-width:700px){.wrap{padding-inline:28px}}
@@ -191,8 +179,39 @@ a.btn{text-decoration:none}
 .cta h2{margin:0; font-family:var(--display); font-stretch:112%; font-weight:850; font-size:clamp(22px,3vw,28px); line-height:1.1}
 .cta p{margin:0; color:var(--muted)}
 .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+
+/* ---- identité du site : pochoir, noir, orange, angles droits ---- */
+:root{ --stencil:"Big Shoulders Stencil","Archivo",sans-serif; --accent:#F07E00; --accent-ink:#A85200 }
+body{background:#FFFFFF}
+.flagbar{display:flex; height:6px}.flagbar i{flex:1}.flagbar i:nth-child(1){background:#F07E00}.flagbar i:nth-child(2){background:#F2F2F2}.flagbar i:nth-child(3){background:#1F7A48}
+.top{border-bottom:2px solid #111; padding-bottom:20px}
+.top h1{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:clamp(40px,6vw,72px); line-height:.9; text-transform:uppercase}
+.top p{color:#333}
+.top a.back{color:#111; font-weight:700}
+.top .seal{color:#1F3D2E}
+.stage{border-radius:0; border:2px solid #111; box-shadow:10px 10px 0 var(--accent)}
+.h, .word{font-family:var(--stencil); font-stretch:normal; font-weight:900; text-transform:uppercase; letter-spacing:.01em}
+.h{font-size:calc(4.9*var(--u)); line-height:.92}
+.word{font-size:calc(6.2*var(--u)); letter-spacing:.03em}
+.who b{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:calc(2.8*var(--u)); text-transform:uppercase}
+.btn{border-radius:0; border:2px solid #111; height:46px; font-weight:700}
+.btn:hover{background:#F4F4F4}
+.btn.primary{background:var(--accent); color:#111; border-color:#111; box-shadow:4px 4px 0 #111}
+.btn.primary:hover{background:var(--accent); box-shadow:6px 6px 0 #111; transform:translate(-2px,-2px)}
+.bar{border-radius:0; background:#E3E3E0}
+.scenes button{border-radius:0; border:2px solid #111; color:#111; font-weight:600}
+.scenes button[aria-current="true"]{background:#111; color:#FFF; border-color:#111}
+.vo{border-radius:0; border:2px solid #111; box-shadow:6px 6px 0 #111}
+.vo .lab{color:var(--accent-ink); font-weight:600}
+.cta{border-radius:0; border:2px solid #111; background:var(--accent); padding:32px}
+.cta h2{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:clamp(40px,5vw,64px); line-height:.9; text-transform:uppercase}
+.cta p{color:#111}
+.cta .btn{background:#FFF}
+.cta .btn.primary{background:#111; color:#FFF; box-shadow:4px 4px 0 #FFF}
+@media (max-width:600px){ .vo{box-shadow:4px 4px 0 #111} .stage{box-shadow:6px 6px 0 var(--accent)} }
 </style>
 
+<div class="flagbar" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
   <header class="top">
     <span class="seal" data-seal="" data-id="sh"></span>
@@ -383,7 +402,7 @@ a.btn{text-decoration:none}
   // film
   const S = [
     {name:'Le problème', dur:8000,
-     vo:"À Soubré, un producteur vient de récolter trois tonnes de cacao. À Abidjan, un acheteur est prêt à les prendre. Entre les deux, une question bloque tout : qui garantit le paiement ?"},
+     vo:"À Soubré, un producteur vient de récolter trois tonnes de cacao. À Abidjan, un acheteur est prêt à les prendre. Entre les deux, une question bloque tout : qui garantit le paiement ?"},
     {name:'La plateforme', dur:9000,
      vo:"AgriSecur réunit producteurs, coopératives et acheteurs sur une seule plateforme. Chaque vendeur est vérifié avant de publier une annonce."},
     {name:'Paiement', dur:10000,

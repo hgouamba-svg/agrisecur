@@ -445,7 +445,7 @@
   .ls-foot-links a { color:#D6D6D6; text-decoration:underline; text-underline-offset:3px; }
   .ls-foot-links a:hover { color:#FFFFFF; }
 
-  @media (max-width: 1100px) {
+  @media (max-width: 1360px) {
     .ls-top-row { flex-wrap:wrap; row-gap:4px; }
     .ls-actions { margin-left:auto; }
     nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; }
@@ -512,12 +512,29 @@
   @media (prefers-reduced-motion: reduce) {
     .ls-btn, .ls-lot { transition:none; }
   }
+
+  /* Boutons flottants (signalement, écoute, retour en haut) */
+  .fab { position:fixed; right:20px; z-index:500; display:flex; align-items:center; justify-content:center; gap:8px; min-height:44px; background:#FFFFFF; color:#111111; border:2px solid #111111; border-radius:0; font-family:'Archivo',sans-serif; font-size:14px; font-weight:700; cursor:pointer; box-shadow:3px 3px 0 #111111; transition:transform .12s ease, box-shadow .12s ease; }
+  .fab:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 #111111; }
+  .fab:active { transform:translate(2px,2px); box-shadow:1px 1px 0 #111111; }
+  .fab svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+  .fab-report { bottom:20px; padding:0 16px; background:#111111; color:#FFFFFF; box-shadow:3px 3px 0 #F07E00; }
+  .fab-report:hover { box-shadow:4px 4px 0 #F07E00; }
+  .fab-sq { width:44px; padding:0; }
+  .fab-voice { bottom:78px; }
+  .fab-top { bottom:132px; }
+  @media (max-width: 600px) {
+    .fab { right:12px; }
+    .fab-report { bottom:14px; width:44px; padding:0; }
+    .fab-report .fab-label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+    .fab-voice { bottom:66px; }
+    .fab-top { bottom:118px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .fab { transition:none; } }
 </style>
 </head>
 <body>
-<button id="btn-signalement" onclick="ouvrirModaleSignalement()" title="Signaler un problème ou une suggestion" style="position:fixed; bottom:20px; right:20px; z-index:500; background:var(--ink); color:var(--paper); border:none; border-radius:6px; padding:11px 18px; font-family:'Archivo', sans-serif; font-size:13px; font-weight:600; cursor:pointer; box-shadow:0 4px 14px rgba(36,26,18,.25); display:flex; align-items:center; gap:7px;" data-i18n="report.button">
-  💬 Signaler un problème
-</button>
+<button id="btn-signalement" class="fab fab-report" onclick="ouvrirModaleSignalement()" title="Signaler un problème ou une suggestion" aria-label="Signaler un problème"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span class="fab-label" data-i18n="report.button">Signaler un problème</span></button>
 
 <div id="ecran-aide-publique" style="display:none; min-height:100vh; background:var(--cream);">
   <nav class="landing-nav" style="border-bottom:1px solid var(--line); padding:16px 32px; display:flex; align-items:center; justify-content:space-between;">
@@ -527,9 +544,9 @@
   <div id="aide-publique-conteneur" style="max-width:820px; margin:0 auto; padding:32px 24px 80px;"></div>
 </div>
 
-<button id="btn-lire-voix" onclick="basculerLectureVoix()" title="Écouter cette page" style="position:fixed; bottom:140px; right:20px; z-index:499; background:var(--paper); color:var(--ink); border:2px solid var(--ink); border-radius:6px; width:42px; height:42px; cursor:pointer; box-shadow:0 4px 14px rgba(36,26,18,.2); display:flex; align-items:center; justify-content:center; font-size:18px;">🔊</button>
+<button id="btn-lire-voix" class="fab fab-sq fab-voice" onclick="basculerLectureVoix()" title="Écouter cette page" aria-label="Écouter cette page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
 
-<button id="btn-retour-haut" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut" style="display:none; position:fixed; bottom:80px; right:20px; z-index:499; background:var(--paper); color:var(--ink); border:2px solid var(--ink); border-radius:6px; width:42px; height:42px; cursor:pointer; box-shadow:0 4px 14px rgba(36,26,18,.2); align-items:center; justify-content:center; font-size:18px;">↑</button>
+<button id="btn-retour-haut" class="fab fab-sq fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut" aria-label="Retour en haut" style="display:none;"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
 <div id="modale-signalement" style="display:none; position:fixed; inset:0; background:rgba(36,26,18,.45); z-index:600; align-items:center; justify-content:center;">
   <div style="background:var(--paper); border-radius:16px; padding:26px; width:92%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,.3);">
@@ -1476,7 +1493,7 @@ const TRADUCTIONS = {
     "admin.tagline": "Seller account validation and dispute mediation.", "admin.key": "Administrator access key", "admin.access": "Access back-office", "admin.backToUser": "Back to seller / buyer area",
     "app.tagline": "Secure agricultural marketplace", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Escrow tunnel", "app.tabHelp": "Help & contact", "app.tabAccount": "My account",
     "app.loggedAs": "Logged in as", "app.commission": "Platform commission", "app.logout": "Log out",
-    "report.button": "💬 Report a problem", "report.title": "Report a problem",
+    "report.button": "Report a problem", "report.title": "Report a problem",
     "report.subtitle": "Bug, connection issue, or just a suggestion — we read everything, it helps us fix things fast.",
     "report.optConnexion": "I can't log in", "report.optBug": "Other bug / error", "report.optSuggestion": "Improvement suggestion",
     "report.descPlaceholder": "Describe what's happening (as precisely as possible: what were you doing, what did you see)",
@@ -1674,13 +1691,15 @@ function trouverEcranVisible() {
   return document.body;
 }
 
+const ICONE_VOIX = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const ICONE_STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" fill="currentColor" stroke="none"/></svg>';
 function basculerLectureVoix() {
   const btn = document.getElementById("btn-lire-voix");
   if (!window.speechSynthesis) return;
   if (_lectureEnCours) {
     window.speechSynthesis.cancel();
     _lectureEnCours = false;
-    if (btn) btn.textContent = "🔊";
+    if (btn) btn.innerHTML = ICONE_VOIX;
     return;
   }
   const el = trouverEcranVisible();
@@ -1690,11 +1709,11 @@ function basculerLectureVoix() {
   const utterance = new SpeechSynthesisUtterance(texte);
   utterance.lang = lang === "en" ? "en-US" : "fr-FR";
   utterance.rate = 0.95;
-  utterance.onend = () => { _lectureEnCours = false; if (btn) btn.textContent = "🔊"; };
-  utterance.onerror = () => { _lectureEnCours = false; if (btn) btn.textContent = "🔊"; };
+  utterance.onend = () => { _lectureEnCours = false; if (btn) btn.innerHTML = ICONE_VOIX; };
+  utterance.onerror = () => { _lectureEnCours = false; if (btn) btn.innerHTML = ICONE_VOIX; };
   window.speechSynthesis.speak(utterance);
   _lectureEnCours = true;
-  if (btn) btn.textContent = "⏹️";
+  if (btn) btn.innerHTML = ICONE_STOP;
 }
 
 function basculerLangue() {
