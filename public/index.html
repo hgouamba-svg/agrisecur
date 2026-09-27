@@ -39,6 +39,8 @@
     color: #CFE0D5; padding: 11px 12px; border-radius: 7px; cursor: pointer; font-family: 'Archivo', sans-serif; font-size: 14px; text-align: left; transition: background .15s ease, color .15s ease; }
   nav button.tab:hover { background: rgba(255,255,255,.05); color: var(--paper); }
   nav button.tab.active { background: rgba(217,164,65,0.16); border-left-color: var(--gold); color: var(--gold); font-weight: 600; }
+  nav .tab-lien { display: block; background: transparent; border: none; color: #D9A441; padding: 9px 12px; font-family: 'Archivo', sans-serif; font-size: 13px; text-align: left; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+  nav .tab-lien:first-of-type { margin-top: 10px; }
   .who-box { margin-top: auto; padding: 18px 10px 0; border-top: 1px solid rgba(255,255,255,.1); color: var(--paper); }
   .who-box .label { font-size: 11px; color: #8FA695; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .04em; }
   .who-box .val { font-family: 'Archivo', sans-serif; font-size: 15px; }
@@ -112,6 +114,7 @@
     .who-box button { margin: 0; width: auto; padding: 7px 10px; white-space: nowrap; }
     nav button.tab { order: 2; flex: 0 0 auto; border-left: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 12px 10px 10px; font-size: 13.5px; white-space: nowrap; }
     nav button.tab.active { background: transparent; border-bottom-color: var(--gold); }
+    nav .tab-lien { order: 3; flex: 0 0 auto; padding: 8px 10px 10px; font-size: 12.5px; white-space: nowrap; margin-top: 0; }
     nav::after { content: ""; order: 1; flex-basis: 100%; height: 6px; }
     main { padding: 20px 16px 140px; max-width: none; width: 100%; }
     .hero-banner { padding: 22px 20px; border-radius: 16px; }
@@ -1049,12 +1052,14 @@
 <div class="layout" id="app-layout" style="display:none;">
   <nav>
     <div class="brand"><svg class="brand-icon brand-seal" viewBox="0 0 120 120" aria-hidden="true"><use href="#icon-seal"/></svg> AgriSecur</div>
-    <div class="brand-tagline" data-i18n="app.tagline">Marketplace agricole sécurisée</div>
+    <div class="brand-tagline" data-i18n="app.tagline">Sécuriser chaque vente agricole</div>
     <button data-tab="catalogue" class="tab active" data-i18n="app.tabCatalogue">Catalogue &amp; achat</button>
     <button data-tab="vendeur" class="tab" data-i18n="app.tabSeller">Espace vendeur</button>
     <button data-tab="sequestre" class="tab" data-i18n="app.tabEscrow">Suivi des paiements</button>
     <button data-tab="aide" class="tab" data-i18n="app.tabHelp">Aide &amp; contact</button>
     <button data-tab="compte" class="tab" data-i18n="app.tabAccount">Mon compte</button>
+    <a href="/depot" class="tab-lien" data-i18n="app.tabAudit">Audit RDUE · déposer un fichier</a>
+    <button type="button" class="tab-lien" onclick="goToLanding(); window.scrollTo(0,0);" data-i18n="app.tabSite">Accueil du site</button>
     <div class="who-box">
       <div class="label" data-i18n="app.loggedAs">Connecté en tant que</div>
       <div class="val" id="who-name"></div>
@@ -1069,8 +1074,8 @@
     <section id="panel-catalogue" class="panel active">
       <div class="hero-banner">
         <div class="hero-text">
-          <h2>Achetez et vendez en toute confiance</h2>
-          <p>Des lots agricoles vérifiés, des fonds sécurisés jusqu'à la livraison, une plateforme pensée pour les filières ivoiriennes — du producteur à l'acheteur.</p>
+          <h2>Sécuriser chaque vente agricole</h2>
+          <p>Des lots vérifiés, de la parcelle à l'acheteur. Le vendeur est payé une fois la réception confirmée. Vos parcelles doivent être prêtes pour l'Europe ? Commencez par l'<a href="/depot" style="color:inherit;text-decoration:underline;">audit RDUE</a>.</p>
         </div>
         <svg class="hero-icon" viewBox="0 0 44 68"><use href="#icon-cabosse"/></svg>
       </div>
@@ -1560,7 +1565,7 @@ const TRADUCTIONS = {
     "auth.location": "Location", "auth.rccm": "RCCM number (if available)", "auth.passwordMin": "Password (10 characters min.)", "auth.referral": "Referral code (optional)",
     "auth.payoutHint": "💡 No account to receive your payments? See how to open one", "auth.createAccount": "Create my account", "auth.backHome": "← Back to home",
     "admin.tagline": "Seller account validation and dispute mediation.", "admin.key": "Administrator access key", "admin.access": "Access back-office", "admin.backToUser": "Back to seller / buyer area",
-    "app.tagline": "Secure agricultural marketplace", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Payment tracking", "app.tabHelp": "Help & contact", "app.tabAccount": "My account",
+    "app.tagline": "Securing every farm sale", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Payment tracking", "app.tabHelp": "Help & contact", "app.tabAccount": "My account", "app.tabAudit": "EUDR audit · upload a file", "app.tabSite": "Website home",
     "app.loggedAs": "Logged in as", "app.commission": "Platform commission", "app.logout": "Log out",
     "report.button": "Report a problem", "report.title": "Report a problem",
     "report.subtitle": "Bug, connection issue, or just a suggestion — we read everything, it helps us fix things fast.",
@@ -1880,6 +1885,7 @@ function hideAllScreens() {
 }
 
 function goToAuth(mode) {
+  if (session && session.token) { showApp(); return; }
   hideAllScreens();
   document.getElementById("auth-screen").style.display = "flex";
   const modeLink = document.querySelector(`.mode-switch a[data-mode="${mode}"]`);
@@ -2063,8 +2069,16 @@ document.getElementById("form-signalement").addEventListener("submit", async (e)
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    navigator.serviceWorker.register("/sw.js").then((reg) => reg.update()).catch(() => {});
   });
+  // Nouvelle version du site installée : on recharge une fois pour l'afficher
+  // tout de suite (utile surtout dans l'app installée sur téléphone).
+  if (navigator.serviceWorker.controller) {
+    let recharge = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (recharge) return; recharge = true; window.location.reload();
+    });
+  }
 }
 
 let differePromptInstallation = null;
