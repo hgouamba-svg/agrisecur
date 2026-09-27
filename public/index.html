@@ -721,7 +721,7 @@
       <div id="pwa-install-text" style="font-size:12.5px; color:var(--ink); line-height:1.4; margin-bottom:8px;"></div>
       <div style="display:flex; gap:8px;">
         <button id="pwa-install-btn" class="dark" style="font-size:12px; padding:7px 12px;">Installer</button>
-        <button onclick="document.getElementById('pwa-install-banner').style.display='none'; localStorage.setItem('agrisecur_pwa_dismiss','1');" class="outline" style="font-size:12px; padding:7px 12px;">Plus tard</button>
+        <button onclick="document.getElementById('pwa-install-banner').style.display='none'; try{localStorage.setItem('agrisecur_pwa_dismiss', String(Date.now()));}catch(e){}" class="outline" style="font-size:12px; padding:7px 12px;">Plus tard</button>
       </div>
     </div>
   </div>
@@ -987,6 +987,7 @@
         <a onclick="ouvrirAidePublique('mentions-legales')" data-i18n="footer.legal">Mentions légales</a>
         <a onclick="ouvrirAidePublique('cgu-cgv-summary')" data-i18n="footer.cgu">CGU / CGV</a>
         <a onclick="ouvrirAidePublique('donnees-personnelles')" data-i18n="footer.data">Données personnelles</a>
+        <a onclick="afficherInstallationApp()" data-i18n="footer.install">Installer l'app</a>
         <a onclick="ouvrirAidePublique('cookies')" data-i18n="footer.cookies">Cookies</a>
         <a onclick="ouvrirAidePublique('contact')" data-i18n="footer.contact">Nous contacter</a>
       </div>
@@ -1551,7 +1552,7 @@ const TRADUCTIONS = {
     "filieres.eyebrow": "Coverage", "filieres.title": "Seven sectors, and soon more",
     "filieres.lead": "Click on a sector to see the lots actually available right now on AgriSecur.",
     "ctabanner.title": "Ready for<br><span>the EU deadline?</span>", "ctabanner.text": "Upload your plot file: first feedback within 48 working hours.", "ctabanner.login": "I already have an account",
-    "footer.legal": "Legal notice", "footer.cgu": "Terms & Conditions", "footer.data": "Personal data", "footer.cookies": "Cookies", "footer.contact": "Contact us", "footer.backTop": "↑ Back to top",
+    "footer.legal": "Legal notice", "footer.cgu": "Terms & Conditions", "footer.data": "Personal data", "footer.install": "Install the app", "footer.cookies": "Cookies", "footer.contact": "Contact us", "footer.backTop": "↑ Back to top",
     "footer.copy": "© 2026 AgriSecur Côte d'Ivoire — Secure agricultural marketplace",
     "auth.roleSeller": "Seller", "auth.roleBuyer": "Buyer", "auth.login": "Log in", "auth.registerLink": "Create account",
     "auth.email": "Email address", "auth.password": "Password", "auth.forgot": "Forgot password?",
@@ -2068,11 +2069,23 @@ if ("serviceWorker" in navigator) {
 
 let differePromptInstallation = null;
 const dejaEnAppInstallee = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-const installationDejaIgnoree = localStorage.getItem("agrisecur_pwa_dismiss") === "1";
+// « Plus tard » ne masque l'invitation que 7 jours (avant : pour toujours).
+let installationDejaIgnoree = false;
+try {
+  const ignoreLe = Number(localStorage.getItem("agrisecur_pwa_dismiss") || 0);
+  installationDejaIgnoree = ignoreLe > 1 && Date.now() - ignoreLe < 7 * 24 * 3600 * 1000;
+} catch (e) {}
+const estSafariMac = /Macintosh/.test(navigator.userAgent) && /Safari/.test(navigator.userAgent) && !/Chrome|Chromium|Edg|Firefox/.test(navigator.userAgent) && !("ontouchend" in document);
 const estIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
 
 if (!dejaEnAppInstallee && !installationDejaIgnoree) {
-  if (estIOS) {
+  if (estSafariMac) {
+    // Safari sur Mac n'a pas d'invite automatique : on explique le geste.
+    document.getElementById("pwa-install-text").textContent =
+      "Installez AgriSecur comme une app : dans Safari, menu Fichier puis « Ajouter au Dock ».";
+    document.getElementById("pwa-install-btn").style.display = "none";
+    document.getElementById("pwa-install-banner").style.display = "block";
+  } else if (estIOS) {
     // Safari iOS ne déclenche jamais d'invite native — on guide manuellement.
     document.getElementById("pwa-install-text").textContent =
       "Installez AgriSecur sur votre écran d'accueil : appuyez sur Partager (⬆️) puis « Sur l'écran d'accueil ».";
@@ -2087,6 +2100,29 @@ if (!dejaEnAppInstallee && !installationDejaIgnoree) {
       document.getElementById("pwa-install-banner").style.display = "block";
     });
   }
+}
+
+// Bouton « Installer l'app » du pied de page : toujours disponible.
+function afficherInstallationApp() {
+  const texte = document.getElementById("pwa-install-text");
+  const bouton = document.getElementById("pwa-install-btn");
+  if (dejaEnAppInstallee) {
+    texte.textContent = "AgriSecur est déjà installée sur cet appareil.";
+    bouton.style.display = "none";
+  } else if (differePromptInstallation) {
+    texte.textContent = "Installez AgriSecur sur votre appareil pour un accès plus rapide, comme une vraie application.";
+    bouton.style.display = "";
+  } else if (estIOS) {
+    texte.textContent = "Sur iPhone : appuyez sur Partager (⬆️) puis « Sur l'écran d'accueil ».";
+    bouton.style.display = "none";
+  } else if (estSafariMac) {
+    texte.textContent = "Dans Safari : menu Fichier puis « Ajouter au Dock ».";
+    bouton.style.display = "none";
+  } else {
+    texte.textContent = "Dans Chrome ou Edge : cliquez sur l'icône d'installation à droite de la barre d'adresse, ou menu ⋮ puis « Installer AgriSecur ». Sur Android : menu ⋮ puis « Ajouter à l'écran d'accueil ».";
+    bouton.style.display = "none";
+  }
+  document.getElementById("pwa-install-banner").style.display = "block";
 }
 
 document.getElementById("pwa-install-btn").addEventListener("click", async () => {
