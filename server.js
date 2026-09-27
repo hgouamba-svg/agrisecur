@@ -28,7 +28,10 @@ function serveStatic(req, res, pathname) {
   if (!fullPath.startsWith(PUBLIC_DIR)) return false; // anti path-traversal
   if (!fs.existsSync(fullPath) || fs.statSync(fullPath).isDirectory()) return false;
   const ext = path.extname(fullPath);
-  res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
+  // Pages, scripts et styles : toujours revalidés, pour que chaque mise à jour
+  // du site soit visible tout de suite. Images et polices : cache d'un jour.
+  const frais = [".html", ".js", ".css", ".webmanifest", ".json"].includes(ext);
+  res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream", "Cache-Control": frais ? "no-cache" : "public, max-age=86400" });
   res.end(fs.readFileSync(fullPath));
   return true;
 }
