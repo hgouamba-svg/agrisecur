@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="robots" content="noindex, nofollow" />
 <title>AgriSecur Admin — Back-office</title>
-<!-- Back-office AgriSecur : fichier à garder sur votre ordinateur et votre
-     téléphone. Il n'est pas publié sur le site ; il se connecte au serveur
-     avec la clé administrateur (ADMIN_KEY). -->
+<!-- App « AgriSecur Admin » : servie uniquement à /admin par server.js,
+     hors du dossier public/. Le site public ne contient aucun code admin. -->
+<link rel="manifest" href="/admin.webmanifest" />
+<meta name="theme-color" content="#10241C" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="AgriSecur Admin" />
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png" />
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@800;900&family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
@@ -828,9 +834,13 @@ function filiereLabel(f) {
   return FILIERE_LABELS[f] || f;
 }
 
-// Adresse du serveur AgriSecur : le back-office tourne depuis ce fichier,
-// sur l'ordinateur ou le téléphone de l'administrateur, et n'appelle que l'API.
-const API = "https://www.agrisecur.com";
+const API = "";
+
+// Installable comme une app (Mac et Android) : même service worker que le
+// site, qui ne met jamais en cache les appels /api/.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+}
 
 let adminKey = sessionStorage.getItem("agrisecur_admin_key") || null;
 
