@@ -29,9 +29,11 @@ function verifyPassword(password, stored) {
   return crypto.timingSafeEqual(Buffer.from(hash, "hex"), Buffer.from(check, "hex"));
 }
 
+const SESSION_DUREE_MS = 7 * 24 * 3600 * 1000; // 7 jours
+
 function createSession(userType, userId) {
   const token = crypto.randomBytes(32).toString("hex");
-  const expires = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(); // 30 jours
+  const expires = new Date(Date.now() + SESSION_DUREE_MS).toISOString(); // 7 jours
   db.prepare(`INSERT INTO sessions (token, user_type, user_id, expires_at) VALUES (?, ?, ?, ?)`)
     .run(token, userType, userId, expires);
   return token;
@@ -46,6 +48,23 @@ function getSession(token) {
   }
   return session;
 }
+
+// Déconnexion : le jeton devient immédiatement inutilisable côté serveur.
+function supprimerSession(token) {
+  if (typeof token === "string" && token) db.prepare(`DELETE FROM sessions WHERE token = ?`).run(token);
+}
+
+// Révoque toutes les sessions d'un compte (changement / réinitialisation de mot de passe).
+function revoquerSessions(userType, userId) {
+  db.prepare(`DELETE FROM sessions WHERE user_type = ? AND user_id = ?`).run(userType, userId);
+}
+
+// Purge horaire des sessions expirées (dates ISO : comparaison lexicale valable).
+function purgerSessionsExpirees() {
+  db.prepare(`DELETE FROM sessions WHERE expires_at < ?`).run(new Date().toISOString());
+}
+purgerSessionsExpirees();
+setInterval(purgerSessionsExpirees, 3600 * 1000);
 
 // Clé admin "temporaire" pour les actions de back-office (validation KYC,
 // médiation de litige) — le temps qu'un vrai panneau d'administration avec
@@ -66,4 +85,4 @@ if (process.env.NODE_ENV === "production" && ADMIN_KEY === ADMIN_KEY_DEFAUT) {
   process.exit(1);
 }
 
-module.exports = { hashPassword, verifyPassword, createSession, getSession, ADMIN_KEY };
+module.exports = { hashPassword, verifyPassword, createSession, getSession, supprimerSession, revoquerSessions, ADMIN_KEY };

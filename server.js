@@ -8,6 +8,7 @@
 // sans `npm install`, y compris hors-ligne.
 
 const http = require("http");
+const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const db = require("./db");
@@ -15,7 +16,7 @@ const { router, match } = require("./router");
 const payments = require("./payments");
 const { genererBonCommandePDF } = require("./pdf");
 const { envoyerBonCommandeParEmail } = require("./email");
-const { hashPassword, verifyPassword, createSession, getSession, ADMIN_KEY } = require("./auth");
+const { hashPassword, verifyPassword, createSession, getSession, supprimerSession, revoquerSessions, ADMIN_KEY } = require("./auth");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2" };
@@ -42,8 +43,14 @@ function getAuth(req) {
   return { type: session.user_type, id: session.user_id };
 }
 
+// Comparaison à temps constant (empreintes SHA-256 de même longueur) pour ne
+// pas laisser deviner la clé admin caractère par caractère via le timing.
 function isAdmin(req) {
-  return req.headers["x-admin-key"] === ADMIN_KEY;
+  const fournie = req.headers["x-admin-key"];
+  if (typeof fournie !== "string" || !fournie) return false;
+  const a = crypto.createHash("sha256").update(fournie).digest();
+  const b = crypto.createHash("sha256").update(ADMIN_KEY).digest();
+  return crypto.timingSafeEqual(a, b);
 }
 
 function isAdminAvecLimite(req, res) {
@@ -83,24 +90,38 @@ const RATE_LIMIT_MAX = 5;          // tentatives autorisées
 const RATE_LIMIT_FENETRE_MS = 15 * 60 * 1000;  // fenêtre de 15 minutes
 const rateLimitStore = new Map();  // clé "ip:route" -> { count, premiereTentative }
 
-// Derrière un proxy comme celui de Railway, req.socket.remoteAddress ne
-// donne que l'adresse interne du proxy — identique pour tous les visiteurs,
-// ce qui fausserait complètement le comptage par IP. X-Forwarded-For
-// contient la vraie adresse du visiteur, ajoutée automatiquement par Railway.
+// Derrière un proxy (Fly, Railway, Caddy), req.socket.remoteAddress ne donne
+// que l'adresse du proxy. On ne fait confiance qu'aux en-têtes posés par le
+// proxy lui-même : Fly-Client-IP sur Fly.io, sinon (TRUST_PROXY=1) la DERNIÈRE
+// entrée de X-Forwarded-For, ajoutée par le proxy — la première est fournie
+// par le client et donc falsifiable. Sans TRUST_PROXY, on voit l'IP du proxy.
 function getClientIp(req) {
-  const fwd = req.headers["x-forwarded-for"];
-  if (fwd) return fwd.split(",")[0].trim();
+  const fly = req.headers["fly-client-ip"];
+  if (fly && process.env.FLY_APP_NAME) return String(fly).trim();
+  // Derrière un proxy (Railway, Caddy local…), la connexion vient d'une adresse
+  // privée : on prend alors la DERNIÈRE entrée de X-Forwarded-For, ajoutée par
+  // le proxy lui-même (les premières peuvent être falsifiées par le client).
+  const distant = String(req.socket.remoteAddress || "");
+  const viaProxyPrive = /^(::ffff:)?(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\.)|^::1$|^f[cd]/i.test(distant);
+  if (process.env.TRUST_PROXY === "1" || viaProxyPrive) {
+    const fwd = req.headers["x-forwarded-for"];
+    if (fwd) {
+      const derniere = String(fwd).split(",").pop().trim();
+      if (derniere) return derniere;
+    }
+  }
   return req.socket.remoteAddress || "inconnu";
 }
 
-function limiterTentatives(req, res, cle) {
-  const ip = getClientIp(req);
-  const key = `${ip}:${cle}`;
+// options.parIp=false : compteur global sur la clé (ex. par email), quelle que soit l'IP.
+function limiterTentatives(req, res, cle, options = {}) {
+  const key = options.parIp === false ? cle : `${getClientIp(req)}:${cle}`;
+  const max = options.max || RATE_LIMIT_MAX;
   const maintenant = Date.now();
   const entree = rateLimitStore.get(key);
 
   if (entree && maintenant - entree.premiereTentative < RATE_LIMIT_FENETRE_MS) {
-    if (entree.count >= RATE_LIMIT_MAX) {
+    if (entree.count >= max) {
       const attenteMin = Math.ceil((RATE_LIMIT_FENETRE_MS - (maintenant - entree.premiereTentative)) / 60000);
       send(res, 429, { error: `Trop de tentatives. Réessayez dans ${attenteMin} minute${attenteMin > 1 ? "s" : ""}.` });
       return false;
@@ -112,9 +133,8 @@ function limiterTentatives(req, res, cle) {
   return true;
 }
 
-function reinitialiserTentatives(req, cle) {
-  const ip = getClientIp(req);
-  rateLimitStore.delete(`${ip}:${cle}`);
+function reinitialiserTentatives(req, cle, options = {}) {
+  rateLimitStore.delete(options.parIp === false ? cle : `${getClientIp(req)}:${cle}`);
 }
 
 // Purge périodique pour ne pas accumuler indéfiniment des entrées expirées en mémoire
@@ -286,9 +306,35 @@ function getOrder(id) {
 
 // ---------- Authentification ----------
 
+const MOT_DE_PASSE_MIN = 10;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const TYPES_VENDEUR = ["producteur", "gie", "cooperative", "transformateur"];
+const TYPES_ACHETEUR = ["professionnel", "particulier"];
+
+// Champ texte facultatif (vide accepté) ou obligatoire, borné en longueur.
+function texteValide(v, max, requis) {
+  if (v === undefined || v === null || v === "") return !requis;
+  return typeof v === "string" && v.trim().length > 0 && v.length <= max;
+}
+
+// Contrôles communs aux deux inscriptions — renvoie un message d'erreur ou null.
+function erreurInscription({ nom, email, password }) {
+  if (!texteValide(nom, 120, true)) return "nom invalide (120 caractères max)";
+  if (typeof email !== "string" || email.length > 254 || !EMAIL_REGEX.test(email)) return "adresse email invalide";
+  if (typeof password !== "string" || password.length < MOT_DE_PASSE_MIN || password.length > 256) {
+    return `le mot de passe doit faire au moins ${MOT_DE_PASSE_MIN} caractères`;
+  }
+  return null;
+}
+
 router.post("/api/auth/register-seller", (req, res, params, body) => {
   const { nom, type, localisation, rccm, email, password } = body;
   if (!nom || !type || !email || !password) return send(res, 400, { error: "nom, type, email, password requis" });
+  const erreur = erreurInscription(body);
+  if (erreur) return send(res, 400, { error: erreur });
+  if (!TYPES_VENDEUR.includes(type)) return send(res, 400, { error: "type de vendeur invalide" });
+  if (!texteValide(localisation, 120, false)) return send(res, 400, { error: "localisation invalide (120 caractères max)" });
+  if (!texteValide(rccm, 60, false)) return send(res, 400, { error: "numéro RCCM invalide (60 caractères max)" });
   const existing = db.prepare(`SELECT id FROM sellers WHERE email = ?`).get(email);
   if (existing) return send(res, 409, { error: "un compte vendeur existe déjà avec cet email" });
 
@@ -302,8 +348,11 @@ router.post("/api/auth/register-seller", (req, res, params, body) => {
   send(res, 201, { token, user: seller });
 });
 
+// Seules des images encodées en base64 (png/jpeg/webp) sont acceptées : pas de
+// SVG, pas d'URL arbitraire, pas de caractère pouvant sortir d'un attribut HTML.
+const PHOTO_REGEX = /^data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/]+={0,2}$/;
 function photoValide(dataUrl) {
-  return typeof dataUrl === "string" && dataUrl.startsWith("data:image/") && dataUrl.length <= 900000;
+  return typeof dataUrl === "string" && dataUrl.length <= 900000 && PHOTO_REGEX.test(dataUrl);
 }
 
 // node:sqlite (contrairement à better-sqlite3) n'a pas de méthode
@@ -328,7 +377,7 @@ function genererCodeParrainage() {
   let code;
   do {
     code = "";
-    for (let i = 0; i < 6; i++) code += alphabet[Math.floor(Math.random() * alphabet.length)];
+    for (let i = 0; i < 6; i++) code += alphabet[crypto.randomInt(alphabet.length)];
   } while (db.prepare(`SELECT 1 FROM buyers WHERE code_parrainage = ?`).get(code));
   return code;
 }
@@ -336,6 +385,10 @@ function genererCodeParrainage() {
 router.post("/api/auth/register-buyer", (req, res, params, body) => {
   const { nom, type, email, password, code_parrainage_saisi } = body;
   if (!nom || !email || !password) return send(res, 400, { error: "nom, email, password requis" });
+  const erreur = erreurInscription(body);
+  if (erreur) return send(res, 400, { error: erreur });
+  if (type && !TYPES_ACHETEUR.includes(type)) return send(res, 400, { error: "type d'acheteur invalide" });
+  if (code_parrainage_saisi && typeof code_parrainage_saisi !== "string") return send(res, 400, { error: "code de parrainage invalide" });
   const existing = db.prepare(`SELECT id FROM buyers WHERE email = ?`).get(email);
   if (existing) return send(res, 409, { error: "un compte acheteur existe déjà avec cet email" });
 
@@ -359,12 +412,18 @@ router.post("/api/auth/login", (req, res, params, body) => {
   if (!limiterTentatives(req, res, "login")) return;
   const { role, email, password } = body;
   if (!["seller", "buyer"].includes(role) || !email || !password) return send(res, 400, { error: "role, email, password requis" });
+  if (typeof email !== "string" || typeof password !== "string") return send(res, 400, { error: "role, email, password requis" });
+  // Second compteur par compte visé (toutes IP confondues) : freine le
+  // brute-force distribué sur un même email.
+  const cleEmail = `login-email:${role}:${email.trim().toLowerCase()}`;
+  if (!limiterTentatives(req, res, cleEmail, { parIp: false, max: 10 })) return;
   const table = role === "seller" ? "sellers" : "buyers";
   const user = db.prepare(`SELECT * FROM ${table} WHERE email = ?`).get(email);
   if (!user || !user.password_hash || !verifyPassword(password, user.password_hash)) {
     return send(res, 401, { error: "identifiants invalides" });
   }
   reinitialiserTentatives(req, "login"); // connexion réussie : on repart à zéro
+  reinitialiserTentatives(req, cleEmail, { parIp: false });
   const token = createSession(role, user.id);
   delete user.password_hash;
   send(res, 200, { token, user });
@@ -376,7 +435,8 @@ router.post("/api/auth/change-password", (req, res, params, body) => {
   if (!limiterTentatives(req, res, "change-password")) return;
   const { currentPassword, newPassword } = body;
   if (!currentPassword || !newPassword) return send(res, 400, { error: "mot de passe actuel et nouveau mot de passe requis" });
-  if (newPassword.length < 6) return send(res, 400, { error: "le nouveau mot de passe doit faire au moins 6 caractères" });
+  if (typeof newPassword !== "string" || typeof currentPassword !== "string") return send(res, 400, { error: "mot de passe actuel et nouveau mot de passe requis" });
+  if (newPassword.length < MOT_DE_PASSE_MIN || newPassword.length > 256) return send(res, 400, { error: `le nouveau mot de passe doit faire au moins ${MOT_DE_PASSE_MIN} caractères` });
 
   const table = auth.type === "seller" ? "sellers" : "buyers";
   const user = db.prepare(`SELECT * FROM ${table} WHERE id = ?`).get(auth.id);
@@ -385,6 +445,15 @@ router.post("/api/auth/change-password", (req, res, params, body) => {
   }
   reinitialiserTentatives(req, "change-password");
   db.prepare(`UPDATE ${table} SET password_hash = ? WHERE id = ?`).run(hashPassword(newPassword), auth.id);
+  // Déconnecte toutes les autres sessions (appareil perdu, mot de passe
+  // compromis) et renvoie un jeton neuf pour l'appareil courant.
+  revoquerSessions(auth.type, auth.id);
+  send(res, 200, { ok: true, token: createSession(auth.type, auth.id) });
+});
+
+router.post("/api/auth/logout", (req, res) => {
+  const header = req.headers["authorization"];
+  if (header && header.startsWith("Bearer ")) supprimerSession(header.slice(7));
   send(res, 200, { ok: true });
 });
 
@@ -461,7 +530,7 @@ router.get("/api/admin/buyers", (req, res) => {
 function genererMotDePasseTemporaire() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
   let out = "";
-  for (let i = 0; i < 10; i++) out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  for (let i = 0; i < 10; i++) out += alphabet[crypto.randomInt(alphabet.length)];
   return out;
 }
 
@@ -471,6 +540,7 @@ router.post("/api/admin/sellers/:id/reset-password", (req, res, params) => {
   if (!seller) return send(res, 404, { error: "vendeur introuvable" });
   const temp = genererMotDePasseTemporaire();
   db.prepare(`UPDATE sellers SET password_hash = ? WHERE id = ?`).run(hashPassword(temp), params.id);
+  revoquerSessions("seller", seller.id);
   send(res, 200, { mot_de_passe_temporaire: temp });
 });
 
@@ -546,6 +616,7 @@ router.post("/api/admin/buyers/:id/reset-password", (req, res, params) => {
   if (!buyer) return send(res, 404, { error: "acheteur introuvable" });
   const temp = genererMotDePasseTemporaire();
   db.prepare(`UPDATE buyers SET password_hash = ? WHERE id = ?`).run(hashPassword(temp), params.id);
+  revoquerSessions("buyer", buyer.id);
   send(res, 200, { mot_de_passe_temporaire: temp });
 });
 
@@ -571,7 +642,7 @@ router.post("/api/admin/orders/:id/confirmer-virement", (req, res, params) => {
 
   db.prepare(`UPDATE orders SET statut = 'sequestre' WHERE id = ?`).run(order.id);
   logEvent(order.id, "confirmation_virement",
-    `Virement de ${order.montant_total_fcfa} FCFA confirmé reçu (réf. ${order.virement_reference}) — fonds désormais en séquestre`);
+    `Virement de ${order.montant_total_fcfa} FCFA confirmé reçu (réf. ${order.virement_reference}) — paiement enregistré`);
   send(res, 200, getOrder(order.id));
 });
 
@@ -738,13 +809,18 @@ router.post("/api/products", (req, res, params, body) => {
 
   const { nom, quantite_kg, prix_unitaire_fcfa, filiere, mode_livraison, prix_avec_transport_fcfa, photo_url, parcelle_latitude, parcelle_longitude, declaration_non_deforestation } = body;
   if (!nom || !quantite_kg || !prix_unitaire_fcfa) return send(res, 400, { error: "nom, quantite_kg, prix_unitaire_fcfa requis" });
+  if (!texteValide(nom, 120, true)) return send(res, 400, { error: "nom du lot invalide (120 caractères max)" });
+  if (filiere !== undefined && filiere !== null && filiere !== "" && !texteValide(filiere, 40, true)) return send(res, 400, { error: "filière invalide" });
+  const nombrePositif = (v) => (typeof v === "number" || typeof v === "string") && Number.isFinite(Number(v)) && Number(v) > 0;
+  if (!nombrePositif(quantite_kg) || !nombrePositif(prix_unitaire_fcfa)) return send(res, 400, { error: "quantité et prix doivent être des nombres positifs" });
+  if (prix_avec_transport_fcfa && !nombrePositif(prix_avec_transport_fcfa)) return send(res, 400, { error: "prix avec transport invalide" });
   if (mode_livraison && !["acheteur", "vendeur", "a_convenir"].includes(mode_livraison)) {
     return send(res, 400, { error: "mode_livraison invalide" });
   }
   if (prix_avec_transport_fcfa && prix_avec_transport_fcfa < prix_unitaire_fcfa) {
     return send(res, 400, { error: "le prix avec transport doit être supérieur ou égal au prix sans transport" });
   }
-  if (photo_url && (!photo_url.startsWith("data:image/") || photo_url.length > 900000)) {
+  if (photo_url && !photoValide(photo_url)) {
     return send(res, 400, { error: "photo invalide ou trop volumineuse (compressez avant envoi)" });
   }
   const lat = parcelle_latitude !== undefined && parcelle_latitude !== null && parcelle_latitude !== "" ? Number(parcelle_latitude) : null;
@@ -1141,7 +1217,14 @@ router.post("/api/orders", async (req, res, params, body) => {
   const auth = getAuth(req);
   if (!auth || auth.type !== "buyer") return send(res, 401, { error: "connexion acheteur requise" });
 
-  const { product_id, quantite_kg, avec_transport, mode_paiement, virement_reference } = body;
+  const { avec_transport, mode_paiement, virement_reference } = body;
+  const product_id = Number(body.product_id);
+  const quantite_kg = body.quantite_kg;
+  if (!Number.isInteger(product_id) || product_id <= 0) return send(res, 400, { error: "identifiant de produit invalide" });
+  if (typeof quantite_kg !== "number" || !Number.isFinite(quantite_kg) || quantite_kg < 1) {
+    return send(res, 400, { error: "quantité invalide (1 kg minimum)" });
+  }
+  if (virement_reference != null && !texteValide(virement_reference, 100, false)) return send(res, 400, { error: "référence de virement invalide (100 caractères max)" });
   const product = db.prepare(`SELECT * FROM products WHERE id = ?`).get(product_id);
   if (!product) return send(res, 404, { error: "produit introuvable" });
   if (product.statut !== "disponible") return send(res, 409, { error: "produit non disponible" });
@@ -1224,7 +1307,7 @@ router.post("/api/orders", async (req, res, params, body) => {
       `Commande créée par virement bancaire (réf. ${virement_reference}) — ${montant_total} FCFA en attente de confirmation de réception`);
   } else {
     logEvent(info.lastInsertRowid, "creation",
-      `Commande créée (${wantsTransport ? "avec" : "sans"} transport) — ${montant_total} FCFA débités et bloqués en compte séquestre + ${fraisPaiement} FCFA de frais de traitement mobile money`);
+      `Commande créée (${wantsTransport ? "avec" : "sans"} transport) — ${montant_total} FCFA enregistrés + ${fraisPaiement} FCFA de frais de traitement mobile money`);
   }
 
   const commandeComplete = getOrder(info.lastInsertRowid);
@@ -1552,7 +1635,18 @@ function verifierAccesSite(req, res) {
   return false;
 }
 
+// En-têtes de sécurité posés sur toutes les réponses (statiques et API).
+// Pas de Content-Security-Policy : la page repose sur des scripts/handlers inline.
+const EN_TETES_SECURITE = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "same-origin",
+  "Strict-Transport-Security": "max-age=31536000",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(self)",
+};
+
 const server = http.createServer((req, res) => {
+  for (const [nom, valeur] of Object.entries(EN_TETES_SECURITE)) res.setHeader(nom, valeur);
   if (req.method === "OPTIONS") return send(res, 204, {});
   // /api/health reste accessible pour le contrôle de santé de l'hébergeur.
   if (!req.url.startsWith("/api/health") && !verifierAccesSite(req, res)) return;
@@ -1583,14 +1677,25 @@ const server = http.createServer((req, res) => {
     let body = {};
     if (raw) {
       try { body = JSON.parse(raw); } catch { return send(res, 400, { error: "JSON invalide" }); }
+      if (body === null || typeof body !== "object" || Array.isArray(body)) return send(res, 400, { error: "JSON invalide" });
     }
-    try {
-      found.handler(req, res, found.params, body);
-    } catch (err) {
+    // Les handlers async rejettent une promesse au lieu de lever : on
+    // intercepte les deux cas. Le détail de l'erreur reste dans les journaux.
+    const erreurServeur = (err) => {
       console.error(err);
-      send(res, 500, { error: "erreur serveur", detail: err.message });
+      if (!res.headersSent) send(res, 500, { error: "erreur serveur" });
+      else res.end();
+    };
+    try {
+      Promise.resolve(found.handler(req, res, found.params, body)).catch(erreurServeur);
+    } catch (err) {
+      erreurServeur(err);
     }
   });
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("[unhandledRejection]", err);
 });
 
 const PORT = process.env.PORT || 3001;

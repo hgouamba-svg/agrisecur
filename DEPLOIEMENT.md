@@ -41,6 +41,11 @@ fly secrets set \
 Facultatifs : `PAIEMENT_MODE`, `CINETPAY_API_KEY`, `CINETPAY_SITE_ID`,
 `PROMO_ACTIVE`, `MOBILE_MONEY_FRAIS_TAUX`, etc.
 
+Adresse IP des visiteurs (anti brute-force) : sur Fly, l'en-tête `Fly-Client-IP`
+est utilisé automatiquement. Sur Railway (ou derrière Caddy sur Oracle), définir
+`TRUST_PROXY=1` pour que le serveur lise la dernière entrée de `X-Forwarded-For`
+ajoutée par le proxy ; sans cette variable, tous les visiteurs partagent l'IP du proxy.
+
 Ne pas définir `SITE_PASSWORD` tant que le verrou d'accès n'est pas corrigé :
 il utilise le même en-tête `Authorization` que les sessions, donc les
 utilisateurs connectés seraient bloqués.

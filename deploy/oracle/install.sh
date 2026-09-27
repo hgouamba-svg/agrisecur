@@ -62,6 +62,8 @@ if [ ! -f "$ENV_FILE" ]; then
 NODE_ENV=production
 PORT=$PORT_APP
 DB_PATH=$DATA_DIR/agrisecur.db
+# Caddy (sur la même machine) ajoute l'IP du visiteur à X-Forwarded-For.
+TRUST_PROXY=1
 # Reprenez la clé admin de Railway pour garder le même accès au back-office.
 ADMIN_KEY=$(openssl rand -hex 24)
 SMTP_HOST=ssl0.ovh.net

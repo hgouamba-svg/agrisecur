@@ -1,7 +1,7 @@
 {
   "name": "AgriSecur — Marketplace agricole sécurisée",
   "short_name": "AgriSecur",
-  "description": "Marketplace agricole B2B/B2C sécurisée par paiement séquestre — Côte d'Ivoire.",
+  "description": "Audit RDUE et place de marché agricole sécurisée — Côte d'Ivoire.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

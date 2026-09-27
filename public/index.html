@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>AgriSecur — La marketplace agricole sécurisée</title>
+<title>AgriSecur — Audit RDUE et place de marché agricole · Côte d'Ivoire</title>
+<meta name="description" content="AgriSecur aide les coopératives ivoiriennes à vendre et à rester conformes : Audit RDUE express de vos parcelles de cacao en 7 jours, et place de marché agricole avec paiement versé à la réception confirmée." />
 <link rel="manifest" href="/manifest.webmanifest" />
 <meta name="theme-color" content="#1F3D2E" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -574,6 +575,19 @@
     .ls-px-row > span:nth-child(2), .ls-px-row > span:nth-child(4) { text-align:right; }
   }
   @media (prefers-reduced-motion: reduce) { .ls-px-live i { animation:none; } }
+
+  .ls-rdue { background:var(--ls-green); color:#FFFFFF; padding:88px 0; border-bottom:2px solid var(--ls-ink); }
+  .ls-rdue-grid { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:64px; align-items:center; }
+  .ls-rdue .ls-h2 span { color:var(--ls-or); }
+  .ls-rdue-lead { margin:22px 0 0; font-size:19px; line-height:1.6; color:#D5E2D8; max-width:34em; }
+  .ls-rdue-card { border:2px dashed rgba(255,255,255,.5); padding:28px 30px; display:flex; flex-direction:column; gap:14px; }
+  .ls-rdue-price { font-family:var(--ls-stencil); font-weight:900; font-size:clamp(44px,5vw,64px); line-height:1; color:var(--ls-or); }
+  .ls-rdue-card ul { margin:0; padding-left:20px; color:#D5E2D8; font-size:16px; line-height:1.6; }
+  .ls-rdue-ctas { display:flex; flex-wrap:wrap; gap:14px; margin-top:28px; }
+  .ls-rdue-ctas .ls-btn { text-decoration:none; }
+  .ls-rdue-line { background:transparent; color:#FFFFFF; border:2px solid #FFFFFF; }
+  .ls-rdue-note { margin:0; font-size:13px; color:#BFD3C4; }
+  @media (max-width: 900px) { .ls-rdue-grid { grid-template-columns:1fr; gap:32px; } .ls-rdue { padding:64px 0; } }
 </style>
 </head>
 <body>
@@ -668,10 +682,10 @@
         <span>AGRISECUR</span>
       </a>
       <nav class="ls-links" aria-label="Sections">
+        <a onclick="landingScrollTo('landing-rdue')" data-target="landing-rdue" data-i18n="nav.rdue">Audit RDUE</a>
         <a onclick="landingScrollTo('landing-filieres')" data-target="landing-filieres" data-i18n="nav.catalogue">Le marché</a>
         <a onclick="landingScrollTo('landing-comment')" data-target="landing-comment" data-i18n="nav.how">Comment ça marche</a>
         <a onclick="landingScrollTo('landing-tarifs')" data-target="landing-tarifs" data-i18n="nav.prices">Prix du jour</a>
-        <a onclick="landingScrollTo('landing-pro')" data-target="landing-pro" data-i18n="nav.pro">Vendeur Pro</a>
         <a onclick="landingScrollTo('landing-mission')" data-target="landing-mission" data-i18n="nav.mission">Notre mission</a>
         <a onclick="ouvrirAidePublique('contact')" data-i18n="nav.contact">Contact</a>
       </nav>
@@ -687,7 +701,7 @@
     <div class="ls-hero-text">
       <p class="ls-eyebrow" data-i18n="hero.badge">Marché agricole sécurisé · Côte d'Ivoire</p>
       <h1 class="ls-h1" data-i18n="hero.title">Vendez.<br>Achetez.<br><span>Sans risquer votre argent.</span></h1>
-      <p class="ls-lead" data-i18n="hero.lead">L'argent de l'acheteur reste bloqué jusqu'à ce qu'il valide la marchandise reçue. Le producteur est payé à coup sûr, l'acheteur reçoit ce qu'il a commandé.</p>
+      <p class="ls-lead" data-i18n="hero.lead">Le vendeur n'est payé qu'une fois la réception confirmée par l'acheteur. Le producteur est payé à la livraison, l'acheteur reçoit ce qu'il a commandé.</p>
       <div class="ls-ctas">
         <button class="ls-btn ls-btn-orange ls-btn-lg" onclick="goToAuth('register')" data-i18n="hero.cta1">Créer un compte gratuit</button>
         <a class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
@@ -702,17 +716,42 @@
         <p class="ls-sack-grade" data-i18n="sack.grade">FÈVES · GRADE I</p>
         <div class="ls-sack-rule"></div>
         <div class="ls-sack-data"><span>LOT AS-0142</span><span>62,5 KG NET</span><span class="ls-hide-xs">PARCELLE P-0317</span><span class="ls-hide-xs">SOUBRÉ</span></div>
-        <div class="ls-stamp-held" data-i18n="sack.stamp">FONDS BLOQUÉS<small>JUSQU'À LA RÉCEPTION</small></div>
+        <div class="ls-stamp-held" data-i18n="sack.stamp">VERSÉ À LA<small>RÉCEPTION CONFIRMÉE</small></div>
         <div class="ls-stamp-kyc ls-hide-xs" data-i18n="sack.kyc">VENDEUR VÉRIFIÉ</div>
       </div>
       <p class="ls-art-note" data-i18n="sack.note">Marquage d'exemple — lot fictif</p>
     </div>
   </section>
 
+  <section class="ls-rdue" id="landing-rdue">
+    <div class="ls-wrap ls-rdue-grid">
+      <div>
+        <p class="ls-eyebrow ls-eyebrow-light" data-i18n="rdue.eyebrow">Coopératives de cacao · Échéance européenne le 30.12.2026</p>
+        <h2 class="ls-h2" data-i18n="rdue.title">Audit RDUE express : <span>votre fichier de parcelles vérifié en 7 jours</span></h2>
+        <p class="ls-rdue-lead" data-i18n="rdue.lead">À partir du 30 décembre 2026, les acheteurs européens devront prouver que chaque parcelle d'origine du cacao n'est pas issue de la déforestation. Envoyez-nous le fichier de parcelles de votre coopérative : nous le vérifions par analyse satellite et vous remettons un rapport clair, avant que votre acheteur le fasse.</p>
+        <div class="ls-rdue-ctas">
+          <a class="ls-btn ls-btn-orange ls-btn-lg" href="mailto:contact@agrisecur.com?subject=Audit%20RDUE%20express" data-i18n="rdue.cta1">Demander mon audit</a>
+          <a class="ls-btn ls-btn-lg ls-rdue-line" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="rdue.cta2">Écrire sur WhatsApp</a>
+        </div>
+      </div>
+      <div class="ls-rdue-card">
+        <span class="ls-t-lab" data-i18n="rdue.priceLab">Jusqu'à 500 parcelles</span>
+        <span class="ls-rdue-price">250 000 FCFA</span>
+        <ul>
+          <li data-i18n="rdue.i1">Contrôle des données : coordonnées manquantes, doublons, surfaces, chevauchements</li>
+          <li data-i18n="rdue.i2">Niveau de risque de déforestation par parcelle (analyse satellite WHISP)</li>
+          <li data-i18n="rdue.i3">Rapport et plan d'action prêts à transmettre à votre exportateur</li>
+          <li data-i18n="rdue.i4">Moitié à la commande, moitié à la remise du rapport · données confidentielles</li>
+        </ul>
+        <p class="ls-rdue-note" data-i18n="rdue.note">Le rapport aide à préparer la diligence raisonnée européenne ; il ne constitue pas une certification.</p>
+      </div>
+    </div>
+  </section>
+
   <section class="ls-ticket" aria-label="AgriSecur en chiffres">
     <div><span class="ls-t-lab" data-i18n="stats.l1">FILIÈRES</span><span class="ls-t-val">8</span><span class="ls-t-txt" data-i18n="stats.filieres">Cacao, anacarde, café, coton…</span></div>
     <div><span class="ls-t-lab" data-i18n="stats.l2">COMMISSION</span><span class="ls-t-val ls-or">4 %</span><span class="ls-t-txt" data-i18n="stats.commission">Uniquement sur les ventes réussies</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l3">FONDS EN SÉQUESTRE</span><span class="ls-t-val">100 %</span><span class="ls-t-txt" data-i18n="stats.escrow">Rien n'est versé avant validation</span></div>
+    <div><span class="ls-t-lab" data-i18n="stats.l3">VENDEUR PAYÉ</span><span class="ls-t-val">100 %</span><span class="ls-t-txt" data-i18n="stats.escrow">Versé au vendeur après réception confirmée</span></div>
     <div><span class="ls-t-lab" data-i18n="stats.l4">DÉLAI DE CONTRÔLE</span><span class="ls-t-val">24–48 H</span><span class="ls-t-txt" data-i18n="stats.delay">Pour vérifier le lot reçu</span></div>
   </section>
 
@@ -721,14 +760,14 @@
       <div class="ls-how-text">
         <p class="ls-eyebrow ls-eyebrow-light" data-i18n="how.eyebrow">Comment ça marche</p>
         <h2 class="ls-h2" data-i18n="how.title">Le vendeur est payé à la réception. Pas avant.</h2>
-        <p class="ls-body" data-i18n="diff.text">Ailleurs, payer par Mobile Money ou virement donne l'argent au vendeur tout de suite : si le lot ne correspond pas, vous n'avez plus de recours. Sur AgriSecur, les fonds restent sur un compte séquestre jusqu'à votre validation, ou jusqu'à la fin du délai de contestation de 24 à 48 h. En cas de désaccord, notre médiation tranche avant tout versement.</p>
-        <a class="ls-link-light" onclick="ouvrirAidePublique('cgu-cgv-summary')" data-i18n="how.link">Lire les conditions du séquestre</a>
+        <p class="ls-body" data-i18n="diff.text">Ailleurs, payer par Mobile Money ou virement donne l'argent au vendeur tout de suite : si le lot ne correspond pas, vous n'avez plus de recours. Sur AgriSecur, le vendeur n'est payé qu'après votre validation, ou à la fin du délai de contestation de 24 à 48 h. En cas de désaccord, notre médiation tranche avant tout versement.</p>
+        <a class="ls-link-light" onclick="ouvrirAidePublique('cgu-cgv-summary')" data-i18n="how.link">Lire les conditions de paiement</a>
       </div>
       <div class="ls-bordereau">
         <div class="ls-perf"></div>
         <div class="ls-bord-body">
           <div class="ls-bord-head"><span data-i18n="bord.title">BORDEREAU DE TRANSACTION</span><span>N° AS-0142</span></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Commande</b><small data-i18n="bord.s1t">Fonds déposés, bloqués sur le séquestre</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Commande</b><small data-i18n="bord.s1t">Paiement enregistré, en attente de livraison</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <div class="ls-bord-row"><span class="ls-bord-n">02</span><span><b data-i18n="bord.s2">Expédition</b><small data-i18n="bord.s2t">Le vendeur expédie, le lot est suivi</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <div class="ls-bord-row"><span class="ls-bord-n">03</span><span><b data-i18n="bord.s3">Contrôle à réception</b><small data-i18n="bord.s3t">24 à 48 h pour vérifier le lot</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
           <div class="ls-bord-row ls-bord-last"><span class="ls-bord-n">04</span><span><b data-i18n="bord.s4">Libération des fonds</b><small data-i18n="bord.s4t">Versement au vendeur</small></span></div>
@@ -859,7 +898,7 @@
 
   <div class="auth-box">
     <div class="auth-brand"><svg class="brand-icon brand-seal" viewBox="0 0 120 120" aria-hidden="true"><use href="#icon-seal"/></svg> AgriSecur</div>
-    <div class="auth-tagline">La marketplace agricole B2B/B2C qui sécurise vos transactions, du producteur à l'acheteur, par paiement séquestre.</div>
+    <div class="auth-tagline">La plateforme agricole qui sécurise vos ventes, du producteur à l'acheteur : paiement versé à la réception confirmée.</div>
     <div id="auth-msg"></div>
 
     <div class="role-switch">
@@ -881,17 +920,17 @@
     </div>
 
     <form id="form-register" style="display:none;">
-      <input name="nom" placeholder="Nom / raison sociale" required data-i18n-placeholder="auth.name" />
+      <input name="nom" placeholder="Nom / raison sociale" required maxlength="120" data-i18n-placeholder="auth.name" />
       <select name="type" id="register-type">
         <option value="cooperative" data-i18n="auth.coop">Coopérative</option>
         <option value="producteur" data-i18n="auth.producer">Producteur individuel</option>
         <option value="gie" data-i18n="auth.gie">GIE</option>
         <option value="transformateur" data-i18n="auth.processor">Transformateur</option>
       </select>
-      <input name="localisation" placeholder="Localisation" id="register-localisation" data-i18n-placeholder="auth.location" />
-      <input name="rccm" placeholder="N° RCCM (si disponible)" id="register-rccm" data-i18n-placeholder="auth.rccm" />
+      <input name="localisation" placeholder="Localisation" maxlength="120" id="register-localisation" data-i18n-placeholder="auth.location" />
+      <input name="rccm" placeholder="N° RCCM (si disponible)" maxlength="60" id="register-rccm" data-i18n-placeholder="auth.rccm" />
       <input name="email" type="email" placeholder="Adresse email" required data-i18n-placeholder="auth.email" />
-      <input name="password" type="password" placeholder="Mot de passe (8 caractères min.)" required minlength="6" data-i18n-placeholder="auth.passwordMin" />
+      <input name="password" type="password" placeholder="Mot de passe (10 caractères min.)" required minlength="10" data-i18n-placeholder="auth.passwordMin" />
       <input name="code_parrainage_saisi" placeholder="Code de parrainage (facultatif)" id="register-code-parrainage" style="display:none;" data-i18n-placeholder="auth.referral" />
       <div id="register-payout-hint" style="font-size:12.5px; margin-top:-2px;">
         <a onclick="alert('Pour recevoir l\'argent de vos ventes, il vous faut un compte pour recevoir un virement — mobile money ou bancaire.\n\n• Vous avez déjà Orange Money, MTN Money ou Wave ? Rien à faire, ça suffit.\n\n• Vous n\'avez rien de tout ça ? Ouvrez un compte Djamo (gratuit, sur smartphone, avec une carte Visa) ou un compte Orange Money (dans n\'importe quelle boutique Orange) — les deux se font en 10 à 15 minutes avec juste votre carte d\'identité.')" style="color:var(--ink-soft); text-decoration:underline; cursor:pointer;" data-i18n="auth.payoutHint">💡 Pas de compte pour recevoir vos paiements ? Voir comment en ouvrir un</a>
@@ -924,7 +963,7 @@
     <div class="brand-tagline" data-i18n="app.tagline">Marketplace agricole sécurisée</div>
     <button data-tab="catalogue" class="tab active" data-i18n="app.tabCatalogue">Catalogue &amp; achat</button>
     <button data-tab="vendeur" class="tab" data-i18n="app.tabSeller">Espace vendeur</button>
-    <button data-tab="sequestre" class="tab" data-i18n="app.tabEscrow">Tunnel séquestre</button>
+    <button data-tab="sequestre" class="tab" data-i18n="app.tabEscrow">Suivi des paiements</button>
     <button data-tab="aide" class="tab" data-i18n="app.tabHelp">Aide &amp; contact</button>
     <button data-tab="compte" class="tab" data-i18n="app.tabAccount">Mon compte</button>
     <div class="who-box">
@@ -974,7 +1013,7 @@
       <div class="hero-banner compact">
         <div class="hero-text">
           <h2>Votre activité, vendue au juste prix</h2>
-          <p>Vérifiez votre identité, publiez vos lots et suivez vos ventes dans toutes vos filières — le tunnel séquestre s'occupe de sécuriser chaque paiement.</p>
+          <p>Vérifiez votre identité, publiez vos lots et suivez vos ventes dans toutes vos filières — le suivi des paiements sécurise chaque vente.</p>
         </div>
         <svg class="hero-icon" viewBox="0 0 48 52"><use href="#icon-sac"/></svg>
       </div>
@@ -1092,12 +1131,12 @@
       <div class="hero-banner compact">
         <div class="hero-text">
           <h2>Vos fonds, protégés jusqu'à la livraison</h2>
-          <p>Chaque commande passe par un compte séquestre : l'argent n'est versé au vendeur qu'après votre validation, ou à l'expiration du délai de contestation.</p>
+          <p>Chaque commande suit un circuit contrôlé : l'argent n'est versé au vendeur qu'après votre validation, ou à l'expiration du délai de contestation.</p>
         </div>
         <svg class="hero-icon" viewBox="0 0 24 24" style="width:44px;height:44px;color:var(--gold);"><use href="#icon-lock-check"/></svg>
       </div>
       <div class="eyebrow">Sécurité des paiements</div>
-      <h1>Tunnel séquestre</h1>
+      <h1>Suivi des paiements</h1>
       <p class="sub">Vos commandes, avec leur statut réel et l'historique complet de chaque étape.</p>
       <div id="orders-msg"></div>
       <div id="orders-list"></div>
@@ -1112,11 +1151,11 @@
         <strong>Questions fréquentes</strong>
         <details class="help-item" open>
           <summary>Comment mes fonds sont-ils protégés ?</summary>
-          <p>Quand vous commandez, le montant total est bloqué sur un compte séquestre. Le vendeur n'est payé qu'une fois que vous avez validé la conformité de la marchandise, ou automatiquement après le délai de contestation (24 à 48h) si vous n'avez rien signalé.</p>
+          <p>Quand vous commandez, le montant total n'est pas versé immédiatement au vendeur. Le vendeur n'est payé qu'une fois que vous avez validé la conformité de la marchandise, ou automatiquement après le délai de contestation (24 à 48h) si vous n'avez rien signalé.</p>
         </details>
         <details class="help-item">
           <summary>Que se passe-t-il si le lot reçu ne correspond pas ?</summary>
-          <p>Pendant la fenêtre de contestation, ouvrez une réclamation motivée depuis l'onglet « Tunnel séquestre ». Le blocage des fonds est prolongé le temps de l'instruction, et notre médiation interne tranche sur la base des éléments fournis par les deux parties (Article 5 des CGU/CGV).</p>
+          <p>Pendant la fenêtre de contestation, ouvrez une réclamation motivée depuis l'onglet « Suivi des paiements ». Le versement est suspendu le temps de l'instruction, et notre médiation interne tranche sur la base des éléments fournis par les deux parties (Article 5 des CGU/CGV).</p>
         </details>
         <details class="help-item">
           <summary>Quelle commission est prélevée ?</summary>
@@ -1157,15 +1196,15 @@
         <p class="sub" style="margin:8px 0 14px;">Résumé des points essentiels — le document contractuel complet reste la référence en cas de litige.</p>
         <details class="help-item">
           <summary>Article 1 — Objet et champ d'application</summary>
-          <p>AgriSecur est une place de marché numérique B2B/B2C connectant producteurs, coopératives, transformateurs, grossistes et acheteurs de la chaîne de valeur agricole en Côte d'Ivoire, avec catalogue géolocalisé, traçabilité des lots et paiement sécurisé par séquestre.</p>
+          <p>AgriSecur est une place de marché numérique B2B/B2C connectant producteurs, coopératives, transformateurs, grossistes et acheteurs de la chaîne de valeur agricole en Côte d'Ivoire, avec catalogue géolocalisé, traçabilité des lots et paiement versé au vendeur à la réception confirmée.</p>
         </details>
         <details class="help-item">
           <summary>Article 3 — Inscription et vérification (KYC)</summary>
           <p>L'accès aux services de vente nécessite un compte vérifié. Les vendeurs fournissent RCCM, pièce d'identité ou attestation de coopérative. Chacun est responsable de la confidentialité de ses identifiants.</p>
         </details>
         <details class="help-item">
-          <summary>Article 4 — Processus de transaction et séquestre financier</summary>
-          <p>Commande → fonds bloqués → expédition → délai de contestation (24 à 48h) → libération des fonds nets au vendeur, sauf réclamation motivée.</p>
+          <summary>Article 4 — Processus de transaction et de paiement</summary>
+          <p>Commande → paiement enregistré → expédition → délai de contestation (24 à 48h) → libération des fonds nets au vendeur, sauf réclamation motivée.</p>
         </details>
         <details class="help-item">
           <summary>Article 4 bis — Transport et livraison</summary>
@@ -1240,7 +1279,7 @@
         </details>
         <details class="help-item">
           <summary>Pourquoi ces données sont-elles traitées ?</summary>
-          <p>Pour créer et sécuriser votre compte, vérifier l'identité des vendeurs avant toute vente, exécuter le tunnel séquestre, et vous contacter en cas de litige. Aucune donnée n'est vendue à des tiers.</p>
+          <p>Pour créer et sécuriser votre compte, vérifier l'identité des vendeurs avant toute vente, suivre les paiements, et vous contacter en cas de litige. Aucune donnée n'est vendue à des tiers.</p>
         </details>
         <details class="help-item">
           <summary>Combien de temps vos données sont-elles conservées ?</summary>
@@ -1301,8 +1340,8 @@
         <strong>Changer mon mot de passe</strong>
         <form class="inline" id="form-change-password" style="margin-top:12px; flex-direction:column; align-items:stretch; max-width:360px;">
           <input name="currentPassword" type="password" placeholder="Mot de passe actuel" required />
-          <input name="newPassword" type="password" placeholder="Nouveau mot de passe (8 caractères min.)" required minlength="6" />
-          <input name="confirmPassword" type="password" placeholder="Confirmer le nouveau mot de passe" required minlength="6" />
+          <input name="newPassword" type="password" placeholder="Nouveau mot de passe (10 caractères min.)" required minlength="10" />
+          <input name="confirmPassword" type="password" placeholder="Confirmer le nouveau mot de passe" required minlength="10" />
           <button class="dark" type="submit" style="align-self:flex-start;">Mettre à jour le mot de passe</button>
         </form>
       </div>
@@ -1396,7 +1435,7 @@
     <section id="admin-panel-virements" class="panel">
       <div class="eyebrow">Rapprochement bancaire</div>
       <h1>Virements en attente</h1>
-      <p class="sub">Vérifiez votre relevé bancaire, puis confirmez la réception pour lever le séquestre et démarrer le tunnel normalement.</p>
+      <p class="sub">Vérifiez votre relevé bancaire, puis confirmez la réception pour enregistrer le paiement et démarrer le suivi normalement.</p>
       <div id="admin-virements-msg"></div>
       <div id="admin-virements-list"></div>
     </section>
@@ -1491,6 +1530,25 @@
 
 
 <script>
+// ==================== Échappement HTML (anti-XSS) ====================
+// Toute donnée venant du serveur (noms, emails, photos, descriptions...)
+// insérée via innerHTML doit passer par esc(). Dans un onclick="...", une
+// valeur texte passe par jsArg() (chaîne JS littérale, elle-même échappée).
+function esc(v) {
+  return String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function jsArg(v) { return esc(JSON.stringify(String(v == null ? "" : v))); }
+// Ouvre en grand une image déjà affichée (photo de preuve, document KYC),
+// sans jamais réinjecter son URL dans du code.
+function ouvrirImage(el) {
+  const w = window.open("", "_blank");
+  if (!w) return;
+  const img = w.document.createElement("img");
+  img.src = el.src;
+  img.style.maxWidth = "100%";
+  w.document.body.appendChild(img);
+}
+
 // ==================== Traduction (FR/EN) ====================
 // Système simple par attributs data-i18n : chaque élément statique porte
 // sa clé, on bascule son contenu texte selon la langue choisie. Pour le
@@ -1504,11 +1562,11 @@ const TRADUCTIONS = {
     "nav.login": "Log in", "nav.register": "Create account", "nav.features": "Features", "nav.catalogue": "Catalogue", "nav.how": "How it works", "nav.prices": "Market prices", "nav.mission": "Our mission", "nav.contact": "Contact",
     "hero.badge": "🇨🇮 Available in Côte d'Ivoire",
     "hero.title": "Sell and buy your agricultural products <em>without ever risking your money</em>",
-    "hero.lead": "The agricultural marketplace that holds the buyer's funds until delivery is confirmed — not a simple instant payment with no recourse, real protection against non-payment and non-conformity.",
+    "hero.lead": "The seller is only paid once the buyer confirms delivery. The producer gets paid on delivery, the buyer gets what they ordered.",
     "hero.cta1": "Create a free account", "hero.cta2": "How it works", "hero.film": "▶ Watch the film (51 s)",
-    "stats.filieres": "Sectors covered", "stats.commission": "Commission, only on successful sales", "stats.escrow": "Funds protected in escrow", "stats.delay": "Dispute window",
+    "stats.filieres": "Sectors covered", "stats.commission": "Commission, only on successful sales", "stats.escrow": "Paid to the seller after confirmed delivery", "stats.delay": "Dispute window",
     "diff.title": "The difference with a regular payment",
-    "diff.text": "On most platforms, paying means the seller receives the money immediately — whether by mobile money or bank transfer — leaving you no recourse if the delivered lot doesn't match. On AgriSecur, whatever your payment method, your funds stay in an escrow account until you confirm the goods are compliant, or during a 24-to-48-hour dispute window if you say nothing. In case of disagreement, our internal mediation decides before any funds are released.",
+    "diff.text": "Elsewhere, paying by mobile money or bank transfer hands the money to the seller right away: if the lot doesn't match, you have no recourse. On AgriSecur, the seller is only paid after your approval, or once the 24-to-48-hour dispute window ends. In case of disagreement, our mediation decides before anything is paid out.",
     "pro.eyebrow": "For sellers who want to go further", "pro.title": "Pro Seller Subscription",
     "pro.lead": "10,000 FCFA / month — a trust badge, better placement in the catalogue, and your prices compared to the market.",
     "pro.f1.title": "Pro Seller badge", "pro.f1.text": "A trust signal visible to all buyers, directly on your listings.",
@@ -1516,13 +1574,13 @@ const TRADUCTIONS = {
     "pro.f3.title": "Better visibility", "pro.f3.text": "Your lots stand out more in the catalogue, for more views and more sales.",
     "feat.eyebrow": "Features", "feat.title": "Everything you need",
     "feat.lead": "A complete platform to connect producers, cooperatives and buyers in Côte d'Ivoire.",
-    "feat.f1.title": "Escrow payment", "feat.f1.text": "The buyer's funds are held until delivery is confirmed or the dispute window expires.",
+    "feat.f1.title": "Paid on confirmed delivery", "feat.f1.text": "The seller is paid once delivery is confirmed or the dispute window expires.",
     "feat.f2.title": "Verified sellers", "feat.f2.text": "Every cooperative and producer goes through identity verification before publishing a lot.",
     "feat.f3.title": "Multi-sector", "feat.f3.text": "Cocoa, cashew, coffee, cotton, rubber, palm oil, rice and food crops.",
     "how.eyebrow": "Simple & fast", "how.title": "How does it work?", "how.lead": "In 4 steps, buy or sell your agricultural products safely.",
     "how.s1.title": "Create your account", "how.s1.text": "Sign up for free. Sellers verify their identity (RCCM, ID card, or cooperative certificate).",
     "how.s2.title": "Browse or publish", "how.s2.text": "Explore available lots by sector, or publish your own once your account is verified.",
-    "how.s3.title": "Order with confidence", "how.s3.text": "Your funds are held in escrow as soon as the order is confirmed — not paid to the seller immediately.",
+    "how.s3.title": "Order with confidence", "how.s3.text": "Your payment is not passed on to the seller immediately — only after confirmed delivery.",
     "how.s4.title": "Confirm, and funds are released", "how.s4.text": "Inspect the goods on arrival. You confirm or open a claim — the seller is only paid in either of these two cases.",
     "prices.eyebrow": "Transparency", "prices.title": "Market prices, in real time",
     "prices.lead": "Calculated directly from lots currently published on AgriSecur — not a fixed feed, the real prices seen on the platform, sector by sector.",
@@ -1541,10 +1599,10 @@ const TRADUCTIONS = {
     "auth.roleSeller": "Seller", "auth.roleBuyer": "Buyer", "auth.login": "Log in", "auth.registerLink": "Create account",
     "auth.email": "Email address", "auth.password": "Password", "auth.forgot": "Forgot password?",
     "auth.name": "Name / company name", "auth.coop": "Cooperative", "auth.producer": "Individual producer", "auth.gie": "GIE", "auth.processor": "Processor",
-    "auth.location": "Location", "auth.rccm": "RCCM number (if available)", "auth.passwordMin": "Password (8 characters min.)", "auth.referral": "Referral code (optional)",
+    "auth.location": "Location", "auth.rccm": "RCCM number (if available)", "auth.passwordMin": "Password (10 characters min.)", "auth.referral": "Referral code (optional)",
     "auth.payoutHint": "💡 No account to receive your payments? See how to open one", "auth.createAccount": "Create my account", "auth.backHome": "← Back to home",
     "admin.tagline": "Seller account validation and dispute mediation.", "admin.key": "Administrator access key", "admin.access": "Access back-office", "admin.backToUser": "Back to seller / buyer area",
-    "app.tagline": "Secure agricultural marketplace", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Escrow tunnel", "app.tabHelp": "Help & contact", "app.tabAccount": "My account",
+    "app.tagline": "Secure agricultural marketplace", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Payment tracking", "app.tabHelp": "Help & contact", "app.tabAccount": "My account",
     "app.loggedAs": "Logged in as", "app.commission": "Platform commission", "app.logout": "Log out",
     "report.button": "Report a problem", "report.title": "Report a problem",
     "report.subtitle": "Bug, connection issue, or just a suggestion — we read everything, it helps us fix things fast.",
@@ -1563,35 +1621,47 @@ function t(cle) {
 
 // Textes anglais de la page d'accueil (version bordereau / sac de cacao).
 Object.assign(TRADUCTIONS.en, {
+  "nav.rdue": "EUDR audit",
+  "rdue.eyebrow": "Cocoa cooperatives · EU deadline 30.12.2026",
+  "rdue.title": "Express EUDR audit: <span>your plot file checked in 7 days</span>",
+  "rdue.lead": "From 30 December 2026, European buyers must prove that every cocoa plot of origin is deforestation-free. Send us your cooperative's plot file: we check it by satellite analysis and give you a clear report, before your buyer does.",
+  "rdue.cta1": "Request my audit",
+  "rdue.cta2": "Message us on WhatsApp",
+  "rdue.priceLab": "Up to 500 plots",
+  "rdue.i1": "Data check: missing coordinates, duplicates, areas, overlaps",
+  "rdue.i2": "Deforestation risk level per plot (WHISP satellite analysis)",
+  "rdue.i3": "Report and action plan ready to send to your exporter",
+  "rdue.i4": "Half on order, half on delivery of the report · confidential data",
+  "rdue.note": "The report helps prepare EU due diligence; it is not a certification.",
   "nav.catalogue": "The market",
   "nav.prices": "Today's prices",
   "nav.pro": "Pro Seller",
   "nav.mission": "Our mission",
   "hero.badge": "Secure agricultural market · Côte d'Ivoire",
   "hero.title": "Sell.<br>Buy.<br><span>Without risking your money.</span>",
-  "hero.lead": "The buyer's money stays locked until they approve the goods received. The producer is sure to be paid, the buyer gets what they ordered.",
+  "hero.lead": "The seller is only paid once the buyer confirms delivery. The producer gets paid on delivery, the buyer gets what they ordered.",
   "hero.film": "Watch the film · 51 s",
   "sack.origin": "PRODUCE OF CÔTE D'IVOIRE",
   "sack.name": "COCOA",
   "sack.grade": "BEANS · GRADE I",
-  "sack.stamp": "FUNDS HELD<small>UNTIL DELIVERY</small>",
+  "sack.stamp": "PAID ON<small>CONFIRMED DELIVERY</small>",
   "sack.kyc": "VERIFIED SELLER",
   "sack.note": "Sample marking — fictitious lot",
   "stats.l1": "SECTORS",
   "stats.l2": "COMMISSION",
-  "stats.l3": "FUNDS IN ESCROW",
+  "stats.l3": "SELLER PAID",
   "stats.l4": "INSPECTION WINDOW",
   "stats.filieres": "Cocoa, cashew, coffee, cotton…",
   "stats.commission": "Only on successful sales",
-  "stats.escrow": "Nothing paid out before approval",
+  "stats.escrow": "Paid to the seller after confirmed delivery",
   "stats.delay": "To check the lot received",
   "how.eyebrow": "How it works",
   "how.title": "The seller is paid on delivery. Not before.",
-  "diff.text": "Elsewhere, paying by mobile money or bank transfer hands the money to the seller right away: if the lot doesn't match, you have no recourse. On AgriSecur, funds stay in an escrow account until you approve, or until the 24-to-48-hour dispute window ends. In case of disagreement, our mediation decides before anything is paid out.",
-  "how.link": "Read the escrow terms",
+  "diff.text": "Elsewhere, paying by mobile money or bank transfer hands the money to the seller right away: if the lot doesn't match, you have no recourse. On AgriSecur, the seller is only paid after your approval, or once the 24-to-48-hour dispute window ends. In case of disagreement, our mediation decides before anything is paid out.",
+  "how.link": "Read the payment terms",
   "bord.title": "TRANSACTION SLIP",
   "bord.s1": "Order",
-  "bord.s1t": "Funds deposited, held in escrow",
+  "bord.s1t": "Payment recorded, awaiting delivery",
   "bord.s2": "Shipping",
   "bord.s2t": "The seller ships, the lot is tracked",
   "bord.s3": "Inspection on arrival",
@@ -1812,7 +1882,7 @@ async function adminApi(path, opts = {}) {
 }
 
 function msg(el, text, ok) {
-  el.innerHTML = `<div class="msg ${ok ? 'ok' : 'err'}">${text}</div>`;
+  el.innerHTML = `<div class="msg ${ok ? 'ok' : 'err'}">${esc(text)}</div>`;
   setTimeout(() => (el.innerHTML = ""), 4500);
 }
 
@@ -1848,7 +1918,7 @@ function setActiveNavLink(id) {
   });
 }
 
-const landingSectionIds = ["landing-filieres", "landing-comment", "landing-tarifs", "landing-pro", "landing-mission"];
+const landingSectionIds = ["landing-rdue", "landing-filieres", "landing-comment", "landing-tarifs", "landing-pro", "landing-mission"];
 const landingObserver = new IntersectionObserver(
   (entries) => {
     const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -1865,7 +1935,6 @@ async function loadMarketTicker() {
   const el = document.getElementById("market-ticker");
   if (!el) return;
   const en = (localStorage.getItem("agrisecur_lang") || "fr") === "en";
-  const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const heure = (iso) => { try { return new Date(iso).toLocaleTimeString(en ? "en-GB" : "fr-FR", { hour: "2-digit", minute: "2-digit" }); } catch (e) { return ""; } };
   const dateCourte = (iso) => { try { return new Date(iso).toLocaleDateString(en ? "en-GB" : "fr-FR", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { return iso; } };
   const nb = (v, d = 0) => Number(v).toLocaleString(en ? "en-US" : "fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -2110,7 +2179,6 @@ async function loadLandingCatalogue() {
         </div></div>`;
       return;
     }
-    const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
     const couleurs = { cacao:"#5A3A22", anacarde:"#C9A36A", cafe:"#3B2A1E", coton:"#E9E4D6", hevea:"#2F5D3A", palmier:"#B8860B", riz:"#E8D9A8", vivrier:"#1F3D2E" };
     const clairs = ["anacarde","coton","riz"];
     const tonnes = (kg) => kg >= 1000 ? `${fmt(Math.round(kg / 100) / 10)} t` : `${fmt(kg)} kg`;
@@ -2232,6 +2300,10 @@ function startSession(role, data) {
 }
 
 document.getElementById("btn-logout").addEventListener("click", () => {
+  // Invalide aussi le jeton côté serveur (sans attendre la réponse).
+  if (session && session.token) {
+    fetch(API + "/api/auth/logout", { method: "POST", headers: { Authorization: "Bearer " + session.token } }).catch(() => {});
+  }
   session = null;
   localStorage.removeItem("agrisecur_session");
   hideAllScreens();
@@ -2301,14 +2373,14 @@ function copierCodeParrainage() {
 
 function partagerParrainageWhatsapp() {
   const code = session.user.code_parrainage;
-  const texte = `Je vends/achète mes produits agricoles en toute sécurité sur AgriSecur — paiement bloqué jusqu'à validation de la livraison, zéro risque d'arnaque. Inscris-toi avec mon code ${code} : ${window.location.origin}`;
+  const texte = `Je vends/achète mes produits agricoles en toute sécurité sur AgriSecur — paiement versé au vendeur seulement à la réception confirmée. Inscris-toi avec mon code ${code} : ${window.location.origin}`;
   window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, "_blank");
 }
 
 async function partagerAchatWhatsapp(orderId) {
   try {
     const o = await api(`/api/orders/${orderId}`);
-    const texte = `J'ai sécurisé l'achat de ${fmt(o.quantite_kg)} kg de ${o.produit_nom} via AgriSecur — paiement bloqué jusqu'à validation de la livraison, zéro risque d'impayé ou de non-conformité. Découvrez la plateforme : ${window.location.origin}`;
+    const texte = `J'ai sécurisé l'achat de ${fmt(o.quantite_kg)} kg de ${o.produit_nom} via AgriSecur — paiement versé au vendeur seulement à la réception confirmée. Découvrez la plateforme : ${window.location.origin}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(texte)}`, "_blank");
   } catch (e) {
     alert("Impossible de préparer le partage pour le moment.");
@@ -2418,7 +2490,7 @@ async function loadProAnalytics() {
     el.innerHTML = `<table>
       <tr><th>Filière</th><th>Prix moyen marché</th><th>Votre prix moyen</th></tr>
       ${rows.map((r) => `<tr>
-        <td>${filiereLabel(r.filiere)}</td>
+        <td>${esc(filiereLabel(r.filiere))}</td>
         <td>${fmt(r.prix_moyen_marche)} FCFA/kg</td>
         <td>${r.mon_prix_moyen ? fmt(r.mon_prix_moyen) + " FCFA/kg" : "—"}</td>
       </tr>`).join("")}
@@ -2446,8 +2518,8 @@ async function loadVendeurDashboard() {
       breakdown.style.display = "block";
       breakdown.querySelector(".breakdown-body").innerHTML = d.par_filiere.map((f) => `
         <div class="list-row" style="grid-template-columns: 2fr 1fr 1fr;">
-          <span><span class="tag">${filiereLabel(f.filiere)}</span></span>
-          <span>${f.n} commande${f.n > 1 ? "s" : ""}</span>
+          <span><span class="tag">${esc(filiereLabel(f.filiere))}</span></span>
+          <span>${Number(f.n)} commande${f.n > 1 ? "s" : ""}</span>
           <span>${fmt(f.net)} FCFA nets</span>
         </div>
       `).join("");
@@ -2476,13 +2548,13 @@ async function loadMesLots() {
       const enAvant = l.mis_en_avant_jusqua && new Date(l.mis_en_avant_jusqua) > now;
       return `
       <div class="list-row" style="grid-template-columns: 2fr 1fr 1fr 1fr auto;">
-        <span>${l.nom} ${enAvant ? '<span class="tag" style="background:#FBF0D6;color:#9A6A15;margin-left:4px;">★</span>' : ""}</span>
-        <span>${filiereLabel(l.filiere)}</span>
+        <span>${esc(l.nom)} ${enAvant ? '<span class="tag" style="background:#FBF0D6;color:#9A6A15;margin-left:4px;">★</span>' : ""}</span>
+        <span>${esc(filiereLabel(l.filiere))}</span>
         <span>${fmt(l.quantite_kg)} kg</span>
-        <span class="status-pill ${LOT_STATUT_CLASS[l.statut] || ""}">${LOT_STATUT_LABEL[l.statut] || l.statut}</span>
+        <span class="status-pill ${LOT_STATUT_CLASS[l.statut] || ""}">${esc(LOT_STATUT_LABEL[l.statut] || l.statut)}</span>
         <span style="display:flex; gap:6px; flex-wrap:wrap;">
-          ${l.statut === "disponible" ? `<button class="outline" onclick="boosterLot(${l.id})">${enAvant ? "Prolonger" : "Booster"}</button>` : ""}
-          ${l.statut === "disponible" ? `<button class="danger-outline" onclick="retirerLot(${l.id})">Retirer</button>` : ""}
+          ${l.statut === "disponible" ? `<button class="outline" onclick="boosterLot(${Number(l.id)})">${enAvant ? "Prolonger" : "Booster"}</button>` : ""}
+          ${l.statut === "disponible" ? `<button class="danger-outline" onclick="retirerLot(${Number(l.id)})">Retirer</button>` : ""}
           ${l.parcelle_latitude && l.parcelle_longitude ? boutonWhisp(l) : ""}
         </span>
       </div>
@@ -2532,12 +2604,12 @@ function boutonWhisp(l) {
   }
   if (l.whisp_statut === "termine" && l.whisp_risque) {
     const labels = { faible: "Risque faible", eleve: "Risque élevé", indetermine: "À approfondir" };
-    return `<button class="outline${nouveau}" onclick="verifierDeforestationLot(${l.id})" title="Relancer une nouvelle analyse">🛰️ ${labels[l.whisp_risque] || l.whisp_risque} · relancer</button>`;
+    return `<button class="outline${nouveau}" onclick="verifierDeforestationLot(${Number(l.id)})" title="Relancer une nouvelle analyse">🛰️ ${esc(labels[l.whisp_risque] || l.whisp_risque)} · relancer</button>`;
   }
   if (l.whisp_statut === "erreur") {
-    return `<button class="outline" onclick="verifierDeforestationLot(${l.id})">🛰️ Analyse échouée · réessayer</button>`;
+    return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">🛰️ Analyse échouée · réessayer</button>`;
   }
-  return `<button class="outline" onclick="verifierDeforestationLot(${l.id})">🛰️ Vérifier le risque de déforestation</button>`;
+  return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">🛰️ Vérifier le risque de déforestation</button>`;
 }
 
 async function verifierDeforestationLot(id) {
@@ -2626,25 +2698,25 @@ async function loadCatalogue() {
     grid.innerHTML = visibles.map((p) => `
       <div class="card" style="padding:0; overflow:hidden; border:2px solid var(--ink); box-shadow:var(--shadow-hard); ${p.en_avant ? "border-color:var(--gold);" : ""}">
         ${p.photo_url
-          ? `<img src="${p.photo_url}" alt="${p.nom}" style="width:100%; height:140px; object-fit:cover; display:block;" />`
+          ? `<img src="${esc(p.photo_url)}" alt="${esc(p.nom)}" style="width:100%; height:140px; object-fit:cover; display:block;" />`
           : `<div style="width:100%; height:140px; background:var(--cream); display:flex; align-items:center; justify-content:center;"><svg style="width:34px;height:34px;color:var(--line);"><use href="#icon-leaf"/></svg></div>`}
         <div style="padding:16px;">
           <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:2px;">
-            <span class="tag">${filiereLabel(p.filiere)}</span>
+            <span class="tag">${esc(filiereLabel(p.filiere))}</span>
             ${p.en_avant ? '<span class="tag" style="background:#FBF0D6;color:#9A6A15;">★ En avant</span>' : ""}
             ${p.vendeur_pro ? '<span class="tag" style="background:var(--green);color:var(--paper);">Vendeur Pro</span>' : ""}
             ${p.vendeur_fondateur ? '<span class="tag" style="background:var(--gold);color:var(--green);">★ Fondateur</span>' : ""}
             ${p.vendeur_reactif ? '<span class="tag" style="background:#E3F0E8;color:var(--green-soft);">⚡ Expédie en &lt;24h</span>' : ""}
-            ${p.parcelle_latitude && p.parcelle_longitude ? `<span class="tag" style="background:#E3EEF5;color:#2B5C8A;cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${p.parcelle_latitude},${p.parcelle_longitude}','_blank')">🌍 Parcelle traçable</span>` : ""}
+            ${p.parcelle_latitude && p.parcelle_longitude ? `<span class="tag" style="background:#E3EEF5;color:#2B5C8A;cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${Number(p.parcelle_latitude)},${Number(p.parcelle_longitude)}','_blank')">🌍 Parcelle traçable</span>` : ""}
             ${badgeRisqueWhisp(p)}
           </div>
-          <div class="prod-name">${p.nom}</div>
-          <div class="sub" style="margin:0;">${p.localisation || "Localisation non précisée"} · ${p.vendeur_nom}</div>
+          <div class="prod-name">${esc(p.nom)}</div>
+          <div class="sub" style="margin:0;">${esc(p.localisation || "Localisation non précisée")} · ${esc(p.vendeur_nom)}</div>
           <div class="price">${fmt(p.prix_unitaire_fcfa)} <small>FCFA / kg sans transport · ${fmt(p.quantite_kg)} kg disponibles</small></div>
           ${p.prix_avec_transport_fcfa ? `<div class="price" style="margin-top:-4px;">${fmt(p.prix_avec_transport_fcfa)} <small>FCFA / kg avec transport inclus</small></div>` : ""}
           <div class="sub" style="margin:0 0 8px; font-size:12px;">🚚 ${livraisonLabel(p.mode_livraison)}</div>
           ${session.role === "buyer"
-            ? `<button class="primary" onclick="commander(${p.id}, ${p.quantite_kg}, ${p.prix_avec_transport_fcfa || "null"}, ${p.prix_unitaire_fcfa})">Commander</button>`
+            ? `<button class="primary" onclick="commander(${Number(p.id)}, ${Number(p.quantite_kg)}, ${Number(p.prix_avec_transport_fcfa) || "null"}, ${Number(p.prix_unitaire_fcfa)})">Commander</button>`
             : `<p class="sub" style="margin:8px 0 0;">Connectez-vous avec un compte acheteur pour commander.</p>`}
         </div>
       </div>
@@ -2658,8 +2730,8 @@ function renderCatalogueFilters(products) {
   const bar = document.getElementById("catalogue-filters");
   const present = ["tous", ...new Set(products.map((p) => p.filiere))];
   bar.innerHTML = present.map((f) => `
-    <button class="filter-chip ${catalogueFiltre === f ? "active" : ""}" onclick="setCatalogueFiltre('${f}')">
-      ${f === "tous" ? "Toutes les filières" : filiereLabel(f)}
+    <button class="filter-chip ${catalogueFiltre === f ? "active" : ""}" onclick="setCatalogueFiltre(${jsArg(f)})">
+      ${f === "tous" ? "Toutes les filières" : esc(filiereLabel(f))}
     </button>
   `).join("");
 }
@@ -2714,9 +2786,9 @@ async function commander(productId, maxQty, prixAvecTransport, prixSansTransport
       mode_paiement: modePaiement, virement_reference: virementReference,
     }) });
     if (modePaiement === "virement") {
-      msg(msgEl, `Commande enregistrée — en attente de confirmation de votre virement de ${fmt(order.montant_total_fcfa)} FCFA (réf. ${virementReference}). Suivez son statut dans l'onglet « Tunnel séquestre ».`, true);
+      msg(msgEl, `Commande enregistrée — en attente de confirmation de votre virement de ${fmt(order.montant_total_fcfa)} FCFA (réf. ${virementReference}). Suivez son statut dans l'onglet « Suivi des paiements ».`, true);
     } else {
-      msg(msgEl, `Commande confirmée (${avecTransport ? "avec" : "sans"} transport) — ${fmt(order.montant_total_fcfa)} FCFA sécurisés en compte séquestre${order.frais_paiement_fcfa > 0 ? ` + ${fmt(order.frais_paiement_fcfa)} FCFA de frais de traitement mobile money` : ""}. Suivez son avancement dans l'onglet « Tunnel séquestre ».`, true);
+      msg(msgEl, `Commande confirmée (${avecTransport ? "avec" : "sans"} transport) — ${fmt(order.montant_total_fcfa)} FCFA enregistrés, versés au vendeur après réception confirmée${order.frais_paiement_fcfa > 0 ? ` + ${fmt(order.frais_paiement_fcfa)} FCFA de frais de traitement mobile money` : ""}. Suivez son avancement dans l'onglet « Suivi des paiements ».`, true);
     }
     loadCatalogue();
   } catch (e) {
@@ -2901,14 +2973,14 @@ function renderOrder(o) {
         <strong>Commande n° ${o.id}</strong>
         <span class="status-pill st-${o.statut}">${statutLabel(o.statut)}</span>
       </div>
-      <div class="sub" style="margin:4px 0 0;"><span class="tag" style="margin-right:6px;">${filiereLabel(o.filiere)}</span>${o.produit_nom}</div>
+      <div class="sub" style="margin:4px 0 0;"><span class="tag" style="margin-right:6px;">${esc(filiereLabel(o.filiere))}</span>${esc(o.produit_nom)}</div>
       <div class="sub" style="margin:2px 0 0; font-size:12px;">🚚 Commande ${o.avec_transport ? "avec transport inclus" : "sans transport"}</div>
-      <div class="sub" style="margin:2px 0 0; font-size:12px;">${o.mode_paiement === "virement" ? `🏦 Virement bancaire${o.virement_reference ? " — réf. " + o.virement_reference : ""}` : "📱 Mobile money"}</div>
+      <div class="sub" style="margin:2px 0 0; font-size:12px;">${o.mode_paiement === "virement" ? `🏦 Virement bancaire${o.virement_reference ? " — réf. " + esc(o.virement_reference) : ""}` : "📱 Mobile money"}</div>
       ${renderOrderStepper(o)}
       ${(o.photo_expedition_url || o.photo_reclamation_url) ? `
       <div style="display:flex; gap:12px; margin:10px 0; flex-wrap:wrap;">
-        ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Photo à l'expédition</div><img src="${o.photo_expedition_url}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="window.open('${o.photo_expedition_url}','_blank')" /></div>` : ""}
-        ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Photo de la réclamation</div><img src="${o.photo_reclamation_url}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="window.open('${o.photo_reclamation_url}','_blank')" /></div>` : ""}
+        ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Photo à l'expédition</div><img src="${esc(o.photo_expedition_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+        ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Photo de la réclamation</div><img src="${esc(o.photo_reclamation_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
       </div>` : ""}
       <table>
         <tr><td>Montant marchandise</td><td>${fmt(o.montant_total_fcfa)} FCFA</td></tr>
@@ -2918,7 +2990,7 @@ function renderOrder(o) {
         <tr><td>Net vendeur</td><td>${fmt(o.montant_net_vendeur_fcfa)} FCFA</td></tr>
       </table>
       <div class="events">
-        ${o.events.map(ev => `<div class="event"><div class="t">${ev.created_at}</div>${ev.detail || ev.type}</div>`).join("")}
+        ${o.events.map(ev => `<div class="event"><div class="t">${esc(ev.created_at)}</div>${esc(ev.detail || ev.type)}</div>`).join("")}
       </div>
       <div style="margin-top:12px; display:flex; gap:8px;">${actions.join("") || '<span class="sub" style="margin:0;">Aucune action requise de votre part pour le moment.</span>'}</div>
     </div>
@@ -3033,7 +3105,9 @@ document.getElementById("form-change-password").addEventListener("submit", async
     return;
   }
   try {
-    await api("/api/auth/change-password", { method: "POST", body: JSON.stringify({ currentPassword: fd.currentPassword, newPassword: fd.newPassword }) });
+    const res = await api("/api/auth/change-password", { method: "POST", body: JSON.stringify({ currentPassword: fd.currentPassword, newPassword: fd.newPassword }) });
+    // Les anciennes sessions sont révoquées : on garde le nouveau jeton.
+    if (res.token) { session.token = res.token; localStorage.setItem("agrisecur_session", JSON.stringify(session)); }
     msg(msgEl, "Mot de passe mis à jour.", true);
     e.target.reset();
   } catch (err) {
@@ -3198,21 +3272,21 @@ async function loadAdminKyc() {
     list.innerHTML = sellers.map((s) => `
       <div class="card">
         <div class="row">
-          <span><strong>${s.nom}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${s.email || ""} · ${s.type} · RCCM : ${s.rccm || "non renseigné"}</span></span>
+          <span><strong>${esc(s.nom)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(s.email || "")} · ${esc(s.type)} · RCCM : ${esc(s.rccm || "non renseigné")}</span></span>
           <span class="status-pill st-${s.kyc_statut}">${s.kyc_statut === "valide" ? "Vérifié" : s.kyc_statut === "rejete" ? "Rejeté" : "En attente"}</span>
         </div>
         ${s.kyc_document_identite_url || s.kyc_document_rccm_url ? `
         <div style="display:flex; gap:14px; margin:12px 0; flex-wrap:wrap;">
-          ${s.kyc_document_identite_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">🪪 Pièce d'identité / attestation</div><img src="${s.kyc_document_identite_url}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="window.open('${s.kyc_document_identite_url}','_blank')" /></div>` : ""}
-          ${s.kyc_document_rccm_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📄 Justificatif RCCM</div><img src="${s.kyc_document_rccm_url}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="window.open('${s.kyc_document_rccm_url}','_blank')" /></div>` : ""}
+          ${s.kyc_document_identite_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">🪪 Pièce d'identité / attestation</div><img src="${esc(s.kyc_document_identite_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+          ${s.kyc_document_rccm_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📄 Justificatif RCCM</div><img src="${esc(s.kyc_document_rccm_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
         </div>
         <p class="sub" style="margin:0 0 12px; font-size:12px;">Dossier soumis le ${new Date(s.kyc_soumis_le).toLocaleDateString("fr-FR")}</p>
         ` : `<p class="sub" style="margin:10px 0 12px; font-size:12px;">⚠️ Aucun document soumis pour l'instant.</p>`}
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
-          ${s.kyc_statut !== "valide" ? `<button class="dark" onclick="setKyc(${s.id},'valide')">Valider</button>` : ""}
-          ${s.kyc_statut !== "rejete" ? `<button class="danger-outline" onclick="setKyc(${s.id},'rejete')">Rejeter</button>` : ""}
-          <button class="outline" onclick="resetSellerPassword(${s.id})">Réinitialiser MDP</button>
-          <button class="danger-outline" onclick="supprimerVendeur(${s.id}, '${s.nom.replace(/'/g, "\\'")}')">🗑️ Supprimer</button>
+          ${s.kyc_statut !== "valide" ? `<button class="dark" onclick="setKyc(${Number(s.id)},'valide')">Valider</button>` : ""}
+          ${s.kyc_statut !== "rejete" ? `<button class="danger-outline" onclick="setKyc(${Number(s.id)},'rejete')">Rejeter</button>` : ""}
+          <button class="outline" onclick="resetSellerPassword(${Number(s.id)})">Réinitialiser MDP</button>
+          <button class="danger-outline" onclick="supprimerVendeur(${Number(s.id)}, ${jsArg(s.nom)})">🗑️ Supprimer</button>
         </div>
       </div>
     `).join("");
@@ -3289,19 +3363,19 @@ async function loadAdminLitiges() {
           <strong>Commande n° ${o.id}</strong>
           <span class="status-pill st-litige">Litige en cours</span>
         </div>
-        <div class="sub" style="margin:4px 0 0;"><span class="tag" style="margin-right:6px;">${filiereLabel(o.filiere)}</span>${o.produit_nom}</div>
+        <div class="sub" style="margin:4px 0 0;"><span class="tag" style="margin-right:6px;">${esc(filiereLabel(o.filiere))}</span>${esc(o.produit_nom)}</div>
         <div class="sub" style="margin:2px 0 0; font-size:12px;">🚚 Commande ${o.avec_transport ? "avec transport inclus" : "sans transport"}</div>
         ${(o.photo_expedition_url || o.photo_reclamation_url) ? `
         <div style="display:flex; gap:14px; margin:12px 0; flex-wrap:wrap;">
-          ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Preuve du vendeur (à l'expédition)</div><img src="${o.photo_expedition_url}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="window.open('${o.photo_expedition_url}','_blank')" /></div>` : `<div class="sub" style="font-size:12px;">📦 Le vendeur n'a fourni aucune photo à l'expédition.</div>`}
-          ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Preuve de l'acheteur (réclamation)</div><img src="${o.photo_reclamation_url}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="window.open('${o.photo_reclamation_url}','_blank')" /></div>` : ""}
+          ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Preuve du vendeur (à l'expédition)</div><img src="${esc(o.photo_expedition_url)}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : `<div class="sub" style="font-size:12px;">📦 Le vendeur n'a fourni aucune photo à l'expédition.</div>`}
+          ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Preuve de l'acheteur (réclamation)</div><img src="${esc(o.photo_reclamation_url)}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
         </div>` : ""}
         <table>
           <tr><td>Montant total</td><td>${fmt(o.montant_total_fcfa)} FCFA</td></tr>
           <tr><td>Net vendeur si clôturée</td><td>${fmt(o.montant_net_vendeur_fcfa)} FCFA</td></tr>
         </table>
         <div class="events">
-          ${o.events.map(ev => `<div class="event"><div class="t">${ev.created_at}</div>${ev.detail || ev.type}</div>`).join("")}
+          ${o.events.map(ev => `<div class="event"><div class="t">${esc(ev.created_at)}</div>${esc(ev.detail || ev.type)}</div>`).join("")}
         </div>
         <div style="margin-top:12px; display:flex; gap:8px;">
           <button class="dark" onclick="trancher(${o.id},'cloture')">Trancher en faveur du vendeur</button>
@@ -3344,9 +3418,9 @@ async function loadAdminSva() {
       ? `<div class="empty-state">Aucun achat SVA pour l'instant.</div>`
       : d.recents.map((r) => `
         <div class="list-row" style="grid-template-columns: 2fr 1fr 1fr 1fr;">
-          <span>${r.vendeur_nom}</span>
-          <span>${SVA_TYPE_LABEL[r.type] || r.type}</span>
-          <span style="font-size:12px;color:var(--ink-soft);">${r.description}</span>
+          <span>${esc(r.vendeur_nom)}</span>
+          <span>${esc(SVA_TYPE_LABEL[r.type] || r.type)}</span>
+          <span style="font-size:12px;color:var(--ink-soft);">${esc(r.description)}</span>
           <span>${fmt(r.montant_fcfa)} FCFA</span>
         </div>
       `).join("");
@@ -3366,11 +3440,11 @@ async function loadAdminAcheteurs() {
     }
     list.innerHTML = buyers.map((b) => `
       <div class="list-row" style="grid-template-columns: 2fr 1fr 1fr auto auto;">
-        <span><strong>${b.nom}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${b.email || ""}</span></span>
-        <span>${b.type}</span>
+        <span><strong>${esc(b.nom)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(b.email || "")}</span></span>
+        <span>${esc(b.type)}</span>
         <span>${new Date(b.created_at).toLocaleDateString("fr-FR")}</span>
-        <span><button class="outline" onclick="resetBuyerPassword(${b.id})">Réinitialiser MDP</button></span>
-        <span><button class="danger-outline" onclick="supprimerAcheteur(${b.id}, '${b.nom.replace(/'/g, "\\'")}')">🗑️ Supprimer</button></span>
+        <span><button class="outline" onclick="resetBuyerPassword(${Number(b.id)})">Réinitialiser MDP</button></span>
+        <span><button class="danger-outline" onclick="supprimerAcheteur(${Number(b.id)}, ${jsArg(b.nom)})">🗑️ Supprimer</button></span>
       </div>
     `).join("");
   } catch (e) {
@@ -3429,11 +3503,11 @@ async function loadAdminVirements() {
           <span class="status-pill st-attente_virement">En attente de virement</span>
         </div>
         <table>
-          <tr><td>Produit</td><td>${o.produit_nom}</td></tr>
-          <tr><td>Acheteur</td><td>${o.acheteur_nom}</td></tr>
-          <tr><td>Vendeur</td><td>${o.vendeur_nom}</td></tr>
+          <tr><td>Produit</td><td>${esc(o.produit_nom)}</td></tr>
+          <tr><td>Acheteur</td><td>${esc(o.acheteur_nom)}</td></tr>
+          <tr><td>Vendeur</td><td>${esc(o.vendeur_nom)}</td></tr>
           <tr><td>Montant attendu</td><td><strong>${fmt(o.montant_total_fcfa)} FCFA</strong></td></tr>
-          <tr><td>Référence de virement</td><td><strong>${o.virement_reference || "—"}</strong></td></tr>
+          <tr><td>Référence de virement</td><td><strong>${esc(o.virement_reference || "—")}</strong></td></tr>
           <tr><td>Commande passée le</td><td>${new Date(o.created_at).toLocaleString("fr-FR")}</td></tr>
         </table>
         <div style="margin-top:12px;">
@@ -3447,11 +3521,11 @@ async function loadAdminVirements() {
 }
 
 async function confirmerVirement(id) {
-  if (!confirm("Confirmez-vous avoir vérifié sur le relevé bancaire que ce virement a bien été reçu ? Cette action lève le séquestre et démarre le tunnel de livraison normal.")) return;
+  if (!confirm("Confirmez-vous avoir vérifié sur le relevé bancaire que ce virement a bien été reçu ? Cette action enregistre le paiement et démarre le suivi de livraison normal.")) return;
   const msgEl = document.getElementById("admin-virements-msg");
   try {
     await adminApi(`/api/admin/orders/${id}/confirmer-virement`, { method: "POST" });
-    msg(msgEl, "Virement confirmé — la commande est désormais en séquestre.", true);
+    msg(msgEl, "Virement confirmé — le paiement de la commande est enregistré.", true);
     loadAdminVirements();
   } catch (e) {
     msg(msgEl, "Action impossible. " + e.message, false);
@@ -3548,14 +3622,14 @@ async function loadAdminSignalements() {
       <div class="card" style="margin:12px 16px;">
         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:8px;">
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-            <span class="tag">${TYPE_SIGNALEMENT_LABEL[r.type] || r.type}</span>
+            <span class="tag">${esc(TYPE_SIGNALEMENT_LABEL[r.type] || r.type)}</span>
             <span class="status-pill st-${r.statut === "resolu" ? "cloture" : r.statut === "en_cours" ? "en_controle" : "expedie"}">${STATUT_SIGNALEMENT_LABEL[r.statut]}</span>
             <span class="sub" style="font-size:11.5px;">${new Date(r.created_at).toLocaleString("fr-FR")}</span>
           </div>
         </div>
-        <p style="margin:0 0 8px; font-size:13.5px;">${r.description.replace(/</g, "&lt;")}</p>
-        ${r.contexte ? `<p class="sub" style="font-size:11.5px; margin:0 0 8px;">📍 ${r.contexte.replace(/</g, "&lt;")}</p>` : ""}
-        ${r.contact ? `<p class="sub" style="font-size:12px; margin:0 0 10px;">✉️ Contact laissé : ${r.contact.replace(/</g, "&lt;")}</p>` : ""}
+        <p style="margin:0 0 8px; font-size:13.5px;">${esc(r.description)}</p>
+        ${r.contexte ? `<p class="sub" style="font-size:11.5px; margin:0 0 8px;">📍 ${esc(r.contexte)}</p>` : ""}
+        ${r.contact ? `<p class="sub" style="font-size:12px; margin:0 0 10px;">✉️ Contact laissé : ${esc(r.contact)}</p>` : ""}
         <div style="display:flex; gap:8px;">
           ${r.statut !== "en_cours" ? `<button class="outline" onclick="changerStatutSignalement(${r.id},'en_cours')">Marquer en cours</button>` : ""}
           ${r.statut !== "resolu" ? `<button class="dark" onclick="changerStatutSignalement(${r.id},'resolu')">Marquer résolu</button>` : ""}
@@ -3590,8 +3664,8 @@ async function loadAdminDepenses() {
     list.innerHTML = d.depenses.map((dep) => `
       <div class="list-row" style="grid-template-columns: 1fr 1.2fr 1.6fr 1fr auto;">
         <span>${new Date(dep.date_depense).toLocaleDateString("fr-FR")}</span>
-        <span>${CATEGORIE_ICONE[dep.categorie] || ""} ${dep.categorie}</span>
-        <span style="font-size:12.5px;color:var(--ink-soft);">${dep.description || "—"}</span>
+        <span>${CATEGORIE_ICONE[dep.categorie] || ""} ${esc(dep.categorie)}</span>
+        <span style="font-size:12.5px;color:var(--ink-soft);">${esc(dep.description || "—")}</span>
         <span>${fmt(dep.montant_fcfa)} FCFA</span>
         <span><button class="danger-outline" onclick="supprimerDepense(${dep.id})">Supprimer</button></span>
       </div>
@@ -3654,7 +3728,7 @@ async function telechargerBonCommande(id) {
 const FILIERES_PRIX_ADMIN = ["cacao","cafe","anacarde","coton","hevea","palmier","riz","vivrier"];
 function lignePrixOfficiel(o = {}) {
   const opts = FILIERES_PRIX_ADMIN.map((f) => `<option value="${f}" ${o.filiere === f ? "selected" : ""}>${filiereLabel(f)}</option>`).join("");
-  const v = (x) => String(x == null ? "" : x).replace(/"/g, "&quot;");
+  const v = esc;
   return `<div class="prix-off-ligne" style="display:grid; grid-template-columns:120px 110px 1.2fr 1.2fr 140px 1.2fr 36px; gap:8px; align-items:center; margin-bottom:8px;">
     <select data-k="filiere">${opts}</select>
     <input data-k="prix_fcfa_kg" type="number" min="1" placeholder="FCFA/kg" value="${v(o.prix_fcfa_kg)}">
