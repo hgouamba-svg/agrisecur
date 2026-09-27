@@ -1632,7 +1632,9 @@ document.getElementById("btn-whisp-test").addEventListener("click", async () => 
   zone.innerHTML = `<span class="sub">Test en cours (jusqu'à une minute)…</span>`;
   try {
     const r = await adminApi("/api/admin/whisp/test", { method: "POST", body: JSON.stringify({ pays: "ci" }) });
-    zone.innerHTML = r.ok
+    zone.innerHTML = r.ok && r.attente
+      ? `<div class="msg ok">${esc(r.message)}</div>`
+      : r.ok
       ? `<div class="msg ok">WHISP répond en ${esc(r.secondes)} s. Risque de la parcelle test : ${esc(LIBELLE_RISQUE[r.risque] || r.risque)} (${esc(r.nb_indicateurs)} indicateurs reçus).</div>`
       : `<div class="msg err">${esc(r.message)}</div>`;
   } catch (err) {

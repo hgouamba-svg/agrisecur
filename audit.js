@@ -209,11 +209,23 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
         method: "POST", headers: entetes(),
         body: JSON.stringify({ type: "FeatureCollection", features: [{ type: "Feature", geometry: { type: "Point", coordinates: point }, properties: {} }], analysisOptions: { nationalCodes: [pays], async: false } }),
       });
-      const env = await lireEnveloppe(r);
+      let env = await lireEnveloppe(r);
+      const enCours = (e) => ["analysis_queued", "analysis_processing"].includes(e.code);
+      // WHISP peut mettre la demande en file d'attente même en mode direct :
+      // on suit alors son avancement pendant 50 secondes au plus.
+      const token = env.data && env.data.token;
+      while (enCours(env) && token && Date.now() - debut < 50000) {
+        await new Promise((ok) => setTimeout(ok, 3000));
+        const s = await fetch(`${whispBase}/status/${encodeURIComponent(token)}`, { headers: entetes() });
+        env = await lireEnveloppe(s);
+      }
       const secondes = Math.round((Date.now() - debut) / 100) / 10;
       if (env.code === "analysis_completed") {
         const props = env.data && env.data.features && env.data.features[0] ? env.data.features[0].properties : {};
         return send(res, 200, { ok: true, secondes, risque: niveauRisque(props, "cacao"), nb_indicateurs: Object.keys(props || {}).length });
+      }
+      if (enCours(env)) {
+        return send(res, 200, { ok: true, secondes, attente: true, message: `Clé WHISP acceptée : l'analyse test est en file d'attente chez WHISP (serveurs occupés, ${secondes} s d'attente). Les audits réels attendent automatiquement leur tour.` });
       }
       return send(res, 200, { ok: false, secondes, message: `WHISP a répondu : ${r.status} ${env.code || ""} ${env.message || ""}`.trim() });
     } catch (err) {
