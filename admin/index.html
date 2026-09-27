@@ -643,6 +643,7 @@
       <span class="admin-pill">Back-office</span>
     </div>
     <button data-admin-tab="kyc" class="tab active">Vérifications KYC</button>
+    <button data-admin-tab="audits" class="tab">Audits RDUE</button>
     <button data-admin-tab="litiges" class="tab">Litiges en cours</button>
     <button data-admin-tab="sva" class="tab">Revenus SVA</button>
     <button data-admin-tab="acheteurs" class="tab">Comptes acheteurs</button>
@@ -664,6 +665,42 @@
       <p class="sub">Validez ou rejetez les demandes d'inscription des vendeurs avant qu'ils puissent publier des lots.</p>
       <div id="admin-kyc-msg"></div>
       <div id="admin-kyc-list"></div>
+    </section>
+
+    <section id="admin-panel-audits" class="panel">
+      <div class="eyebrow">Audit RDUE express</div>
+      <h1>Audits de fichiers de parcelles</h1>
+      <p class="sub">Déposez le fichier de parcelles d'une coopérative : contrôle de qualité immédiat, puis analyse satellite du risque de déforestation par WHISP (FAO), parcelle par parcelle. WHISP donne une indication sur données publiques, sans garantie : ce n'est pas une certification.</p>
+      <div id="audits-msg"></div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <div class="row" style="align-items:center; gap:12px; flex-wrap:wrap;">
+          <span><strong>Connexion WHISP</strong><br/><span class="sub" style="margin:0;font-size:12px;">Envoie une parcelle test (zone de Soubré) et mesure le temps de réponse.</span></span>
+          <button class="outline" id="btn-whisp-test" type="button">Tester la connexion</button>
+        </div>
+        <div id="whisp-test-resultat" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:16px;">
+        <strong>Nouvel audit</strong>
+        <form id="form-audit" style="display:grid; gap:10px; margin-top:12px;">
+          <input id="audit-client" name="client" required maxlength="120" placeholder="Nom de la coopérative ou de l'entreprise cliente" />
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px;">
+            <select id="audit-pays" name="pays"><option value="ci">Côte d'Ivoire</option><option value="gh">Ghana</option></select>
+            <select id="audit-filiere" name="filiere"><option value="cacao">Cacao</option><option value="hevea">Hévéa</option><option value="palmier">Palmier à huile</option><option value="cafe">Café</option><option value="anacarde">Anacarde</option><option value="autre">Autre</option></select>
+          </div>
+          <input id="audit-fichier" type="file" accept=".geojson,.json,.kml,.csv,.txt" required />
+          <p class="sub" style="margin:0; font-size:12px;">Formats acceptés : GeoJSON, KML (exporté de Google Earth ou d'une appli GPS), CSV avec colonnes latitude et longitude (points). Pour un Shapefile ou un KMZ, convertissez-le d'abord en GeoJSON ou KML (par exemple avec QGIS ou mapshaper.org). 5 000 parcelles au maximum par audit.</p>
+          <div id="audit-apercu" class="sub" style="margin:0;"></div>
+          <button class="dark" type="submit" id="btn-audit-lancer">Contrôler et lancer l'analyse</button>
+        </form>
+      </div>
+
+      <div id="audits-detail"></div>
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="padding:16px 20px 0;"><strong>Audits réalisés</strong></div>
+        <div id="audits-list"></div>
+      </div>
     </section>
 
     <section id="admin-panel-litiges" class="panel">
@@ -911,6 +948,7 @@ document.querySelectorAll("#admin-layout nav button.tab").forEach((btn) => {
     btn.classList.add("active");
     document.getElementById("admin-panel-" + btn.dataset.adminTab).classList.add("active");
     if (btn.dataset.adminTab === "kyc") loadAdminKyc();
+    if (btn.dataset.adminTab === "audits") loadAdminAudits();
     if (btn.dataset.adminTab === "litiges") loadAdminLitiges();
     if (btn.dataset.adminTab === "sva") loadAdminSva();
     if (btn.dataset.adminTab === "acheteurs") loadAdminAcheteurs();
@@ -1438,6 +1476,263 @@ async function exporterCsv(type) {
     URL.revokeObjectURL(url);
   } catch (e) {
     alert("Impossible d'exporter le fichier pour le moment.");
+  }
+}
+
+// ---------- Audits RDUE express ----------
+const STATUT_WHISP = {
+  a_envoyer: "En préparation", en_cours: "Analyse satellite en cours", termine: "Analyse terminée",
+  erreur: "Erreur d'analyse", desactive: "WHISP non configuré", aucune_parcelle: "Aucune parcelle analysable",
+};
+const LIBELLE_RISQUE = { faible: "Faible", eleve: "Élevé", info_manquante: "Infos manquantes", indetermine: "Indéterminé", non_analysee: "Non analysée" };
+let auditsRafraichissement = null;
+let auditOuvert = null;
+let parcellesLues = null;
+
+function nombresCoord(texte) {
+  return texte.trim().split(/\s+/).filter(Boolean).map((t) => t.split(",").slice(0, 2).map(Number));
+}
+
+function lireKml(texte) {
+  const doc = new DOMParser().parseFromString(texte, "application/xml");
+  if (doc.getElementsByTagName("parsererror").length) throw new Error("fichier KML illisible");
+  const features = [];
+  for (const pm of doc.getElementsByTagName("Placemark")) {
+    const props = {};
+    const nom = pm.getElementsByTagName("name")[0];
+    if (nom) props.id = nom.textContent.trim();
+    for (const d of pm.getElementsByTagName("Data")) {
+      const v = d.getElementsByTagName("value")[0];
+      if (d.getAttribute("name") && v) props[d.getAttribute("name")] = v.textContent.trim();
+    }
+    for (const d of pm.getElementsByTagName("SimpleData")) if (d.getAttribute("name")) props[d.getAttribute("name")] = d.textContent.trim();
+    const polys = [...pm.getElementsByTagName("Polygon")].map((pg) => {
+      const ext = pg.getElementsByTagName("outerBoundaryIs")[0];
+      const rings = [];
+      if (ext) rings.push(nombresCoord(ext.getElementsByTagName("coordinates")[0].textContent));
+      for (const inn of pg.getElementsByTagName("innerBoundaryIs")) rings.push(nombresCoord(inn.getElementsByTagName("coordinates")[0].textContent));
+      return rings;
+    });
+    let geometry = null;
+    if (polys.length === 1) geometry = { type: "Polygon", coordinates: polys[0] };
+    else if (polys.length > 1) geometry = { type: "MultiPolygon", coordinates: polys };
+    else {
+      const pt = pm.getElementsByTagName("Point")[0];
+      if (pt) geometry = { type: "Point", coordinates: nombresCoord(pt.getElementsByTagName("coordinates")[0].textContent)[0] };
+    }
+    features.push({ type: "Feature", geometry, properties: props });
+  }
+  return features;
+}
+
+function lireWkt(w) {
+  const t = String(w || "").trim().toUpperCase();
+  const paires = (s) => s.split(",").map((c) => c.trim().split(/\s+/).slice(0, 2).map(Number));
+  let m = t.match(/^POINT\s*\(\s*([^)]+)\)/);
+  if (m) return { type: "Point", coordinates: paires(m[1])[0] };
+  m = t.match(/^POLYGON\s*\(\s*\((.+)\)\s*\)$/);
+  if (m) return { type: "Polygon", coordinates: m[1].split(/\)\s*,\s*\(/).map(paires) };
+  return null;
+}
+
+function lireCsv(texte) {
+  const lignes = texte.replace(/^﻿/, "").split(/\r?\n/).filter((l) => l.trim());
+  if (lignes.length < 2) throw new Error("fichier CSV vide");
+  const sep = [";", "\t", ","].map((c) => [c, lignes[0].split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const decouper = (l) => {
+    const out = []; let cur = "", q = false;
+    for (let i = 0; i < l.length; i++) {
+      const ch = l[i];
+      if (ch === '"') { if (q && l[i + 1] === '"') { cur += '"'; i++; } else q = !q; }
+      else if (ch === sep && !q) { out.push(cur); cur = ""; }
+      else cur += ch;
+    }
+    out.push(cur); return out.map((v) => v.trim());
+  };
+  const tete = decouper(lignes[0]).map((h) => h.toLowerCase());
+  const trouver = (noms) => tete.findIndex((h) => noms.includes(h));
+  const iLat = trouver(["lat", "latitude", "y", "gps_lat", "gps_latitude"]);
+  const iLon = trouver(["lon", "lng", "long", "longitude", "x", "gps_lon", "gps_long", "gps_longitude"]);
+  const iWkt = trouver(["wkt", "geometry", "geometrie", "geom", "polygone", "polygon"]);
+  if (iWkt === -1 && (iLat === -1 || iLon === -1)) throw new Error("colonnes latitude et longitude (ou WKT) introuvables dans le CSV");
+  const num = (v) => Number(String(v).replace(",", "."));
+  return lignes.slice(1).map((l) => {
+    const v = decouper(l);
+    const props = {};
+    tete.forEach((h, i) => { if (i !== iLat && i !== iLon && i !== iWkt) props[h] = v[i]; });
+    let geometry = null;
+    if (iWkt !== -1 && v[iWkt]) geometry = lireWkt(v[iWkt]);
+    else if (v[iLat] !== "" && v[iLon] !== "" && v[iLat] !== undefined && v[iLon] !== undefined) geometry = { type: "Point", coordinates: [num(v[iLon]), num(v[iLat])] };
+    return { type: "Feature", geometry, properties: props };
+  });
+}
+
+async function lireFichierParcelles(fichier) {
+  const texte = await fichier.text();
+  const nom = fichier.name.toLowerCase();
+  if (nom.endsWith(".kml")) return lireKml(texte);
+  if (nom.endsWith(".csv") || nom.endsWith(".txt")) return lireCsv(texte);
+  let data;
+  try { data = JSON.parse(texte); } catch { throw new Error("fichier GeoJSON illisible"); }
+  if (Array.isArray(data)) return data;
+  if (data.type === "FeatureCollection") return data.features || [];
+  if (data.type === "Feature") return [data];
+  if (data.type && data.coordinates) return [{ type: "Feature", geometry: data, properties: {} }];
+  throw new Error("format GeoJSON non reconnu");
+}
+
+document.getElementById("audit-fichier").addEventListener("change", async (e) => {
+  const apercu = document.getElementById("audit-apercu");
+  parcellesLues = null;
+  apercu.textContent = "";
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    parcellesLues = await lireFichierParcelles(f);
+    const types = {};
+    parcellesLues.forEach((p) => { const t = p && p.geometry ? p.geometry.type : "sans coordonnées"; types[t] = (types[t] || 0) + 1; });
+    apercu.textContent = `${parcellesLues.length} parcelle(s) lue(s) : ` + Object.entries(types).map(([t, n]) => `${n} ${t}`).join(", ");
+  } catch (err) {
+    apercu.textContent = "Lecture impossible : " + err.message;
+  }
+});
+
+document.getElementById("form-audit").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msgEl = document.getElementById("audits-msg");
+  const fichier = document.getElementById("audit-fichier").files[0];
+  if (!parcellesLues || !parcellesLues.length) { msg(msgEl, "Choisissez un fichier contenant au moins une parcelle.", false); return; }
+  const corps = JSON.stringify({
+    client: document.getElementById("audit-client").value.trim(),
+    pays: document.getElementById("audit-pays").value,
+    filiere: document.getElementById("audit-filiere").value,
+    fichier: fichier ? fichier.name : "",
+    features: parcellesLues,
+  });
+  if (corps.length > 3.9 * 1024 * 1024) { msg(msgEl, "Fichier trop lourd pour un seul envoi (4 Mo) : découpez-le en deux audits.", false); return; }
+  const btn = document.getElementById("btn-audit-lancer");
+  btn.disabled = true;
+  try {
+    const audit = await adminApi("/api/admin/audits", { method: "POST", body: corps });
+    msg(msgEl, `Audit n°${audit.id} créé : ${audit.resume.analysables} parcelle(s) envoyée(s) à l'analyse satellite.`, true);
+    e.target.reset();
+    parcellesLues = null;
+    document.getElementById("audit-apercu").textContent = "";
+    await loadAdminAudits();
+    afficherAudit(audit.id);
+  } catch (err) {
+    msg(msgEl, "Audit impossible : " + err.message, false);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById("btn-whisp-test").addEventListener("click", async () => {
+  const zone = document.getElementById("whisp-test-resultat");
+  zone.innerHTML = `<span class="sub">Test en cours (jusqu'à une minute)…</span>`;
+  try {
+    const r = await adminApi("/api/admin/whisp/test", { method: "POST", body: JSON.stringify({ pays: "ci" }) });
+    zone.innerHTML = r.ok
+      ? `<div class="msg ok">WHISP répond en ${esc(r.secondes)} s. Risque de la parcelle test : ${esc(LIBELLE_RISQUE[r.risque] || r.risque)} (${esc(r.nb_indicateurs)} indicateurs reçus).</div>`
+      : `<div class="msg err">${esc(r.message)}</div>`;
+  } catch (err) {
+    zone.innerHTML = `<div class="msg err">${esc(err.message)}</div>`;
+  }
+});
+
+async function loadAdminAudits() {
+  const list = document.getElementById("audits-list");
+  try {
+    const audits = await adminApi("/api/admin/audits");
+    if (!audits.length) {
+      list.innerHTML = `<div class="empty-state">Aucun audit pour le moment.</div>`;
+    } else {
+      list.innerHTML = audits.map((a) => `
+        <div class="list-row" style="grid-template-columns: 2fr 1fr 1.4fr auto; align-items:center;">
+          <span><strong>n°${Number(a.id)} · ${esc(a.client)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(a.pays === "gh" ? "Ghana" : "Côte d'Ivoire")} · ${esc(a.filiere)} · ${new Date(a.cree_le).toLocaleString("fr-FR")}</span></span>
+          <span>${Number(a.nb_parcelles)} parcelles<br/><span class="sub" style="margin:0;font-size:12px;">${Number(a.resume.sans_anomalie)} sans anomalie</span></span>
+          <span>${esc(STATUT_WHISP[a.whisp.statut] || a.whisp.statut)}${a.whisp.statut === "termine" ? `<br/><span class="sub" style="margin:0;font-size:12px;">risque élevé : ${Number(a.risques.eleve)} · faible : ${Number(a.risques.faible)}</span>` : ""}</span>
+          <span><button class="outline" onclick="afficherAudit(${Number(a.id)})">Voir</button></span>
+        </div>`).join("");
+    }
+    const actif = audits.some((a) => ["a_envoyer", "en_cours"].includes(a.whisp.statut));
+    clearTimeout(auditsRafraichissement);
+    if (actif && document.getElementById("admin-panel-audits").classList.contains("active")) {
+      auditsRafraichissement = setTimeout(async () => { await loadAdminAudits(); if (auditOuvert) afficherAudit(auditOuvert, true); }, 15000);
+    }
+  } catch (err) {
+    msg(document.getElementById("audits-msg"), "Impossible de charger les audits. " + err.message, false);
+  }
+}
+
+async function afficherAudit(id, silencieux) {
+  const zone = document.getElementById("audits-detail");
+  auditOuvert = id;
+  try {
+    const a = await adminApi(`/api/admin/audits/${Number(id)}`);
+    const r = a.resume;
+    const ordre = (p) => (p.anomalies.some((x) => x.gravite === "bloquante") ? 0 : p.risque === "eleve" ? 1 : p.anomalies.some((x) => x.gravite === "a_corriger") ? 2 : p.anomalies.length ? 3 : 4);
+    const lignes = a.parcelles.slice().sort((x, y) => ordre(x) - ordre(y)).slice(0, 300);
+    const tuile = (val, lib) => `<div class="card" style="margin:0;"><div style="font-size:22px;font-weight:700;">${Number(val)}</div><div class="sub" style="margin:0;font-size:12px;">${esc(lib)}</div></div>`;
+    zone.innerHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <div class="row" style="flex-wrap:wrap; gap:8px;">
+          <span><strong>Audit n°${Number(a.id)} · ${esc(a.client)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(a.fichier || "")} · ${esc(STATUT_WHISP[a.whisp.statut] || a.whisp.statut)}${a.whisp.duree_secondes !== null ? ` en ${Math.round(a.whisp.duree_secondes / 6) / 10} min` : ""}${a.whisp.erreur ? ` · ${esc(a.whisp.erreur)}` : ""}</span></span>
+          <span style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button class="dark" onclick="exporterAudit(${Number(a.id)})">Exporter (Excel)</button>
+            ${["erreur", "desactive"].includes(a.whisp.statut) ? `<button class="outline" onclick="relancerAudit(${Number(a.id)})">Relancer l'analyse</button>` : ""}
+          </span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin:12px 0;">
+          ${tuile(r.total, "parcelles")}${tuile(r.sans_anomalie, "sans anomalie")}${tuile(r.bloquantes, "bloquantes (non analysées)")}${tuile(r.a_corriger, "à corriger")}${tuile(r.a_verifier, "à vérifier")}
+          ${tuile(a.risques.faible, "risque faible")}${tuile(a.risques.eleve, "risque élevé")}${tuile(a.risques.info_manquante + a.risques.indetermine, "risque à préciser")}
+        </div>
+        <div style="overflow-x:auto;">
+          <table style="width:100%; border-collapse:collapse; font-size:13px;">
+            <thead><tr style="text-align:left;"><th style="padding:6px;">Parcelle</th><th style="padding:6px;">Type</th><th style="padding:6px;">Surface (ha)</th><th style="padding:6px;">Anomalies</th><th style="padding:6px;">Risque</th></tr></thead>
+            <tbody>${lignes.map((p) => `<tr style="border-top:1px solid var(--line);">
+              <td style="padding:6px;">${esc(p.id)}${p.producteur ? `<br/><span class="sub" style="margin:0;font-size:11.5px;">${esc(p.producteur)}</span>` : ""}</td>
+              <td style="padding:6px;">${esc(p.type || "—")}</td>
+              <td style="padding:6px;">${p.superficie_mesuree_ha ?? p.superficie_declaree_ha ?? "—"}</td>
+              <td style="padding:6px;">${p.anomalies.length ? p.anomalies.map((x) => `<div>${x.gravite === "bloquante" ? "⛔" : x.gravite === "a_corriger" ? "⚠️" : "🔎"} ${esc(x.texte)}</div>`).join("") : "—"}</td>
+              <td style="padding:6px;">${esc(p.risque ? (LIBELLE_RISQUE[p.risque] || p.risque) : "En attente")}</td>
+            </tr>`).join("")}</tbody>
+          </table>
+        </div>
+        ${a.parcelles.length > 300 ? `<p class="sub" style="font-size:12px;">300 premières parcelles affichées (les problèmes en premier) ; l'export Excel contient tout.</p>` : ""}
+      </div>`;
+  } catch (err) {
+    if (!silencieux) msg(document.getElementById("audits-msg"), "Impossible d'ouvrir l'audit. " + err.message, false);
+  }
+}
+
+async function relancerAudit(id) {
+  try {
+    await adminApi(`/api/admin/audits/${Number(id)}/relancer`, { method: "POST", body: "{}" });
+    await loadAdminAudits();
+    afficherAudit(id);
+  } catch (err) {
+    msg(document.getElementById("audits-msg"), "Relance impossible : " + err.message, false);
+  }
+}
+
+async function exporterAudit(id) {
+  if (!adminKey) { alert("Session admin expirée, reconnectez-vous."); return; }
+  try {
+    const res = await fetch(`${API}/api/admin/audits/${Number(id)}/export.csv`, { headers: { "X-Admin-Key": adminKey } });
+    if (!res.ok) throw new Error("export impossible");
+    const nom = (res.headers.get("Content-Disposition") || "").match(/filename="([^"]+)"/);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nom ? nom[1] : `audit-${id}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    alert("Impossible d'exporter l'audit pour le moment.");
   }
 }
 </script>

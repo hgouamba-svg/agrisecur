@@ -242,6 +242,10 @@ if (!WHISP_ACTIF) {
   console.log("[whisp] WHISP_API_KEY non définie — vérification satellite désactivée.");
 }
 
+// Outil d'Audit RDUE express (back-office) : contrôle des fichiers de parcelles
+// des coopératives + analyse WHISP groupée. Voir audit.js.
+require("./audit")({ router, db, send, isAdminAvecLimite, whispKey: WHISP_API_KEY, whispBase: WHISP_API_BASE });
+
 async function lireEnveloppeWhisp(res) {
   const texte = await res.text().catch(() => "");
   try { return JSON.parse(texte); } catch { return { code: null, message: texte.slice(0, 300) }; }
