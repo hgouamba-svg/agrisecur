@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>AgriSecur — Audit RDUE et place de marché agricole · Côte d'Ivoire</title>
-<meta name="description" content="AgriSecur aide les coopératives ivoiriennes à vendre et à rester conformes : Audit RDUE express de vos parcelles de cacao en 7 jours, et place de marché agricole avec paiement versé à la réception confirmée." />
+<meta name="description" content="AgriSecur aide les coopératives ivoiriennes à vendre et à rester conformes : Audit RDUE express de vos parcelles de cacao en 7 jours ouvrés, et place de marché agricole avec paiement versé à la réception confirmée." />
 <link rel="manifest" href="/manifest.webmanifest" />
 <meta name="theme-color" content="#1F3D2E" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -776,12 +776,13 @@
 
   <section class="ls-hero">
     <div class="ls-hero-text">
-      <p class="ls-eyebrow" data-i18n="hero.badge">Marché agricole sécurisé · Côte d'Ivoire</p>
-      <h1 class="ls-h1" data-i18n="hero.title">Vendez.<br>Achetez.<br><span>Sans risquer votre argent.</span></h1>
-      <p class="ls-lead" data-i18n="hero.lead">Le vendeur n'est payé qu'une fois la réception confirmée par l'acheteur. Le producteur est payé à la livraison, l'acheteur reçoit ce qu'il a commandé.</p>
+      <p class="ls-eyebrow" data-i18n="hero.badge">Conformité RDUE · Côte d'Ivoire et Ghana</p>
+      <h1 class="ls-h1" data-i18n="hero.title">Vos parcelles<br>prêtes pour<br><span>l'Europe.</span></h1>
+      <p class="ls-lead" data-i18n="hero.lead">Nous vérifions par satellite le fichier de parcelles de votre coopérative. Premier avis sous 48 heures ouvrées, rapport et plan d'action en 7 jours ouvrés, avant l'échéance européenne du 30 décembre 2026.</p>
       <div class="ls-ctas">
-        <button class="ls-btn ls-btn-orange ls-btn-lg" onclick="goToAuth('register')" data-i18n="hero.cta1">Créer un compte gratuit</button>
-        <a class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
+        <a class="ls-btn ls-btn-orange ls-btn-lg" href="/depot" data-i18n="hero.ctaDepot">Déposer mon fichier</a>
+        <a class="ls-btn ls-btn-line ls-btn-lg" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="hero.whatsapp">Écrire sur WhatsApp</a>
+        <a style="display:none" class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
@@ -793,8 +794,8 @@
         <p class="ls-sack-grade" data-i18n="sack.grade">FÈVES · GRADE I</p>
         <div class="ls-sack-rule"></div>
         <div class="ls-sack-data"><span>LOT AS-0142</span><span>62,5 KG NET</span><span class="ls-hide-xs">PARCELLE P-0317</span><span class="ls-hide-xs">SOUBRÉ</span></div>
-        <div class="ls-stamp-held" data-i18n="sack.stamp">VERSÉ À LA<small>RÉCEPTION CONFIRMÉE</small></div>
-        <div class="ls-stamp-kyc ls-hide-xs" data-i18n="sack.kyc">VENDEUR VÉRIFIÉ</div>
+        <div class="ls-stamp-held" data-i18n="sack.stamp">PARCELLES<small>VÉRIFIÉES PAR SATELLITE</small></div>
+        <div class="ls-stamp-kyc ls-hide-xs" data-i18n="sack.kyc">GÉOLOCALISÉE</div>
       </div>
       <p class="ls-art-note" data-i18n="sack.note">Marquage d'exemple — lot fictif</p>
     </div>
@@ -804,10 +805,10 @@
     <div class="ls-wrap ls-rdue-grid">
       <div>
         <p class="ls-eyebrow ls-eyebrow-light" data-i18n="rdue.eyebrow">Coopératives de cacao · Échéance européenne le 30.12.2026</p>
-        <h2 class="ls-h2" data-i18n="rdue.title">Audit RDUE express : <span>votre fichier de parcelles vérifié en 7 jours</span></h2>
+        <h2 class="ls-h2" data-i18n="rdue.title">Audit RDUE express : <span>votre fichier de parcelles vérifié en 7 jours ouvrés</span></h2>
         <p class="ls-rdue-lead" data-i18n="rdue.lead">À partir du 30 décembre 2026, les acheteurs européens devront prouver que chaque parcelle d'origine du cacao n'est pas issue de la déforestation. Envoyez-nous le fichier de parcelles de votre coopérative : nous le vérifions par analyse satellite et vous remettons un rapport clair, avant que votre acheteur le fasse.</p>
         <div class="ls-rdue-ctas">
-          <a class="ls-btn ls-btn-orange ls-btn-lg" href="mailto:contact@agrisecur.com?subject=Audit%20RDUE%20express" data-i18n="rdue.cta1">Demander mon audit</a>
+          <a class="ls-btn ls-btn-orange ls-btn-lg" href="/depot" data-i18n="rdue.cta1">Déposer mon fichier</a>
           <a class="ls-btn ls-btn-lg ls-rdue-line" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="rdue.cta2">Écrire sur WhatsApp</a>
         </div>
       </div>
@@ -818,38 +819,38 @@
           <li data-i18n="rdue.i1">Contrôle des données : coordonnées manquantes, doublons, surfaces, chevauchements</li>
           <li data-i18n="rdue.i2">Niveau de risque de déforestation par parcelle (analyse satellite WHISP)</li>
           <li data-i18n="rdue.i3">Rapport et plan d'action prêts à transmettre à votre exportateur</li>
-          <li data-i18n="rdue.i4">Moitié à la commande, moitié à la remise du rapport · données confidentielles</li>
+          <li data-i18n="rdue.i4">Premier avis sous 48 h ouvrées · moitié à la commande, moitié à la remise du rapport · données confidentielles</li>
         </ul>
         <p class="ls-rdue-note" data-i18n="rdue.note">Le rapport aide à préparer la diligence raisonnable européenne ; il ne constitue pas une certification.</p>
       </div>
     </div>
   </section>
 
-  <section class="ls-ticket" aria-label="AgriSecur en chiffres">
-    <div><span class="ls-t-lab" data-i18n="stats.l1">FILIÈRES</span><span class="ls-t-val">8</span><span class="ls-t-txt" data-i18n="stats.filieres">Cacao, anacarde, café, coton…</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l2">COMMISSION</span><span class="ls-t-val ls-or">4 %</span><span class="ls-t-txt" data-i18n="stats.commission">Uniquement sur les ventes réussies</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l3">VENDEUR PAYÉ</span><span class="ls-t-val">100 %</span><span class="ls-t-txt" data-i18n="stats.escrow">Versé au vendeur après réception confirmée</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l4">DÉLAI DE CONTRÔLE</span><span class="ls-t-val">24–48 H</span><span class="ls-t-txt" data-i18n="stats.delay">Pour vérifier le lot reçu</span></div>
+  <section class="ls-ticket" aria-label="L'audit en chiffres">
+    <div><span class="ls-t-lab" data-i18n="stats.l1">PREMIER AVIS</span><span class="ls-t-val">48 h</span><span class="ls-t-txt" data-i18n="stats.filieres">Ouvrées, dès le dépôt du fichier</span></div>
+    <div><span class="ls-t-lab" data-i18n="stats.l2">RAPPORT</span><span class="ls-t-val ls-or" data-i18n="stats.v2">7 jours</span><span class="ls-t-txt" data-i18n="stats.commission">Ouvrés, après fichier exploitable et acompte</span></div>
+    <div><span class="ls-t-lab" data-i18n="stats.l3">PRIX</span><span class="ls-t-val">250 000</span><span class="ls-t-txt" data-i18n="stats.escrow">FCFA jusqu'à 500 parcelles</span></div>
+    <div><span class="ls-t-lab" data-i18n="stats.l4">ÉCHÉANCE UE</span><span class="ls-t-val">30.12.26</span><span class="ls-t-txt" data-i18n="stats.delay">Grandes entreprises (petites : date à confirmer)</span></div>
   </section>
 
   <section class="ls-how" id="landing-comment">
     <div class="ls-wrap ls-how-grid">
       <div class="ls-how-text">
         <p class="ls-eyebrow ls-eyebrow-light" data-i18n="how.eyebrow">Comment ça marche</p>
-        <h2 class="ls-h2" data-i18n="how.title">Le vendeur est payé à la réception. Pas avant.</h2>
-        <p class="ls-body" data-i18n="diff.text">Ailleurs, payer par Mobile Money ou virement donne l'argent au vendeur tout de suite : si le lot ne correspond pas, vous n'avez plus de recours. Sur AgriSecur, le vendeur n'est payé qu'après votre validation, ou à la fin du délai de contestation de 24 à 48 h. En cas de désaccord, notre médiation tranche avant tout versement.</p>
-        <a class="ls-link-light" onclick="ouvrirAidePublique('cgu-cgv-summary')" data-i18n="how.link">Lire les conditions de paiement</a>
+        <h2 class="ls-h2" data-i18n="how.title">Du fichier au rapport, en 7 jours ouvrés.</h2>
+        <p class="ls-body" data-i18n="diff.text">Vous déposez le fichier de parcelles sur notre page sécurisée. Nous le contrôlons, nous analysons chaque parcelle par satellite avec l'outil WHISP de la FAO, puis nous vous remettons un rapport clair avec les corrections à faire. Le rapport aide à préparer la diligence raisonnable européenne ; ce n'est pas une certification.</p>
+        <a class="ls-link-light" href="/depot" data-i18n="how.link">Déposer mon fichier</a>
       </div>
       <div class="ls-bordereau">
         <div class="ls-perf"></div>
         <div class="ls-bord-body">
-          <div class="ls-bord-head"><span data-i18n="bord.title">BORDEREAU DE TRANSACTION</span><span>N° AS-0142</span></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Commande</b><small data-i18n="bord.s1t">Paiement enregistré, en attente de livraison</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">02</span><span><b data-i18n="bord.s2">Expédition</b><small data-i18n="bord.s2t">Le vendeur expédie, le lot est suivi</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">03</span><span><b data-i18n="bord.s3">Contrôle à réception</b><small data-i18n="bord.s3t">24 à 48 h pour vérifier le lot</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row ls-bord-last"><span class="ls-bord-n">04</span><span><b data-i18n="bord.s4">Libération des fonds</b><small data-i18n="bord.s4t">Versement au vendeur</small></span></div>
+          <div class="ls-bord-head"><span data-i18n="bord.title">BORDEREAU D'AUDIT</span><span>N° AS-0142</span></div>
+          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Dépôt du fichier</b><small data-i18n="bord.s1t">Sur agrisecur.com/depot, en quelques minutes</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <div class="ls-bord-row"><span class="ls-bord-n">02</span><span><b data-i18n="bord.s2">Premier avis</b><small data-i18n="bord.s2t">Sous 48 heures ouvrées</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <div class="ls-bord-row"><span class="ls-bord-n">03</span><span><b data-i18n="bord.s3">Analyse satellite</b><small data-i18n="bord.s3t">Après l'acompte de 50 %</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <div class="ls-bord-row ls-bord-last"><span class="ls-bord-n">04</span><span><b data-i18n="bord.s4">Rapport et plan d'action</b><small data-i18n="bord.s4t">En 7 jours ouvrés</small></span></div>
         </div>
-        <div class="ls-stamp-paid" data-i18n="bord.paid">PAYÉ</div>
+        <div class="ls-stamp-paid" data-i18n="bord.paid">LIVRÉ</div>
       </div>
     </div>
   </section>
@@ -903,7 +904,7 @@
     </div>
   </section>
 
-  <section class="ls-pro" id="landing-pro">
+  <section class="ls-pro" id="landing-pro" style="display:none">
     <div class="ls-wrap ls-pro-grid">
       <div>
         <p class="ls-eyebrow" data-i18n="pro.eyebrow">Pour les vendeurs qui veulent aller plus loin</p>
@@ -945,12 +946,12 @@
   <section class="ls-cta">
     <div class="ls-wrap ls-cta-grid">
       <div>
-        <h2 class="ls-h2 ls-h2-xl" data-i18n="ctabanner.title">Prêt à vendre<br><span>en confiance ?</span></h2>
-        <p class="ls-body" data-i18n="ctabanner.text">Inscription gratuite. Commission prélevée seulement sur les ventes réussies.</p>
+        <h2 class="ls-h2 ls-h2-xl" data-i18n="ctabanner.title">Prêt pour<br><span>l'échéance européenne ?</span></h2>
+        <p class="ls-body" data-i18n="ctabanner.text">Déposez votre fichier de parcelles : premier avis sous 48 heures ouvrées.</p>
       </div>
       <div class="ls-cta-btns">
-        <button class="ls-btn ls-btn-ink ls-btn-lg ls-btn-shadow-w" onclick="goToAuth('register')" data-i18n="hero.cta1">Créer un compte gratuit</button>
-        <button class="ls-btn ls-btn-paper ls-btn-lg" onclick="goToAuth('login')" data-i18n="ctabanner.login">J'ai déjà un compte</button>
+        <a class="ls-btn ls-btn-ink ls-btn-lg ls-btn-shadow-w" href="/depot" data-i18n="hero.ctaDepot">Déposer mon fichier</a>
+        <a class="ls-btn ls-btn-paper ls-btn-lg" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="hero.whatsapp">Écrire sur WhatsApp</a>
       </div>
     </div>
   </section>
@@ -1492,13 +1493,13 @@ function ouvrirImage(el) {
 const TRADUCTIONS = {
   en: {
     "nav.login": "Log in", "nav.register": "Create account", "nav.features": "Features", "nav.catalogue": "Catalogue", "nav.how": "How it works", "nav.prices": "Market prices", "nav.mission": "Our mission", "nav.contact": "Contact",
-    "hero.badge": "🇨🇮 Available in Côte d'Ivoire",
-    "hero.title": "Sell and buy your agricultural products <em>without ever risking your money</em>",
-    "hero.lead": "The seller is only paid once the buyer confirms delivery. The producer gets paid on delivery, the buyer gets what they ordered.",
+    "hero.badge": "EUDR compliance · Côte d'Ivoire and Ghana",
+    "hero.title": "Your plots<br>ready for<br><span>Europe.</span>",
+    "hero.lead": "We check your cooperative's plot file by satellite. First feedback within 48 working hours, report and action plan within 7 working days, ahead of the EU deadline of 30 December 2026.",
     "hero.cta1": "Create a free account", "hero.cta2": "How it works", "hero.film": "▶ Watch the film (51 s)",
-    "stats.filieres": "Sectors covered", "stats.commission": "Commission, only on successful sales", "stats.escrow": "Paid to the seller after confirmed delivery", "stats.delay": "Dispute window",
+    "stats.filieres": "Working hours, from file upload", "stats.commission": "Working days, after usable file and deposit", "stats.escrow": "FCFA up to 500 plots", "stats.delay": "Large companies (smaller ones: date to be confirmed)",
     "diff.title": "The difference with a regular payment",
-    "diff.text": "Elsewhere, paying by mobile money or bank transfer hands the money to the seller right away: if the lot doesn't match, you have no recourse. On AgriSecur, the seller is only paid after your approval, or once the 24-to-48-hour dispute window ends. In case of disagreement, our mediation decides before anything is paid out.",
+    "diff.text": "You upload your plot file on our secure page. We check it, analyse every plot by satellite with FAO's WHISP tool, then give you a clear report with the corrections to make. The report helps prepare EU due diligence; it is not a certification.",
     "pro.eyebrow": "For sellers who want to go further", "pro.title": "Pro Seller Subscription",
     "pro.lead": "10,000 FCFA / month — a trust badge, better placement in the catalogue, and your prices compared to the market.",
     "pro.f1.title": "Pro Seller badge", "pro.f1.text": "A trust signal visible to all buyers, directly on your listings.",
@@ -1509,7 +1510,7 @@ const TRADUCTIONS = {
     "feat.f1.title": "Paid on confirmed delivery", "feat.f1.text": "The seller is paid once delivery is confirmed or the dispute window expires.",
     "feat.f2.title": "Verified sellers", "feat.f2.text": "Every cooperative and producer goes through identity verification before publishing a lot.",
     "feat.f3.title": "Multi-sector", "feat.f3.text": "Cocoa, cashew, coffee, cotton, rubber, palm oil, rice and food crops.",
-    "how.eyebrow": "Simple & fast", "how.title": "How does it work?", "how.lead": "In 4 steps, buy or sell your agricultural products safely.",
+    "how.eyebrow": "Simple & fast", "how.title": "From file to report in 7 working days.", "how.lead": "In 4 steps, buy or sell your agricultural products safely.",
     "how.s1.title": "Create your account", "how.s1.text": "Sign up for free. Sellers verify their identity (RCCM, ID card, or cooperative certificate).",
     "how.s2.title": "Browse or publish", "how.s2.text": "Explore available lots by sector, or publish your own once your account is verified.",
     "how.s3.title": "Order with confidence", "how.s3.text": "Your payment is not passed on to the seller immediately — only after confirmed delivery.",
@@ -1525,7 +1526,7 @@ const TRADUCTIONS = {
     "founder.role": "Founder of AgriSecur — Securing agricultural transactions", "founder.linkedin": "💼 View LinkedIn profile",
     "filieres.eyebrow": "Coverage", "filieres.title": "Seven sectors, and soon more",
     "filieres.lead": "Click on a sector to see the lots actually available right now on AgriSecur.",
-    "ctabanner.title": "Ready to join AgriSecur?", "ctabanner.text": "Create your account for free and start selling or buying safely today.", "ctabanner.login": "I already have an account",
+    "ctabanner.title": "Ready for<br><span>the EU deadline?</span>", "ctabanner.text": "Upload your plot file: first feedback within 48 working hours.", "ctabanner.login": "I already have an account",
     "footer.legal": "Legal notice", "footer.cgu": "Terms & Conditions", "footer.data": "Personal data", "footer.cookies": "Cookies", "footer.contact": "Contact us", "footer.backTop": "↑ Back to top",
     "footer.copy": "© 2026 AgriSecur Côte d'Ivoire — Secure agricultural marketplace",
     "auth.roleSeller": "Seller", "auth.roleBuyer": "Buyer", "auth.login": "Log in", "auth.registerLink": "Create account",
@@ -1555,52 +1556,53 @@ function t(cle) {
 Object.assign(TRADUCTIONS.en, {
   "nav.rdue": "EUDR audit",
   "rdue.eyebrow": "Cocoa cooperatives · EU deadline 30.12.2026",
-  "rdue.title": "Express EUDR audit: <span>your plot file checked in 7 days</span>",
+  "rdue.title": "Express EUDR audit: <span>your plot file checked in 7 working days</span>",
   "rdue.lead": "From 30 December 2026, European buyers must prove that every cocoa plot of origin is deforestation-free. Send us your cooperative's plot file: we check it by satellite analysis and give you a clear report, before your buyer does.",
-  "rdue.cta1": "Request my audit",
+  "rdue.cta1": "Upload my file",
   "rdue.cta2": "Message us on WhatsApp",
   "rdue.priceLab": "Up to 500 plots",
   "rdue.i1": "Data check: missing coordinates, duplicates, areas, overlaps",
   "rdue.i2": "Deforestation risk level per plot (WHISP satellite analysis)",
   "rdue.i3": "Report and action plan ready to send to your exporter",
-  "rdue.i4": "Half on order, half on delivery of the report · confidential data",
+  "rdue.i4": "First feedback within 48 working hours · half on order, half on delivery of the report · confidential data",
   "rdue.note": "The report helps prepare EU due diligence; it is not a certification.",
   "nav.catalogue": "The market",
   "nav.prices": "Today's prices",
   "nav.pro": "Pro Seller",
   "nav.mission": "Our mission",
-  "hero.badge": "Secure agricultural market · Côte d'Ivoire",
-  "hero.title": "Sell.<br>Buy.<br><span>Without risking your money.</span>",
-  "hero.lead": "The seller is only paid once the buyer confirms delivery. The producer gets paid on delivery, the buyer gets what they ordered.",
+  "hero.badge": "EUDR compliance · Côte d'Ivoire and Ghana",
+  "hero.title": "Your plots<br>ready for<br><span>Europe.</span>",
+  "hero.lead": "We check your cooperative's plot file by satellite. First feedback within 48 working hours, report and action plan within 7 working days, ahead of the EU deadline of 30 December 2026.",
   "hero.film": "Watch the film · 51 s",
+    "hero.ctaDepot": "Upload my file", "hero.whatsapp": "Message us on WhatsApp", "stats.v2": "7 days",
   "sack.origin": "PRODUCE OF CÔTE D'IVOIRE",
   "sack.name": "COCOA",
   "sack.grade": "BEANS · GRADE I",
-  "sack.stamp": "PAID ON<small>CONFIRMED DELIVERY</small>",
-  "sack.kyc": "VERIFIED SELLER",
+  "sack.stamp": "PLOTS<small>CHECKED BY SATELLITE</small>",
+  "sack.kyc": "GEOLOCATED",
   "sack.note": "Sample marking — fictitious lot",
-  "stats.l1": "SECTORS",
-  "stats.l2": "COMMISSION",
-  "stats.l3": "SELLER PAID",
-  "stats.l4": "INSPECTION WINDOW",
-  "stats.filieres": "Cocoa, cashew, coffee, cotton…",
-  "stats.commission": "Only on successful sales",
-  "stats.escrow": "Paid to the seller after confirmed delivery",
-  "stats.delay": "To check the lot received",
+  "stats.l1": "FIRST FEEDBACK",
+  "stats.l2": "REPORT",
+  "stats.l3": "PRICE",
+  "stats.l4": "EU DEADLINE",
+  "stats.filieres": "Working hours, from file upload",
+  "stats.commission": "Working days, after usable file and deposit",
+  "stats.escrow": "FCFA up to 500 plots",
+  "stats.delay": "Large companies (smaller ones: date to be confirmed)",
   "how.eyebrow": "How it works",
-  "how.title": "The seller is paid on delivery. Not before.",
-  "diff.text": "Elsewhere, paying by mobile money or bank transfer hands the money to the seller right away: if the lot doesn't match, you have no recourse. On AgriSecur, the seller is only paid after your approval, or once the 24-to-48-hour dispute window ends. In case of disagreement, our mediation decides before anything is paid out.",
-  "how.link": "Read the payment terms",
-  "bord.title": "TRANSACTION SLIP",
-  "bord.s1": "Order",
-  "bord.s1t": "Payment recorded, awaiting delivery",
-  "bord.s2": "Shipping",
-  "bord.s2t": "The seller ships, the lot is tracked",
-  "bord.s3": "Inspection on arrival",
-  "bord.s3t": "24 to 48 h to check the lot",
-  "bord.s4": "Release of funds",
-  "bord.s4t": "Payment to the seller",
-  "bord.paid": "PAID",
+  "how.title": "From file to report in 7 working days.",
+  "diff.text": "You upload your plot file on our secure page. We check it, analyse every plot by satellite with FAO's WHISP tool, then give you a clear report with the corrections to make. The report helps prepare EU due diligence; it is not a certification.",
+  "how.link": "Upload my file",
+  "bord.title": "AUDIT SLIP",
+  "bord.s1": "File upload",
+  "bord.s1t": "On agrisecur.com/depot, in a few minutes",
+  "bord.s2": "First feedback",
+  "bord.s2t": "Within 48 working hours",
+  "bord.s3": "Satellite analysis",
+  "bord.s3t": "After the 50% deposit",
+  "bord.s4": "Report and action plan",
+  "bord.s4t": "Within 7 working days",
+  "bord.paid": "DELIVERED",
   "filieres.eyebrow": "On the market right now",
   "filieres.title": "Verified lots, plot included",
   "filieres.all": "Full catalogue",
@@ -1623,8 +1625,8 @@ Object.assign(TRADUCTIONS.en, {
   "mission.lead": "AgriSecur was born from a simple observation: the risk of non-payment and non-compliant delivery holds back trade between producers and buyers. Our role is to bring the trust needed, without ever becoming a buyer or seller ourselves.",
   "founder.role": "FOUNDER",
   "founder.linkedin": "LinkedIn profile",
-  "ctabanner.title": "Ready to sell<br><span>with confidence?</span>",
-  "ctabanner.text": "Free sign-up. Commission only on successful sales.",
+  "ctabanner.title": "Ready for<br><span>the EU deadline?</span>",
+  "ctabanner.text": "Upload your plot file: first feedback within 48 working hours.",
   "footer.copy": "AGRISECUR SARL · ABIDJAN · COCODY"
 });
 
