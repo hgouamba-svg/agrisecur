@@ -20,7 +20,7 @@ const MAX_PARCELLES = 5000;         // limite d'une demande asynchrone WHISP
 const WHISP_DELAI_MAX_MIN = 20;     // au-delà : considéré en échec
 const WHISP_INTERVALLE_S = 20;
 
-module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, whispKey, whispBase }) {
+module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, limiterTentatives, envoyerEmail, whispKey, whispBase }) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS audits (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +42,13 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     );
   `);
 
+  // Colonnes ajoutées après la première version (dépôt par le client, notifications).
+  for (const col of ["source TEXT NOT NULL DEFAULT 'admin'", "email_client TEXT", "notifie_le TEXT"]) {
+    try { db.exec(`ALTER TABLE audits ADD COLUMN ${col}`); } catch { /* colonne déjà présente */ }
+  }
+
   const whispActif = !!whispKey;
+  const EMAIL_NOTIF = process.env.AUDIT_NOTIF_EMAIL || process.env.CONTACT_EMAIL || "contact@agrisecur.com";
   const entetes = () => ({ "x-api-key": whispKey, "Content-Type": "application/json", "x-whisp-agent": "agrisecur-audit" });
 
   async function lireEnveloppe(res) {
@@ -91,6 +97,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     }
     if (!whispActif) {
       db.prepare(`UPDATE audits SET whisp_statut = 'desactive', whisp_erreur = 'Clé WHISP absente (variable WHISP_API_KEY)' WHERE id = ?`).run(audit.id);
+      notifier(audit.id, "ERREUR");
       return;
     }
     const maintenant = new Date().toISOString();
@@ -110,6 +117,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     } catch (err) {
       console.error(`[audit] soumission WHISP échouée pour l'audit ${audit.id} :`, err.message);
       db.prepare(`UPDATE audits SET whisp_statut = 'erreur', whisp_erreur = ?, whisp_soumis_le = ? WHERE id = ?`).run(String(err.message).slice(0, 300), maintenant, audit.id);
+      notifier(audit.id, "ERREUR");
     }
   }
 
@@ -118,6 +126,34 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     const resultats = associerResultats(frais, featureCollection);
     db.prepare(`UPDATE audits SET whisp_statut = 'termine', whisp_token = NULL, whisp_termine_le = ?, resultats = ?, whisp_erreur = NULL WHERE id = ?`)
       .run(new Date().toISOString(), JSON.stringify(resultats), audit.id);
+    notifier(audit.id, "RESULTAT");
+  }
+
+  // ---- Notifications par e-mail (lues par l'agent Audit RDUE dans Gmail) ----
+  // DEPOT : fichier reçu + contrôles de qualité ; RESULTAT : analyse WHISP
+  // terminée ; ERREUR : analyse impossible. Le CSV complet est joint.
+  function notifier(id, type) {
+    const a = db.prepare(`SELECT * FROM audits WHERE id = ?`).get(id);
+    if (!a) return;
+    const r = resumeAudit(a);
+    const lignes = [
+      `Audit n°${a.id} — ${a.client}`,
+      `Pays : ${a.pays === "gh" ? "Ghana" : "Côte d'Ivoire"} · Filière : ${a.filiere} · Fichier : ${a.fichier || "-"}`,
+      `Origine : ${a.source === "client" ? "déposé par le client sur le site" : "lancé depuis le back-office"}${a.email_client ? ` · Contact client : ${a.email_client}` : ""}`,
+      "",
+      `Parcelles : ${r.resume.total} · sans anomalie : ${r.resume.sans_anomalie} · bloquantes (non analysées) : ${r.resume.bloquantes} · à corriger : ${r.resume.a_corriger} · à vérifier : ${r.resume.a_verifier}`,
+    ];
+    if (type === "RESULTAT") lignes.push(`Risque de déforestation (WHISP) : faible ${r.risques.faible} · élevé ${r.risques.eleve} · informations manquantes ${r.risques.info_manquante} · indéterminé ${r.risques.indetermine}`, `Analyse terminée en ${r.whisp.duree_secondes ?? "?"} secondes.`);
+    if (type === "ERREUR") lignes.push(`Analyse satellite impossible : ${a.whisp_erreur || "raison inconnue"}. Relancez-la depuis le back-office, onglet Audits RDUE.`);
+    if (type === "DEPOT") lignes.push("Analyse satellite lancée automatiquement ; un second e-mail « RESULTAT AUDIT » suivra.");
+    lignes.push("", "Tableau complet parcelle par parcelle en pièce jointe (CSV, séparateur « ; »).", "WHISP (FAO) fournit une indication sur données publiques, sans garantie : ce n'est pas une certification.");
+    envoyerEmail({
+      to: EMAIL_NOTIF,
+      subject: `${type} AUDIT ${a.client} (n°${a.id})`,
+      text: lignes.join("\n"),
+      attachments: [{ filename: nomCsv(a), content: csvAudit(a), contentType: "text/csv; charset=utf-8" }],
+    }).then((ok) => { if (ok && type !== "DEPOT") db.prepare(`UPDATE audits SET notifie_le = ? WHERE id = ?`).run(new Date().toISOString(), a.id); })
+      .catch((e) => console.error(`[audit] e-mail ${type} non envoyé pour l'audit ${a.id} :`, e.message));
   }
 
   async function verifierEnCours() {
@@ -127,6 +163,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
       const depuis = (Date.now() - new Date(audit.whisp_soumis_le || 0).getTime()) / 60000;
       if (depuis > WHISP_DELAI_MAX_MIN) {
         db.prepare(`UPDATE audits SET whisp_statut = 'erreur', whisp_token = NULL, whisp_erreur = 'Délai dépassé : relancez l''analyse' WHERE id = ?`).run(audit.id);
+        notifier(audit.id, "ERREUR");
         continue;
       }
       if (!audit.whisp_token) continue;
@@ -137,6 +174,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
         if (env.code === "analysis_completed") { terminer(audit, env.data); continue; }
         db.prepare(`UPDATE audits SET whisp_statut = 'erreur', whisp_token = NULL, whisp_erreur = ? WHERE id = ?`)
           .run(`${res.status} ${env.code || ""} ${env.message || ""}`.trim().slice(0, 300), audit.id);
+        notifier(audit.id, "ERREUR");
       } catch (err) {
         console.error(`[audit] vérification WHISP échouée pour l'audit ${audit.id} :`, err.message);
       }
@@ -151,6 +189,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     const duree = a.whisp_termine_le && a.whisp_soumis_le ? Math.round((new Date(a.whisp_termine_le) - new Date(a.whisp_soumis_le)) / 1000) : null;
     return {
       id: a.id, client: a.client, pays: a.pays, filiere: a.filiere, fichier: a.fichier, cree_le: a.cree_le,
+      source: a.source || "admin", email_client: a.email_client || null, notifie_le: a.notifie_le || null,
       nb_parcelles: a.nb_parcelles, resume, risques,
       whisp: { statut: a.whisp_statut, soumis_le: a.whisp_soumis_le, termine_le: a.whisp_termine_le, duree_secondes: duree, erreur: a.whisp_erreur },
     };
@@ -182,17 +221,18 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     }
   });
 
-  router.post("/api/admin/audits", (req, res, params, body) => {
-    if (!isAdminAvecLimite(req, res)) return;
+  // Valide la demande, contrôle les parcelles, enregistre l'audit et lance WHISP.
+  // Renvoie { erreur } ou { audit }.
+  function creerAudit(body, source, emailClient) {
     const client = String((body && body.client) || "").trim().slice(0, 120);
     const pays = body && ["ci", "gh"].includes(body.pays) ? body.pays : null;
     const filiere = body && FILIERES.includes(body.filiere) ? body.filiere : null;
     const features = body && Array.isArray(body.features) ? body.features : null;
-    if (!client) return send(res, 400, { error: "nom du client manquant" });
-    if (!pays) return send(res, 400, { error: "pays invalide" });
-    if (!filiere) return send(res, 400, { error: "filière invalide" });
-    if (!features || !features.length) return send(res, 400, { error: "aucune parcelle dans le fichier" });
-    if (features.length > MAX_PARCELLES) return send(res, 400, { error: `trop de parcelles (${features.length}) : ${MAX_PARCELLES} au maximum par audit, découpez le fichier` });
+    if (!client) return { erreur: "nom du client manquant" };
+    if (!pays) return { erreur: "pays invalide" };
+    if (!filiere) return { erreur: "filière invalide" };
+    if (!features || !features.length) return { erreur: "aucune parcelle dans le fichier" };
+    if (features.length > MAX_PARCELLES) return { erreur: `trop de parcelles (${features.length}) : ${MAX_PARCELLES} au maximum par audit, découpez le fichier` };
 
     const { parcelles, resume } = controlerParcelles(features, pays);
     // Clé unique par parcelle (l'identifiant du fichier peut être en double).
@@ -205,13 +245,34 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
       type: "Feature", geometry: features[p.index].geometry, properties: { agrisecur_id: p.cle },
     }));
     const info = db.prepare(`
-      INSERT INTO audits (client, pays, filiere, fichier, cree_le, nb_parcelles, resume, parcelles, geojson, whisp_statut)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'a_envoyer')
+      INSERT INTO audits (client, pays, filiere, fichier, cree_le, nb_parcelles, resume, parcelles, geojson, whisp_statut, source, email_client)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'a_envoyer', ?, ?)
     `).run(client, pays, filiere, String((body && body.fichier) || "").slice(0, 160), new Date().toISOString(), parcelles.length,
-      JSON.stringify(resume), JSON.stringify(parcelles), JSON.stringify({ type: "FeatureCollection", features: aEnvoyer }));
+      JSON.stringify(resume), JSON.stringify(parcelles), JSON.stringify({ type: "FeatureCollection", features: aEnvoyer }), source, emailClient || null);
     const audit = db.prepare(`SELECT * FROM audits WHERE id = ?`).get(Number(info.lastInsertRowid));
+    if (source === "client") notifier(audit.id, "DEPOT");
     soumettre(audit).catch((e) => console.error("[audit]", e.message));
-    send(res, 201, resumeAudit(audit));
+    return { audit };
+  }
+
+  router.post("/api/admin/audits", (req, res, params, body) => {
+    if (!isAdminAvecLimite(req, res)) return;
+    const r = creerAudit(body, "admin", null);
+    if (r.erreur) return send(res, 400, { error: r.erreur });
+    send(res, 201, resumeAudit(r.audit));
+  });
+
+  // Dépôt public : le client envoie lui-même son fichier depuis le site.
+  // Contrôle immédiat + analyse WHISP automatique + e-mails à AgriSecur.
+  router.post("/api/depot-audit", (req, res, params, body) => {
+    if (!limiterTentatives(req, res, "depot-audit", { max: 6 })) return;
+    if (body && body.site_web) return send(res, 201, { ok: true }); // piège à robots
+    const email = String((body && body.email) || "").trim().slice(0, 160);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return send(res, 400, { error: "adresse e-mail invalide" });
+    const r = creerAudit(body, "client", email);
+    if (r.erreur) return send(res, 400, { error: r.erreur });
+    const { resume } = resumeAudit(r.audit);
+    send(res, 201, { ok: true, reference: `AUD-${r.audit.id}`, resume });
   });
 
   router.get("/api/admin/audits", (req, res) => {
@@ -250,10 +311,7 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
     return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }
 
-  router.get("/api/admin/audits/:id/export.csv", (req, res, params) => {
-    if (!isAdminAvecLimite(req, res)) return;
-    const a = db.prepare(`SELECT * FROM audits WHERE id = ?`).get(Number(params.id));
-    if (!a) return send(res, 404, { error: "audit introuvable" });
+  function csvAudit(a) {
     const resultats = a.resultats ? JSON.parse(a.resultats) : {};
     const parcelles = JSON.parse(a.parcelles);
     const clesWhisp = [...new Set(Object.values(resultats).flatMap((r) => Object.keys(r.props || {})))];
@@ -266,9 +324,18 @@ module.exports = function installerAudit({ router, db, send, isAdminAvecLimite, 
         r ? libelleRisque[r.risque] : (p.analysable ? "En attente" : "Non analysée"),
         ...clesWhisp.map((k) => (r && r.props ? r.props[k] : ""))];
     });
-    const csv = "﻿" + [entete, ...lignes].map((l) => l.map(celluleCsv).join(";")).join("\r\n");
-    const nom = `audit-${a.id}-${a.client.replace(/[^A-Za-z0-9]+/g, "-").slice(0, 40)}.csv`;
-    res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="${nom}"` });
-    res.end(csv);
+    return "\uFEFF" + [entete, ...lignes].map((l) => l.map(celluleCsv).join(";")).join("\r\n");
+  }
+
+  function nomCsv(a) {
+    return `audit-${a.id}-${a.client.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]+/g, "-").slice(0, 40)}.csv`;
+  }
+
+  router.get("/api/admin/audits/:id/export.csv", (req, res, params) => {
+    if (!isAdminAvecLimite(req, res)) return;
+    const a = db.prepare(`SELECT * FROM audits WHERE id = ?`).get(Number(params.id));
+    if (!a) return send(res, 404, { error: "audit introuvable" });
+    res.writeHead(200, { "Content-Type": "text/csv; charset=utf-8", "Content-Disposition": `attachment; filename="${nomCsv(a)}"` });
+    res.end(csvAudit(a));
   });
 };

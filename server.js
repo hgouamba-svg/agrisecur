@@ -244,7 +244,7 @@ if (!WHISP_ACTIF) {
 
 // Outil d'Audit RDUE express (back-office) : contrôle des fichiers de parcelles
 // des coopératives + analyse WHISP groupée. Voir audit.js.
-require("./audit")({ router, db, send, isAdminAvecLimite, whispKey: WHISP_API_KEY, whispBase: WHISP_API_BASE });
+require("./audit")({ router, db, send, isAdminAvecLimite, limiterTentatives, envoyerEmail, whispKey: WHISP_API_KEY, whispBase: WHISP_API_BASE });
 
 async function lireEnveloppeWhisp(res) {
   const texte = await res.text().catch(() => "");
@@ -1689,6 +1689,7 @@ const server = http.createServer((req, res) => {
 
   if (req.method === "GET" && !url.pathname.startsWith("/api")) {
     if (FICHIERS_APP_ADMIN[url.pathname]) return servirAppAdmin(res, url.pathname);
+    if (url.pathname === "/depot" || url.pathname === "/depot/") return serveStatic(req, res, "/depot.html");
     if (serveStatic(req, res, url.pathname)) return;
   }
 

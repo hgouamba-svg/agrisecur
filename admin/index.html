@@ -1536,7 +1536,7 @@ function lireWkt(w) {
 }
 
 function lireCsv(texte) {
-  const lignes = texte.replace(/^﻿/, "").split(/\r?\n/).filter((l) => l.trim());
+  const lignes = texte.replace(/^\uFEFF/, "").split(/\r?\n/).filter((l) => l.trim());
   if (lignes.length < 2) throw new Error("fichier CSV vide");
   const sep = [";", "\t", ","].map((c) => [c, lignes[0].split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
   const decouper = (l) => {
@@ -1649,7 +1649,7 @@ async function loadAdminAudits() {
     } else {
       list.innerHTML = audits.map((a) => `
         <div class="list-row" style="grid-template-columns: 2fr 1fr 1.4fr auto; align-items:center;">
-          <span><strong>n°${Number(a.id)} · ${esc(a.client)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(a.pays === "gh" ? "Ghana" : "Côte d'Ivoire")} · ${esc(a.filiere)} · ${new Date(a.cree_le).toLocaleString("fr-FR")}</span></span>
+          <span><strong>n°${Number(a.id)} · ${esc(a.client)}</strong><br/><span class="sub" style="margin:0;font-size:12px;">${esc(a.pays === "gh" ? "Ghana" : "Côte d'Ivoire")} · ${esc(a.filiere)} · ${new Date(a.cree_le).toLocaleString("fr-FR")}${a.source === "client" ? ` · déposé par le client (${esc(a.email_client || "")})` : ""}</span></span>
           <span>${Number(a.nb_parcelles)} parcelles<br/><span class="sub" style="margin:0;font-size:12px;">${Number(a.resume.sans_anomalie)} sans anomalie</span></span>
           <span>${esc(STATUT_WHISP[a.whisp.statut] || a.whisp.statut)}${a.whisp.statut === "termine" ? `<br/><span class="sub" style="margin:0;font-size:12px;">risque élevé : ${Number(a.risques.eleve)} · faible : ${Number(a.risques.faible)}</span>` : ""}</span>
           <span><button class="outline" onclick="afficherAudit(${Number(a.id)})">Voir</button></span>

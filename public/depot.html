@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Déposer votre fichier de parcelles · AgriSecur</title>
+<meta name="description" content="Envoyez le fichier de parcelles de votre coopérative pour l'Audit RDUE express d'AgriSecur." />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root { --green:#1F3D2E; --or:#F07E00; --or-txt:#A85200; --ink:#111111; --ink-soft:#5C5C5C; --line:#E3E3E0; --cream:#F5F5F3; --paper:#FFFFFF; --ok:#1B7F45; --err:#B3261E; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:var(--cream); color:var(--ink); font-family:'Archivo', system-ui, sans-serif; font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:720px; margin:0 auto; padding-inline:16px; padding-block:24px 64px; display:grid; gap:22px; }
+  header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:20px; color:var(--green); text-decoration:none; }
+  .brand img { width:34px; height:34px; }
+  .lang { display:flex; border:2px solid var(--ink); background:var(--paper); }
+  .lang button { border:0; background:transparent; padding:6px 12px; font:600 13px 'IBM Plex Mono', monospace; cursor:pointer; color:var(--ink); }
+  .lang button[aria-pressed="true"] { background:var(--ink); color:var(--paper); }
+  .card { background:var(--paper); border:2px solid var(--ink); box-shadow:8px 8px 0 var(--or); margin-right:8px; }
+  .card-head { background:var(--green); color:#fff; padding:10px 18px; font:600 12px 'IBM Plex Mono', monospace; letter-spacing:.12em; text-transform:uppercase;
+    background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 6px); }
+  .card-body { padding:24px 22px; display:grid; gap:16px; }
+  .kicker { margin:0; font:600 12px 'IBM Plex Mono', monospace; letter-spacing:.12em; text-transform:uppercase; color:var(--or-txt); }
+  h1 { margin:0; font-size:clamp(26px,5vw,34px); line-height:1.1; font-weight:800; text-wrap:balance; }
+  .lead { margin:0; color:var(--ink-soft); max-width:60ch; }
+  ol.steps { margin:0; padding-left:22px; display:grid; gap:6px; }
+  form { display:grid; gap:14px; }
+  .grid2 { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; }
+  label { display:grid; gap:5px; font-weight:600; font-size:14px; }
+  input, select { font:inherit; color:var(--ink); background:var(--paper); border:2px solid var(--ink); padding:10px 12px; width:100%; border-radius:0; }
+  input[type=file] { padding:10px; background:var(--cream); }
+  .hint { font-weight:400; font-size:13px; color:var(--ink-soft); }
+  .check { display:flex; gap:10px; align-items:flex-start; font-weight:400; font-size:14px; }
+  .check input { width:auto; margin-top:4px; }
+  .hp { position:absolute; left:-5000px; width:1px; height:1px; overflow:hidden; }
+  button.go { justify-self:start; background:var(--or); color:var(--ink); border:2px solid var(--ink); box-shadow:4px 4px 0 var(--ink); padding:12px 22px; font:800 16px 'Archivo', sans-serif; cursor:pointer; }
+  button.go:disabled { opacity:.6; cursor:wait; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline:3px solid var(--or); outline-offset:2px; }
+  .apercu { font-size:14px; color:var(--ink-soft); min-height:1.5em; margin:0; }
+  .msg { padding:12px 14px; border:2px solid currentColor; font-size:15px; }
+  .msg.err { color:var(--err); }
+  .result { display:grid; gap:12px; }
+  .ref { font:600 22px 'IBM Plex Mono', monospace; }
+  .tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:10px; }
+  .tile { border:2px solid var(--ink); padding:10px 12px; }
+  .tile b { display:block; font-size:24px; font-variant-numeric:tabular-nums; }
+  .tile span { font-size:13px; color:var(--ink-soft); }
+  .foot { font-size:13px; color:var(--ink-soft); }
+  .foot a { color:var(--or-txt); }
+  @media (max-width:560px){ .grid2 { grid-template-columns:1fr; } .card { box-shadow:5px 5px 0 var(--or); margin-right:5px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/"><img src="/icons/icon-192.png" alt="" /> AgriSecur</a>
+    <div class="lang" role="group" aria-label="Langue / Language">
+      <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <section class="card" aria-labelledby="titre">
+    <div class="card-head" data-t="bandeau">Audit RDUE express · Dépôt sécurisé</div>
+    <div class="card-body">
+      <p class="kicker" data-t="kicker">Votre fichier de parcelles</p>
+      <h1 id="titre" data-t="titre">Envoyez le fichier de parcelles de votre coopérative</h1>
+      <p class="lead" data-t="lead">Nous contrôlons chaque parcelle et analysons le risque de déforestation par satellite. Vous voyez tout de suite un premier bilan, et nous revenons vers vous sous 48 heures ouvrées.</p>
+      <ol class="steps">
+        <li data-t="e1">Choisissez votre fichier : GeoJSON, KML (Google Earth, application GPS) ou CSV avec latitude et longitude.</li>
+        <li data-t="e2">Indiquez le nom de votre organisation et une adresse e-mail pour vous répondre.</li>
+        <li data-t="e3">Cliquez sur « Envoyer mon fichier » : le premier bilan s'affiche en quelques secondes.</li>
+      </ol>
+
+      <form id="form" autocomplete="on" novalidate>
+        <label for="org"><span data-t="l_org">Nom de la coopérative ou de l'entreprise</span>
+          <input id="org" name="client" required maxlength="120" autocomplete="organization" />
+        </label>
+        <div class="grid2">
+          <label for="email"><span data-t="l_email">E-mail pour vous répondre</span>
+            <input id="email" name="email" type="email" required maxlength="160" autocomplete="email" />
+          </label>
+          <label for="pays"><span data-t="l_pays">Pays</span>
+            <select id="pays" name="pays">
+              <option value="ci" data-t="o_ci">Côte d'Ivoire</option>
+              <option value="gh" data-t="o_gh">Ghana</option>
+            </select>
+          </label>
+        </div>
+        <label for="filiere"><span data-t="l_filiere">Filière</span>
+          <select id="filiere" name="filiere">
+            <option value="cacao" data-t="f_cacao">Cacao</option>
+            <option value="hevea" data-t="f_hevea">Hévéa (caoutchouc)</option>
+            <option value="palmier" data-t="f_palmier">Palmier à huile</option>
+            <option value="cafe" data-t="f_cafe">Café</option>
+            <option value="anacarde" data-t="f_anacarde">Anacarde</option>
+            <option value="autre" data-t="f_autre">Autre</option>
+          </select>
+        </label>
+        <label for="fichier"><span data-t="l_fichier">Fichier de parcelles</span>
+          <input id="fichier" type="file" accept=".geojson,.json,.kml,.csv,.txt" required />
+          <span class="hint" data-t="h_fichier">5 000 parcelles au maximum. Un Shapefile, un KMZ ou un fichier Excel ? Envoyez-le à contact@agrisecur.com, nous le convertissons.</span>
+        </label>
+        <p class="apercu" id="apercu" aria-live="polite"></p>
+        <div class="hp" aria-hidden="true"><label for="site_web">Site web</label><input id="site_web" name="site_web" tabindex="-1" autocomplete="off" /></div>
+        <label class="check" for="accord"><input id="accord" type="checkbox" required />
+          <span data-t="accord">J'accepte qu'AgriSecur traite ce fichier uniquement pour réaliser l'audit. Les données restent confidentielles ; l'analyse satellite passe par l'outil WHISP de la FAO, qui ne conserve pas les données envoyées.</span>
+        </label>
+        <div id="erreur" aria-live="assertive"></div>
+        <button class="go" type="submit" id="envoyer" data-t="envoyer">Envoyer mon fichier</button>
+      </form>
+
+      <div class="result" id="resultat" hidden>
+        <p class="kicker" data-t="r_kicker">Fichier bien reçu</p>
+        <div class="ref" id="ref"></div>
+        <div class="tiles" id="tiles"></div>
+        <p class="lead" id="r_texte"></p>
+        <p class="foot" data-t="r_suite">Gardez cette référence. Nous vous écrivons sous 48 heures ouvrées à l'adresse indiquée. L'analyse satellite donne une indication fondée sur des données publiques : ce n'est pas une certification.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot"><span data-t="foot">Une question ?</span> <a href="https://wa.me/33745984195">WhatsApp +33 7 45 98 41 95</a> · contact@agrisecur.com · <a href="/">www.agrisecur.com</a> · Agrisecur SARL – RCCM CI-ABJ-03-2026-B13-12497 – Abidjan</p>
+</div>
+
+<script src="/lecture-parcelles.js"></script>
+<script>
+(function () {
+  var T = {
+    fr: {},
+    en: {
+      bandeau: "EUDR Express Check · Secure upload",
+      kicker: "Your plot file",
+      titre: "Send your organisation's plot file",
+      lead: "We check every plot and assess deforestation risk by satellite. You see a first summary right away, and we get back to you within 48 working hours.",
+      e1: "Choose your file: GeoJSON, KML (Google Earth, GPS app) or CSV with latitude and longitude.",
+      e2: "Enter your organisation's name and an e-mail address for our reply.",
+      e3: "Click “Send my file”: the first summary appears within seconds.",
+      l_org: "Cooperative or company name", l_email: "E-mail for our reply", l_pays: "Country", l_filiere: "Commodity", l_fichier: "Plot file",
+      o_ci: "Côte d'Ivoire", o_gh: "Ghana",
+      f_cacao: "Cocoa", f_hevea: "Rubber", f_palmier: "Oil palm", f_cafe: "Coffee", f_anacarde: "Cashew", f_autre: "Other",
+      h_fichier: "5,000 plots maximum. A Shapefile, KMZ or Excel file? Send it to contact@agrisecur.com and we will convert it.",
+      accord: "I agree that AgriSecur processes this file only to carry out the check. The data stays confidential; the satellite analysis uses FAO's WHISP tool, which does not store the data sent.",
+      envoyer: "Send my file",
+      r_kicker: "File received",
+      r_suite: "Keep this reference. We will write to you within 48 working hours at the address provided. The satellite analysis gives an indication based on public data: it is not a certification.",
+      foot: "A question?",
+    },
+  };
+  var lang = /(^|[?&])lang=en\b/.test(location.search) ? "en" : "fr";
+  var textes = {
+    fr: { lus: function (n) { return n + " parcelle(s) lue(s) dans le fichier."; }, illisible: "Lecture impossible : ", choisir: "Choisissez un fichier contenant au moins une parcelle.", champs: "Remplissez le nom, l'e-mail et cochez l'accord.", lourd: "Fichier trop lourd pour un envoi (4 Mo) : envoyez-le à contact@agrisecur.com.", reseau: "Envoi impossible pour le moment. Vérifiez votre connexion et réessayez.", envoi: "Envoi en cours…",
+      tiles: ["parcelles reçues", "sans anomalie", "à corriger ou vérifier", "inutilisables en l'état"],
+      bilan: function (r) { return r.bloquantes ? r.analysables + " parcelle(s) sont en cours d'analyse satellite. " + r.bloquantes + " parcelle(s) ne peuvent pas être analysées en l'état (coordonnées manquantes ou hors du pays, par exemple) : nous vous dirons quoi corriger." : "Toutes les parcelles utilisables sont en cours d'analyse satellite."; } },
+    en: { lus: function (n) { return n + " plot(s) read from the file."; }, illisible: "Cannot read the file: ", choisir: "Choose a file with at least one plot.", champs: "Fill in the name and e-mail, and tick the consent box.", lourd: "File too large for one upload (4 MB): send it to contact@agrisecur.com.", reseau: "Upload failed. Check your connection and try again.", envoi: "Sending…",
+      tiles: ["plots received", "no issue found", "to fix or check", "unusable as is"],
+      bilan: function (r) { return r.bloquantes ? r.analysables + " plot(s) are being analysed by satellite. " + r.bloquantes + " plot(s) cannot be analysed as they are (missing coordinates or outside the country, for example): we will tell you what to fix." : "All usable plots are being analysed by satellite."; } },
+  };
+  var original = {};
+  document.querySelectorAll("[data-t]").forEach(function (el) { original[el.getAttribute("data-t")] = el.textContent; });
+  function appliquer(l) {
+    lang = l;
+    document.documentElement.lang = l;
+    document.querySelectorAll("[data-t]").forEach(function (el) {
+      var k = el.getAttribute("data-t");
+      el.textContent = l === "en" && T.en[k] ? T.en[k] : original[k];
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === l)); });
+    if (l === "en") document.getElementById("pays").value = "gh";
+  }
+  document.querySelectorAll(".lang button").forEach(function (b) { b.addEventListener("click", function () { appliquer(b.getAttribute("data-lang")); }); });
+  appliquer(lang);
+
+  var parcelles = null;
+  var erreur = document.getElementById("erreur");
+  function montrerErreur(t) { erreur.innerHTML = ""; if (!t) return; var d = document.createElement("div"); d.className = "msg err"; d.textContent = t; erreur.appendChild(d); }
+
+  document.getElementById("fichier").addEventListener("change", function (e) {
+    var ap = document.getElementById("apercu");
+    parcelles = null; ap.textContent = ""; montrerErreur("");
+    var f = e.target.files[0];
+    if (!f) return;
+    window.AgriSecurParcelles.lire(f).then(function (liste) {
+      parcelles = liste;
+      ap.textContent = textes[lang].lus(liste.length);
+    }, function (err) { montrerErreur(textes[lang].illisible + err.message); });
+  });
+
+  document.getElementById("form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    montrerErreur("");
+    var org = document.getElementById("org").value.trim();
+    var email = document.getElementById("email").value.trim();
+    if (!org || !email || !document.getElementById("accord").checked) return montrerErreur(textes[lang].champs);
+    if (!parcelles || !parcelles.length) return montrerErreur(textes[lang].choisir);
+    var fichier = document.getElementById("fichier").files[0];
+    var corps = JSON.stringify({
+      client: org, email: email, site_web: document.getElementById("site_web").value,
+      pays: document.getElementById("pays").value, filiere: document.getElementById("filiere").value,
+      fichier: fichier ? fichier.name : "", features: parcelles,
+    });
+    if (corps.length > 3.9 * 1024 * 1024) return montrerErreur(textes[lang].lourd);
+    var btn = document.getElementById("envoyer");
+    btn.disabled = true; var libelle = btn.textContent; btn.textContent = textes[lang].envoi;
+    fetch("/api/depot-audit", { method: "POST", headers: { "Content-Type": "application/json" }, body: corps })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (!x.ok) throw new Error(x.d && x.d.error ? x.d.error : textes[lang].reseau);
+        var r = x.d.resume;
+        document.getElementById("form").hidden = true;
+        document.getElementById("resultat").hidden = false;
+        document.getElementById("ref").textContent = (lang === "en" ? "Ref. " : "Réf. ") + x.d.reference;
+        var vals = [r.total, r.sans_anomalie, (r.total - r.sans_anomalie - r.bloquantes), r.bloquantes];
+        var tiles = document.getElementById("tiles"); tiles.innerHTML = "";
+        vals.forEach(function (v, i) { var t = document.createElement("div"); t.className = "tile"; var b = document.createElement("b"); b.textContent = v; var s = document.createElement("span"); s.textContent = textes[lang].tiles[i]; t.appendChild(b); t.appendChild(s); tiles.appendChild(t); });
+        document.getElementById("r_texte").textContent = textes[lang].bilan(r);
+        document.getElementById("resultat").scrollIntoView({ behavior: "smooth", block: "start" });
+      })
+      .catch(function (err) { montrerErreur(err.message || textes[lang].reseau); })
+      .then(function () { btn.disabled = false; btn.textContent = libelle; });
+  });
+})();
+</script>
+</body>
+</html>

@@ -70,7 +70,36 @@ function assainirEntete(valeur) {
   return String(valeur).replace(/[\r\n]+/g, " ").trim();
 }
 
-async function envoyerEmail({ to, subject, text }) {
+// Sujet encodé en UTF-8 (RFC 2047) dès qu'il contient un accent.
+function encoderSujet(sujet) {
+  return /^[\x20-\x7e]*$/.test(sujet) ? sujet : `=?UTF-8?B?${Buffer.from(sujet, "utf8").toString("base64")}?=`;
+}
+
+// Base64 découpé en lignes de 76 caractères (limite MIME).
+function base64Lignes(contenu) {
+  return Buffer.from(contenu).toString("base64").replace(/.{1,76}/g, "$&\r\n").trimEnd();
+}
+
+// Corps du message : texte brut seul, ou multipart/mixed avec pièces jointes
+// ({ filename, content: Buffer|string, contentType }).
+function construireCorps(text, attachments) {
+  if (!attachments || !attachments.length) {
+    return { entetes: ["Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: base64"], corps: base64Lignes(text) };
+  }
+  const frontiere = "agrisecur-" + Date.now().toString(36) + Math.random().toString(36).slice(2);
+  const parties = [
+    `--${frontiere}`, "Content-Type: text/plain; charset=utf-8", "Content-Transfer-Encoding: base64", "", base64Lignes(text),
+  ];
+  for (const pj of attachments) {
+    const nom = String(pj.filename || "piece-jointe").replace(/[^A-Za-z0-9._-]+/g, "-").slice(0, 100);
+    parties.push(`--${frontiere}`, `Content-Type: ${pj.contentType || "application/octet-stream"}; name="${nom}"`,
+      "Content-Transfer-Encoding: base64", `Content-Disposition: attachment; filename="${nom}"`, "", base64Lignes(pj.content));
+  }
+  parties.push(`--${frontiere}--`);
+  return { entetes: [`Content-Type: multipart/mixed; boundary="${frontiere}"`], corps: parties.join("\r\n") };
+}
+
+async function envoyerEmail({ to, subject, text, attachments }) {
   if (!MAILER_ACTIF) {
     console.log("[mailer] envoi ignoré (SMTP non configuré) :", subject);
     return false;
@@ -115,14 +144,16 @@ async function envoyerEmail({ to, subject, text }) {
             await envoyerCommande(secureSocket, `RCPT TO:<${destinataire}>`);
             await envoyerCommande(secureSocket, "DATA");
 
+            const { entetes, corps } = construireCorps(String(text || ""), attachments);
             const message = [
               `From: AgriSecur <${SMTP_USER}>`,
               `To: ${destinataire}`,
-              `Subject: ${sujet}`,
+              `Subject: ${encoderSujet(sujet)}`,
               `Date: ${new Date().toUTCString()}`,
-              `Content-Type: text/plain; charset=utf-8`,
+              "MIME-Version: 1.0",
+              ...entetes,
               "",
-              dotStuff(text),
+              dotStuff(corps),
               ".",
             ].join("\r\n");
 
