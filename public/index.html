@@ -47,6 +47,56 @@
   .who-box button:hover { background: rgba(255,255,255,.08); }
   main { flex: 1; padding: 40px 44px; max-width: 1000px; min-width: 0; }
 
+
+  /* ---------- Bordereau de contact ---------- */
+  .ct { --ct-ink:#111111; --ct-or:#F07E00; --ct-or-txt:#A85200; --ct-green:#1F3D2E; --ct-wa:#1B7F45; --ct-jute:#C9A874;
+        background:#FFFFFF; border:2px solid var(--ct-ink); box-shadow:8px 8px 0 var(--ct-or); margin:8px 8px 28px 0; color:var(--ct-ink); font-family:'Archivo',sans-serif; }
+  .ct-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 18px; background:var(--ct-green); color:#FFFFFF; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.12em;
+             background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 2px, transparent 2px 6px); }
+  .ct-etat { display:inline-flex; align-items:center; gap:7px; letter-spacing:.06em; }
+  .ct-etat::before { content:""; width:8px; height:8px; border-radius:50%; background:#8FA695; }
+  .ct-etat.is-open::before { background:#3DDC84; box-shadow:0 0 0 3px rgba(61,220,132,.25); }
+  .ct-body { position:relative; padding:26px 24px 24px; }
+  .ct-kicker { margin:0 0 10px; font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase; color:var(--ct-or-txt); }
+  .ct-title { margin:0; font-family:'Big Shoulders Stencil','Archivo',sans-serif; font-weight:900; font-size:clamp(44px,9vw,68px); line-height:.9; text-transform:uppercase; max-width:80%; }
+  .ct-title span { color:var(--ct-or); }
+  .ct-lead { margin:14px 0 22px; font-size:15px; line-height:1.55; color:#3A3A3A; max-width:520px; }
+  .ct-stamp { position:absolute; top:22px; right:18px; transform:rotate(9deg); border:4px double var(--ct-wa); color:var(--ct-wa); padding:5px 10px 3px; font-family:'Big Shoulders Stencil','Archivo',sans-serif; font-weight:900; font-size:22px; letter-spacing:.08em; line-height:1; text-align:center; opacity:.9; }
+  .ct-stamp small { display:block; font-size:10px; letter-spacing:.14em; margin-top:2px; }
+  .ct-line { display:grid; grid-template-columns:40px minmax(0,1fr) 24px; align-items:center; gap:12px; padding:14px 4px; border-top:2px dashed #CFCFCF; color:var(--ct-ink); text-decoration:none; transition:background .15s ease, padding .15s ease; }
+  .ct-line:hover { background:#FFF6EC; padding-left:10px; }
+  .ct-n { font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:14px; color:var(--ct-or-txt); }
+  .ct-txt b { display:block; font-size:18px; font-weight:800; }
+  .ct-txt small { display:block; font-size:13.5px; color:#5C5C5C; margin-top:2px; overflow-wrap:anywhere; }
+  .ct-go { font-size:22px; font-weight:800; }
+  .ct-line-wa { background:var(--ct-wa); color:#FFFFFF; border:2px solid var(--ct-ink); box-shadow:4px 4px 0 var(--ct-ink); padding:16px 14px; margin-bottom:10px; }
+  .ct-line-wa:hover { background:#16693A; padding-left:18px; }
+  .ct-line-wa .ct-n, .ct-line-wa .ct-txt small { color:#D5F2E1; }
+  .ct-line-wa + .ct-line { border-top:0; }
+  .ct-hours { margin:6px 0 0; padding-top:12px; border-top:2px dashed #CFCFCF; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#5C5C5C; }
+  .ct-form { margin-top:22px; padding:18px; background:#F7F2EA; border:2px solid var(--ct-ink); display:flex; flex-direction:column; gap:10px;
+             background-image:repeating-linear-gradient(45deg, rgba(201,168,116,.10) 0 2px, transparent 2px 7px); }
+  .ct-form-title { margin:0 0 2px; font-family:'Big Shoulders Stencil','Archivo',sans-serif; font-weight:900; font-size:26px; text-transform:uppercase; line-height:1; }
+  .ct-row { display:grid; grid-template-columns:minmax(0,1fr) 150px; gap:10px; }
+  .ct-form input, .ct-form select, .ct-form textarea { width:100%; box-sizing:border-box; border:2px solid var(--ct-ink); border-radius:0; background:#FFFFFF; padding:12px; font:inherit; font-size:15px; color:var(--ct-ink); }
+  .ct-form input:focus, .ct-form select:focus, .ct-form textarea:focus { outline:3px solid var(--ct-or); outline-offset:0; }
+  .ct-send { align-self:flex-start; min-height:48px; padding:0 22px; background:var(--ct-or); color:var(--ct-ink); border:2px solid var(--ct-ink); box-shadow:4px 4px 0 var(--ct-ink); font:inherit; font-weight:800; font-size:15px; cursor:pointer; transition:transform .12s ease, box-shadow .12s ease; }
+  .ct-send:hover { transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--ct-ink); }
+  .ct-send:active { transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ct-ink); }
+  .ct-send[disabled] { opacity:.6; cursor:wait; }
+  .ct-msg { margin:0; font-size:14px; font-weight:600; min-height:1em; }
+  .ct-msg.ok { color:var(--ct-wa); } .ct-msg.err { color:#B8352A; }
+  @media (max-width: 560px) {
+    .ct-body { padding:22px 16px 18px; }
+    .ct-head { padding:10px 14px; font-size:11px; letter-spacing:.08em; white-space:nowrap; }
+    .ct-title { max-width:100%; }
+    .ct-stamp { top:auto; bottom:auto; position:static; display:inline-block; margin:-6px 0 16px; transform:rotate(-4deg); }
+    .ct-row { grid-template-columns:minmax(0,1fr); }
+    .ct-send { align-self:stretch; }
+    .ct { margin-right:6px; box-shadow:6px 6px 0 var(--ct-or); }
+  }
+  @media (prefers-reduced-motion: reduce) { .ct-line, .ct-send { transition:none; } }
+
   /* Espace connecté sur téléphone : le menu latéral de 240 px poussait tout
      le contenu hors de l'écran. Il devient une barre en haut, avec les
      onglets en ligne (sur deux rangées si besoin). */
@@ -1160,6 +1210,52 @@
       <h1>Aide &amp; contact</h1>
       <p class="sub">🌱 Nous sommes là pour vous aider. Comment fonctionne AgriSecur, vos droits, et comment nous joindre.</p>
 
+      <!-- Bordereau de contact : même langage que la page d'accueil
+           (pochoir des sacs de cacao, tampon, bordures noires, ombres orange). -->
+      <div class="ct" id="contact">
+        <div class="ct-head">
+          <span class="ct-head-l">BORDEREAU · CONTACT</span>
+          <span id="ct-etat" class="ct-etat" aria-live="polite">—</span>
+        </div>
+        <div class="ct-body">
+          <p class="ct-kicker">Agrisecur SARL · Abidjan, Côte d'Ivoire</p>
+          <h2 class="ct-title">Parlons de<br/>votre <span>récolte.</span></h2>
+          <p class="ct-lead">Coopérative, producteur, acheteur, exportateur : une question sur une vente, un paiement, un litige ou l'audit RDUE ? Une personne vous répond — pas un robot.</p>
+          <div class="ct-stamp" aria-hidden="true">RÉPONSE<small>PAR UN HUMAIN</small></div>
+
+          <a class="ct-line ct-line-wa" href="https://wa.me/33745984195?text=Bonjour%20AgriSecur%2C%20" target="_blank" rel="noopener">
+            <span class="ct-n">01</span>
+            <span class="ct-txt"><b>WhatsApp</b><small>Le plus rapide · +33 7 45 98 41 95</small></span>
+            <span class="ct-go" aria-hidden="true">→</span>
+          </a>
+          <a class="ct-line" href="mailto:contact@agrisecur.com">
+            <span class="ct-n">02</span>
+            <span class="ct-txt"><b>E-mail</b><small>contact@agrisecur.com</small></span>
+            <span class="ct-go" aria-hidden="true">→</span>
+          </a>
+          <a class="ct-line" href="mailto:support@agrisecur.com">
+            <span class="ct-n">03</span>
+            <span class="ct-txt"><b>Support technique</b><small>support@agrisecur.com · compte, connexion, bug</small></span>
+            <span class="ct-go" aria-hidden="true">→</span>
+          </a>
+          <p class="ct-hours">Lundi–vendredi · 8h–17h, heure d'Abidjan (GMT)</p>
+
+          <form class="ct-form" id="ct-form" novalidate>
+            <p class="ct-form-title">Ou laissez-nous un message</p>
+            <div class="ct-row">
+              <input name="nom" placeholder="Votre nom ou coopérative" maxlength="120" required />
+              <select name="profil" aria-label="Vous êtes">
+                <option>Coopérative</option><option>Producteur</option><option>Acheteur</option><option>Exportateur</option><option>Autre</option>
+              </select>
+            </div>
+            <input name="joindre" placeholder="Téléphone / WhatsApp ou e-mail" maxlength="120" required />
+            <textarea name="message" rows="4" placeholder="Votre message (lot, filière, quantité, question…)" maxlength="1800" required></textarea>
+            <button type="submit" class="ct-send">Envoyer le message</button>
+            <p class="ct-msg" id="ct-msg" role="status"></p>
+          </form>
+        </div>
+      </div>
+
       <div class="card">
         <strong>Questions fréquentes</strong>
         <details class="help-item" open>
@@ -1315,20 +1411,6 @@
         </p>
       </div>
 
-      <div class="card" id="contact">
-        <strong>Nous contacter</strong>
-        <p class="sub" style="margin:8px 0 14px;">
-          Une question, un problème technique, un litige non résolu par la médiation interne ?<br/><br/>
-          <strong>Email général :</strong> contact@agrisecur.com<br/>
-          <strong>Support technique :</strong> support@agrisecur.com<br/>
-          <strong>Heures d'ouverture :</strong> Lundi–Vendredi, 8h–17h (heure d'Abidjan)
-        </p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a href="mailto:contact@agrisecur.com" style="text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; background:var(--green); color:var(--paper); border:2px solid var(--green);">✉️ Nous écrire par email</a>
-          <!-- WhatsApp : numéro au format international sans espaces ni + (ici France 33). -->
-          <a href="https://wa.me/33745984195" target="_blank" rel="noopener" style="text-decoration:none; padding:10px 18px; border-radius:6px; font-weight:700; font-size:13px; display:inline-flex; align-items:center; gap:6px; background:var(--paper); color:#1B8A4C; border:2px solid #25D366;">💬 WhatsApp</a>
-        </div>
-      </div>
     </section>
 
     <section id="panel-compte" class="panel">
@@ -1571,6 +1653,44 @@ function appliquerTraductions() {
     }
   });
 }
+
+
+// ---------------- Bordereau de contact ----------------
+// État « ouvert / fermé » calculé à l'heure d'Abidjan (GMT, pas d'heure d'été),
+// et envoi du formulaire vers /api/signalements (type « contact ») : le message
+// arrive dans le back-office et, si le SMTP est configuré, par e-mail.
+(function () {
+  const etat = document.getElementById("ct-etat");
+  function majEtat() {
+    if (!etat) return;
+    const d = new Date(); const j = d.getUTCDay(); const h = d.getUTCHours() + d.getUTCMinutes() / 60;
+    const ouvert = j >= 1 && j <= 5 && h >= 8 && h < 17;
+    etat.classList.toggle("is-open", ouvert);
+    etat.textContent = ouvert ? "OUVERT" : "FERMÉ · DÈS 8H";
+  }
+  majEtat(); setInterval(majEtat, 60000);
+
+  const form = document.getElementById("ct-form");
+  if (!form) return;
+  const out = document.getElementById("ct-msg");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(form));
+    out.className = "ct-msg";
+    if (!fd.nom.trim() || !fd.joindre.trim() || fd.message.trim().length < 5) {
+      out.classList.add("err"); out.textContent = "Merci d'indiquer votre nom, un moyen de vous joindre et votre message."; return;
+    }
+    const btn = form.querySelector(".ct-send"); btn.disabled = true; btn.textContent = "Envoi…";
+    try {
+      const r = await fetch("/api/signalements", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "contact", description: fd.message.trim(), contact: fd.joindre.trim(), contexte: `${fd.nom.trim()} · ${fd.profil}` }) });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "erreur");
+      form.reset(); out.classList.add("ok"); out.textContent = "Message bien reçu. Nous vous recontactons au plus vite.";
+    } catch (err) {
+      out.classList.add("err"); out.textContent = "L'envoi n'a pas abouti. Écrivez-nous plutôt sur WhatsApp.";
+    } finally { btn.disabled = false; btn.textContent = "Envoyer le message"; }
+  });
+})();
 
 // ==================== Accessibilité : commande vocale ====================
 // Deux mécanismes génériques, appliqués automatiquement à tout le site

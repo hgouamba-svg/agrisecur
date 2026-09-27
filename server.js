@@ -12,6 +12,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const db = require("./db");
+const { envoyerEmail } = require("./mailer");
 const { router, match } = require("./router");
 const payments = require("./payments");
 const { genererBonCommandePDF } = require("./pdf");
@@ -1542,15 +1543,29 @@ router.get("/api/orders", (req, res) => {
 router.post("/api/signalements", (req, res, params, body) => {
   if (!limiterTentatives(req, res, "signalement")) return;
   const { type, description, contexte, contact } = body;
-  if (!["bug", "suggestion", "connexion"].includes(type)) return send(res, 400, { error: "type invalide" });
+  if (!["bug", "suggestion", "connexion", "contact"].includes(type)) return send(res, 400, { error: "type invalide" });
   if (!description || description.trim().length < 5) return send(res, 400, { error: "description trop courte" });
   if (description.length > 2000) return send(res, 400, { error: "description trop longue (2000 caractères max)" });
 
   const auth = getAuth(req);
+  // Les messages du formulaire « Nous contacter » sont rangés avec les
+  // suggestions (la table n'accepte que bug/suggestion/connexion), repérables
+  // par le préfixe « Formulaire contact » dans le contexte.
+  const typeStocke = type === "contact" ? "suggestion" : type;
+  const contexteStocke = type === "contact" ? `Formulaire contact · ${String(contexte || "").slice(0, 200)}` : (contexte || null);
   const info = db.prepare(`
     INSERT INTO signalements (type, description, contexte, contact, user_type, user_id)
     VALUES (?, ?, ?, ?, ?, ?)
-  `).run(type, description.trim(), contexte || null, contact || null, auth ? auth.type : null, auth ? auth.id : null);
+  `).run(typeStocke, description.trim(), contexteStocke, contact || null, auth ? auth.type : null, auth ? auth.id : null);
+  // Message du formulaire « Nous contacter » : copie par e-mail à la boîte
+  // contact (sans bloquer la réponse, et sans effet si le SMTP n'est pas configuré).
+  if (type === "contact") {
+    envoyerEmail({
+      to: process.env.CONTACT_EMAIL || "contact@agrisecur.com",
+      subject: `Nouveau message de contact — ${String(contexte || "").slice(0, 80)}`,
+      text: `De : ${contexte || "-"}\nPour répondre : ${contact || "-"}\n\n${description.trim()}\n\n(Message n° ${info.lastInsertRowid}, aussi visible dans le back-office, onglet Signalements.)`,
+    }).catch((e) => console.log("[contact] e-mail non envoyé :", e.message));
+  }
   send(res, 201, { ok: true, id: info.lastInsertRowid });
 });
 
