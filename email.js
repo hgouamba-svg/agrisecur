@@ -38,6 +38,21 @@ if (nodemailer && SMTP_CONFIGURE) {
 }
 
 async function envoyerBonCommandeParEmail(commande, destinataireEmail, pdfBuffer) {
+  // Sur Railway (offre Hobby), le SMTP est bloqué : on passe par Brevo si configuré.
+  if (process.env.BREVO_API_KEY) {
+    try {
+      await require("./mailer").envoyerEmail({
+        to: destinataireEmail,
+        subject: `AgriSecur — Confirmation de votre commande n°${commande.id}`,
+        text: `Bonjour,\n\nVotre commande n°${commande.id} a bien été enregistrée sur AgriSecur.\nVous trouverez le bon de commande complet en pièce jointe.\n\nVos fonds restent protégés en compte séquestre jusqu'à validation de la conformité du lot.\n\nL'équipe AgriSecur`,
+        attachments: [{ filename: `agrisecur-bon-commande-${commande.id}.pdf`, content: pdfBuffer, contentType: "application/pdf" }],
+      });
+      return { envoye: true };
+    } catch (err) {
+      console.error(`[email] Échec de l'envoi Brevo pour la commande #${commande.id} :`, err.message);
+      return { envoye: false, raison: err.message };
+    }
+  }
   if (!transporteur) {
     console.log(`[email] Envoi désactivé (SMTP non configuré) — bon de commande #${commande.id} non envoyé à ${destinataireEmail}.`);
     return { envoye: false, raison: "SMTP non configuré" };
@@ -63,4 +78,4 @@ async function envoyerBonCommandeParEmail(commande, destinataireEmail, pdfBuffer
   }
 }
 
-module.exports = { envoyerBonCommandeParEmail, SMTP_CONFIGURE };
+module.exports = { envoyerBonCommandeParEmail, SMTP_CONFIGURE: SMTP_CONFIGURE || !!process.env.BREVO_API_KEY };

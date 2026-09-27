@@ -17,11 +17,15 @@ const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = process.env.SMTP_USER || null;
 // Accepte SMTP_PASS ou SMTP_PASSWORD (nom déjà utilisé par email.js sur Railway)
 const SMTP_PASS = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || null;
-const MAILER_ACTIF = !!(SMTP_USER && SMTP_PASS);
+// Brevo (API HTTPS) : Railway bloque le SMTP sur les offres Free/Trial/Hobby.
+// Si BREVO_API_KEY est défini, on envoie par Brevo ; sinon par SMTP.
+const BREVO_API_KEY = process.env.BREVO_API_KEY || null;
+const EXPEDITEUR = process.env.EMAIL_FROM || SMTP_USER || "contact@agrisecur.com";
+const MAILER_ACTIF = !!(BREVO_API_KEY || (SMTP_USER && SMTP_PASS));
 const TIMEOUT_MS = 15000;
 
 if (!MAILER_ACTIF) {
-  console.log("[mailer] SMTP_USER / SMTP_PASSWORD non définis — notifications email désactivées.");
+  console.log("[mailer] ni BREVO_API_KEY ni SMTP_USER / SMTP_PASSWORD définis — notifications email désactivées.");
 }
 
 // Attend une réponse SMTP complète (gère les réponses multi-lignes : les
@@ -100,11 +104,38 @@ function construireCorps(text, attachments) {
   return { entetes: [`Content-Type: multipart/mixed; boundary="${frontiere}"`], corps: parties.join("\r\n") };
 }
 
+async function envoyerParBrevo({ to, subject, text, attachments }) {
+  const corps = {
+    sender: { name: "AgriSecur", email: EXPEDITEUR },
+    to: [{ email: assainirEntete(to) }],
+    subject: assainirEntete(subject),
+    textContent: String(text || ""),
+  };
+  if (attachments && attachments.length) {
+    corps.attachment = attachments.map((pj) => ({
+      name: String(pj.filename || "piece-jointe").replace(/[^A-Za-z0-9._-]+/g, "-").slice(0, 100),
+      content: Buffer.from(pj.content).toString("base64"),
+    }));
+  }
+  const r = await fetch(process.env.BREVO_API_URL || "https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": BREVO_API_KEY, "content-type": "application/json", accept: "application/json" },
+    body: JSON.stringify(corps),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
+  });
+  if (!r.ok) {
+    const detail = (await r.text().catch(() => "")).slice(0, 300);
+    throw new Error(`Brevo ${r.status} ${detail}`);
+  }
+  return true;
+}
+
 async function envoyerEmail({ to, subject, text, attachments }) {
   if (!MAILER_ACTIF) {
-    console.log("[mailer] envoi ignoré (SMTP non configuré) :", subject);
+    console.log("[mailer] envoi ignoré (email non configuré) :", subject);
     return false;
   }
+  if (BREVO_API_KEY) return envoyerParBrevo({ to, subject, text, attachments });
 
   const destinataire = assainirEntete(to);
   const sujet = assainirEntete(subject);
