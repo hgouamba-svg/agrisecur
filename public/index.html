@@ -45,7 +45,34 @@
   .badge-role { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--gold); background: rgba(217,164,65,.14); padding: 2px 7px; border-radius: 4px; margin-top: 4px; }
   .who-box button { margin-top: 12px; background: transparent; border: 1px solid rgba(255,255,255,.25); color: var(--paper); border-radius: 7px; padding: 8px 10px; font-size: 12px; cursor: pointer; width: 100%; transition: background .15s ease; }
   .who-box button:hover { background: rgba(255,255,255,.08); }
-  main { flex: 1; padding: 40px 44px; max-width: 1000px; }
+  main { flex: 1; padding: 40px 44px; max-width: 1000px; min-width: 0; }
+
+  /* Espace connecté sur téléphone : le menu latéral de 240 px poussait tout
+     le contenu hors de l'écran. Il devient une barre en haut, avec les
+     onglets en ligne (sur deux rangées si besoin). */
+  @media (max-width: 760px) {
+    .layout { flex-direction: column; }
+    nav { width: auto; padding: 12px 12px 0; gap: 0; flex-direction: row; flex-wrap: wrap; align-items: center; position: sticky; top: 0; z-index: 400; }
+    nav .brand { font-size: 18px; padding: 0 6px 0 2px; }
+    nav .brand-icon.brand-seal { width: 26px; height: 26px; }
+    nav .brand-tagline { display: none; }
+    .who-box { order: 1; margin: 0 0 0 auto; padding: 0; border: 0; display: flex; align-items: center; gap: 8px; }
+    .who-box .label, .who-box #who-commission, .who-box .badge-role { display: none; }
+    .who-box .val { font-size: 13px; max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .who-box button { margin: 0; width: auto; padding: 7px 10px; white-space: nowrap; }
+    nav button.tab { order: 2; flex: 0 0 auto; border-left: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 12px 10px 10px; font-size: 13.5px; white-space: nowrap; }
+    nav button.tab.active { background: transparent; border-bottom-color: var(--gold); }
+    nav::after { content: ""; order: 1; flex-basis: 100%; height: 6px; }
+    main { padding: 20px 16px 140px; max-width: none; width: 100%; }
+    .hero-banner { padding: 22px 20px; border-radius: 16px; }
+    .hero-banner .hero-icon { width: 48px; height: 74px; }
+    #app-layout .trust-tiles { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    #app-layout .grid { grid-template-columns: minmax(0, 1fr); }
+    #vendeur-kpis, #parrainage-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px; }
+    #vendeur-kpis .kpi-card, #parrainage-kpis .kpi-card { padding: 14px; }
+    #vendeur-kpis .kpi-val, #parrainage-kpis .kpi-val { font-size: 18px; }
+    #app-layout .hero-banner { padding: 22px 20px; }
+  }
   h1 { font-family: 'Archivo', sans-serif; font-size: 27px; margin: 0 0 6px; font-weight: 600; letter-spacing: -.01em; }
   .eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--gold-dark); margin: 0 0 6px; }
   .sub { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; margin: 0 0 26px; max-width: 600px; }
