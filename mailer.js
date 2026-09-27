@@ -15,12 +15,13 @@ const tls = require("tls");
 const SMTP_HOST = process.env.SMTP_HOST || "ssl0.ovh.net";
 const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
 const SMTP_USER = process.env.SMTP_USER || null;
-const SMTP_PASS = process.env.SMTP_PASS || null;
+// Accepte SMTP_PASS ou SMTP_PASSWORD (nom déjà utilisé par email.js sur Railway)
+const SMTP_PASS = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || null;
 const MAILER_ACTIF = !!(SMTP_USER && SMTP_PASS);
 const TIMEOUT_MS = 15000;
 
 if (!MAILER_ACTIF) {
-  console.log("[mailer] SMTP_USER / SMTP_PASS non définis — notifications email désactivées.");
+  console.log("[mailer] SMTP_USER / SMTP_PASSWORD non définis — notifications email désactivées.");
 }
 
 // Attend une réponse SMTP complète (gère les réponses multi-lignes : les
@@ -109,7 +110,11 @@ async function envoyerEmail({ to, subject, text, attachments }) {
   const sujet = assainirEntete(subject);
 
   return new Promise((resolve, reject) => {
-    const socket = net.connect(SMTP_PORT, SMTP_HOST);
+    // Port 465 = TLS direct (SSL) ; autre port (587) = STARTTLS.
+    const tlsDirect = SMTP_PORT === 465;
+    const socket = tlsDirect
+      ? tls.connect({ port: SMTP_PORT, host: SMTP_HOST, servername: SMTP_HOST })
+      : net.connect(SMTP_PORT, SMTP_HOST);
     let termine = false;
 
     const minuteur = setTimeout(() => {
@@ -126,46 +131,48 @@ async function envoyerEmail({ to, subject, text, attachments }) {
       fn(valeur);
     }
 
+    async function session(sock) {
+      try {
+        await envoyerCommande(sock, `EHLO agrisecur.com`);
+        await envoyerCommande(sock, "AUTH LOGIN");
+        await envoyerCommande(sock, Buffer.from(SMTP_USER).toString("base64"));
+        await envoyerCommande(sock, Buffer.from(SMTP_PASS).toString("base64"));
+        await envoyerCommande(sock, `MAIL FROM:<${SMTP_USER}>`);
+        await envoyerCommande(sock, `RCPT TO:<${destinataire}>`);
+        await envoyerCommande(sock, "DATA");
+
+        const { entetes, corps } = construireCorps(String(text || ""), attachments);
+        const message = [
+          `From: AgriSecur <${SMTP_USER}>`,
+          `To: ${destinataire}`,
+          `Subject: ${encoderSujet(sujet)}`,
+          `Date: ${new Date().toUTCString()}`,
+          "MIME-Version: 1.0",
+          ...entetes,
+          "",
+          dotStuff(corps),
+          ".",
+        ].join("\r\n");
+
+        await envoyerCommande(sock, message);
+        await envoyerCommande(sock, "QUIT");
+        sock.end();
+        finir(resolve, true);
+      } catch (err) {
+        sock.destroy();
+        finir(reject, err);
+      }
+    }
+
     socket.once("error", (err) => finir(reject, err));
 
-    socket.once("connect", async () => {
+    socket.once(tlsDirect ? "secureConnect" : "connect", async () => {
       try {
         await lireReponse(socket); // bannière de bienvenue
+        if (tlsDirect) return session(socket);
         await envoyerCommande(socket, `EHLO agrisecur.com`);
         await envoyerCommande(socket, "STARTTLS");
-
-        const secureSocket = tls.connect({ socket, servername: SMTP_HOST }, async () => {
-          try {
-            await envoyerCommande(secureSocket, `EHLO agrisecur.com`);
-            await envoyerCommande(secureSocket, "AUTH LOGIN");
-            await envoyerCommande(secureSocket, Buffer.from(SMTP_USER).toString("base64"));
-            await envoyerCommande(secureSocket, Buffer.from(SMTP_PASS).toString("base64"));
-            await envoyerCommande(secureSocket, `MAIL FROM:<${SMTP_USER}>`);
-            await envoyerCommande(secureSocket, `RCPT TO:<${destinataire}>`);
-            await envoyerCommande(secureSocket, "DATA");
-
-            const { entetes, corps } = construireCorps(String(text || ""), attachments);
-            const message = [
-              `From: AgriSecur <${SMTP_USER}>`,
-              `To: ${destinataire}`,
-              `Subject: ${encoderSujet(sujet)}`,
-              `Date: ${new Date().toUTCString()}`,
-              "MIME-Version: 1.0",
-              ...entetes,
-              "",
-              dotStuff(corps),
-              ".",
-            ].join("\r\n");
-
-            await envoyerCommande(secureSocket, message);
-            await envoyerCommande(secureSocket, "QUIT");
-            secureSocket.end();
-            finir(resolve, true);
-          } catch (err) {
-            secureSocket.destroy();
-            finir(reject, err);
-          }
-        });
+        const secureSocket = tls.connect({ socket, servername: SMTP_HOST }, () => session(secureSocket));
         secureSocket.once("error", (err) => finir(reject, err));
       } catch (err) {
         socket.destroy();
