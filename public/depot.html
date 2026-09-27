@@ -54,6 +54,7 @@
   .foot { font-size:13px; color:var(--ink-soft); }
   .foot a { color:var(--or-txt); }
   @media (max-width:560px){ .grid2 { grid-template-columns:1fr; } .card { box-shadow:5px 5px 0 var(--or); margin-right:5px; } }
+  .note-donnees{margin:-4px 0 12px;font-size:.9rem}.note-donnees a{color:inherit;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -112,6 +113,7 @@
         <label class="check" for="accord"><input id="accord" type="checkbox" required />
           <span data-t="accord">J'accepte qu'AgriSecur traite ce fichier uniquement pour réaliser l'audit. Les données restent confidentielles ; l'analyse satellite passe par l'outil WHISP de la FAO, qui ne conserve pas les données envoyées.</span>
         </label>
+        <p class="note-donnees"><a href="/#donnees-personnelles" target="_blank" rel="noopener" data-t="lienDonnees">Comment nous protégeons vos données</a></p>
         <div id="erreur" aria-live="assertive"></div>
         <button class="go" type="submit" id="envoyer" data-t="envoyer">Envoyer mon fichier</button>
       </form>
@@ -146,6 +148,7 @@
       o_ci: "Côte d'Ivoire", o_gh: "Ghana",
       f_cacao: "Cocoa", f_hevea: "Rubber", f_palmier: "Oil palm", f_cafe: "Coffee", f_anacarde: "Cashew", f_autre: "Other",
       h_fichier: "5,000 plots maximum. A Shapefile, KMZ or Excel file? Send it to contact@agrisecur.com and we will convert it.",
+      lienDonnees: "How we protect your data",
       accord: "I agree that AgriSecur processes this file only to carry out the check. The data stays confidential; the satellite analysis uses FAO's WHISP tool, which does not store the data sent.",
       envoyer: "Send my file",
       r_kicker: "File received",

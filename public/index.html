@@ -820,7 +820,7 @@
           <li data-i18n="rdue.i3">Rapport et plan d'action prêts à transmettre à votre exportateur</li>
           <li data-i18n="rdue.i4">Moitié à la commande, moitié à la remise du rapport · données confidentielles</li>
         </ul>
-        <p class="ls-rdue-note" data-i18n="rdue.note">Le rapport aide à préparer la diligence raisonnée européenne ; il ne constitue pas une certification.</p>
+        <p class="ls-rdue-note" data-i18n="rdue.note">Le rapport aide à préparer la diligence raisonnable européenne ; il ne constitue pas une certification.</p>
       </div>
     </div>
   </section>
@@ -1321,7 +1321,7 @@
         </details>
         <details class="help-item">
           <summary>Article 4 ter — Indication de risque de déforestation</summary>
-          <p>Pour les lots géolocalisés, AgriSecur peut afficher une indication automatisée de risque de déforestation, générée par l'API WHISP (FAO / Forest Data Partnership) à partir de données satellite publiques. Cette indication ne constitue ni une certification de conformité au Règlement (UE) 2023/1115 relatif à la déforestation (RDUE), ni un audit ou une vérification physique de la parcelle. La géolocalisation renseignée relève de la seule responsabilité du vendeur. Il appartient à tout acheteur soumis à des obligations de diligence raisonnée de procéder à ses propres vérifications ; AgriSecur ne saurait être tenue responsable d'une non-conformité constatée sur cette base.</p>
+          <p>Pour les lots géolocalisés, AgriSecur peut afficher une indication automatisée de risque de déforestation, générée par l'API WHISP (FAO / Forest Data Partnership) à partir de données satellite publiques. Cette indication ne constitue ni une certification de conformité au Règlement (UE) 2023/1115 relatif à la déforestation (RDUE), ni un audit ou une vérification physique de la parcelle. La géolocalisation renseignée relève de la seule responsabilité du vendeur. Il appartient à tout acheteur soumis à des obligations de diligence raisonnable de procéder à ses propres vérifications ; AgriSecur ne saurait être tenue responsable d'une non-conformité constatée sur cette base.</p>
         </details>
         <details class="help-item">
           <summary>Article 5 — Gestion des litiges</summary>
@@ -3151,6 +3151,7 @@ async function reclamer(id) {
 }
 
 if (window.location.hash === "#register" && typeof goToAuth === "function") goToAuth("register");
+if (["#donnees-personnelles", "#mentions-legales", "#cgu-cgv-summary"].includes(window.location.hash) && typeof ouvrirAidePublique === "function") ouvrirAidePublique(window.location.hash.slice(1));
 
 async function telechargerBonCommande(id) {
   try {
