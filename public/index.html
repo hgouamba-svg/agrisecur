@@ -387,6 +387,17 @@
   .ls-hero { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); border-bottom:2px solid var(--ls-ink); }
   .ls-hero-text { display:flex; flex-direction:column; justify-content:center; gap:26px; padding:80px 56px 88px max(48px, calc((100vw - 1248px) / 2 + 48px)); }
   .ls-ctas { display:flex; gap:14px; flex-wrap:wrap; }
+  .ls-doors { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .ls-door { display:flex; flex-direction:column; gap:6px; padding:18px 18px 16px; border:2px solid var(--ls-ink); background:#FFFFFF; color:var(--ls-ink); text-decoration:none; box-shadow:5px 5px 0 var(--ls-ink); transition:transform .12s, box-shadow .12s; }
+  .ls-door:hover { transform:translate(-2px,-2px); box-shadow:7px 7px 0 var(--ls-ink); }
+  .ls-door-or { background:var(--ls-or); }
+  .ls-door-lab { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; letter-spacing:.08em; }
+  .ls-door b { font-size:19px; line-height:1.15; font-weight:800; }
+  .ls-door small { font-size:13.5px; line-height:1.4; color:inherit; opacity:.85; }
+  .ls-door-go { margin-top:auto; padding-top:6px; font-weight:700; font-size:14px; text-decoration:underline; text-underline-offset:3px; }
+  .ls-ctas-mini .ls-btn { padding:10px 16px; font-size:13.5px; }
+  @media (max-width:760px){ .ls-doors { grid-template-columns:1fr; } }
+
   .ls-hero-art { background:var(--ls-or); border-left:2px solid var(--ls-ink); padding:64px max(48px, calc((100vw - 1248px) / 2 + 48px)) 56px 64px; display:flex; flex-direction:column; justify-content:center; gap:12px; }
   .ls-sack { position:relative; min-height:560px; padding:44px 44px 40px; border:2px solid var(--ls-ink); box-shadow:12px 12px 0 var(--ls-ink); overflow:hidden; color:#2A2016; display:flex; flex-direction:column; gap:12px;
     background-color:var(--ls-jute);
@@ -776,13 +787,26 @@
 
   <section class="ls-hero">
     <div class="ls-hero-text">
-      <p class="ls-eyebrow" data-i18n="hero.badge">Conformité RDUE · Côte d'Ivoire et Ghana</p>
-      <h1 class="ls-h1" data-i18n="hero.title">Vos parcelles<br>prêtes pour<br><span>l'Europe.</span></h1>
-      <p class="ls-lead" data-i18n="hero.lead">Nous vérifions par satellite le fichier de parcelles de votre coopérative. Premier avis sous 48 heures ouvrées, rapport et plan d'action en 7 jours ouvrés, avant l'échéance européenne du 30 décembre 2026.</p>
-      <div class="ls-ctas">
-        <a class="ls-btn ls-btn-orange ls-btn-lg" href="/depot" data-i18n="hero.ctaDepot">Déposer mon fichier</a>
-        <a class="ls-btn ls-btn-line ls-btn-lg" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="hero.whatsapp">Écrire sur WhatsApp</a>
-        <a class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
+      <p class="ls-eyebrow" data-i18n="hero.badge">Notre mission · Côte d'Ivoire et Ghana</p>
+      <h1 class="ls-h1" data-i18n="hero.title">Sécuriser<br>chaque vente<br><span>agricole.</span></h1>
+      <p class="ls-lead" data-i18n="hero.lead">De la parcelle à l'acheteur : nous vérifions vos parcelles pour l'Europe, puis nous vous aidons à vendre vos lots en confiance.</p>
+      <div class="ls-doors">
+        <a class="ls-door ls-door-or" href="/depot">
+          <span class="ls-door-lab" data-i18n="door.a.lab">AUDIT RDUE · 250 000 FCFA</span>
+          <b data-i18n="door.a.title">Vos parcelles prêtes pour l'Europe</b>
+          <small data-i18n="door.a.text">Premier avis sous 48 h ouvrées, rapport en 7 jours ouvrés.</small>
+          <span class="ls-door-go" data-i18n="door.a.cta">Déposer mon fichier →</span>
+        </a>
+        <a class="ls-door" href="#register" onclick="goToAuth('register'); return false;">
+          <span class="ls-door-lab" data-i18n="door.b.lab">PLACE DE MARCHÉ · 4 %</span>
+          <b data-i18n="door.b.title">Vendez et achetez des lots vérifiés</b>
+          <small data-i18n="door.b.text">Vendeurs vérifiés, parcelles géolocalisées. Commission seulement sur les ventes réussies.</small>
+          <span class="ls-door-go" data-i18n="door.b.cta">Créer un compte →</span>
+        </a>
+      </div>
+      <div class="ls-ctas ls-ctas-mini">
+        <a class="ls-btn ls-btn-line" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="hero.whatsapp">Écrire sur WhatsApp</a>
+        <a class="ls-btn ls-btn-line" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
@@ -1493,9 +1517,9 @@ function ouvrirImage(el) {
 const TRADUCTIONS = {
   en: {
     "nav.login": "Log in", "nav.register": "Create account", "nav.features": "Features", "nav.catalogue": "Catalogue", "nav.how": "How it works", "nav.prices": "Market prices", "nav.mission": "Our mission", "nav.contact": "Contact",
-    "hero.badge": "EUDR compliance · Côte d'Ivoire and Ghana",
-    "hero.title": "Your plots<br>ready for<br><span>Europe.</span>",
-    "hero.lead": "We check your cooperative's plot file by satellite. First feedback within 48 working hours, report and action plan within 7 working days, ahead of the EU deadline of 30 December 2026.",
+    "hero.badge": "Our mission · Côte d'Ivoire and Ghana",
+    "hero.title": "Securing<br>every farm<br><span>sale.</span>",
+    "hero.lead": "From the plot to the buyer: we check your plots for Europe, then help you sell your lots with confidence.",
     "hero.cta1": "Create a free account", "hero.cta2": "How it works", "hero.film": "▶ Watch the film (51 s)",
     "stats.filieres": "Working hours, from file upload", "stats.commission": "Working days, after usable file and deposit", "stats.escrow": "FCFA up to 500 plots", "stats.delay": "Large companies (smaller ones: date to be confirmed)",
     "diff.title": "The difference with a regular payment",
@@ -1570,11 +1594,12 @@ Object.assign(TRADUCTIONS.en, {
   "nav.prices": "Today's prices",
   "nav.pro": "Pro Seller",
   "nav.mission": "Our mission",
-  "hero.badge": "EUDR compliance · Côte d'Ivoire and Ghana",
-  "hero.title": "Your plots<br>ready for<br><span>Europe.</span>",
-  "hero.lead": "We check your cooperative's plot file by satellite. First feedback within 48 working hours, report and action plan within 7 working days, ahead of the EU deadline of 30 December 2026.",
+  "hero.badge": "Our mission · Côte d'Ivoire and Ghana",
+  "hero.title": "Securing<br>every farm<br><span>sale.</span>",
+  "hero.lead": "From the plot to the buyer: we check your plots for Europe, then help you sell your lots with confidence.",
   "hero.film": "Watch the film · 51 s",
     "hero.ctaDepot": "Upload my file", "hero.whatsapp": "Message us on WhatsApp", "stats.v2": "7 days",
+    "door.a.lab": "EUDR AUDIT · 250,000 FCFA", "door.a.title": "Your plots ready for Europe", "door.a.text": "First feedback within 48 working hours, report within 7 working days.", "door.a.cta": "Upload my file →", "door.b.lab": "MARKETPLACE · 4 %", "door.b.title": "Sell and buy verified lots", "door.b.text": "Verified sellers, geolocated plots. Commission only on successful sales.", "door.b.cta": "Create an account →",
   "sack.origin": "PRODUCE OF CÔTE D'IVOIRE",
   "sack.name": "COCOA",
   "sack.grade": "BEANS · GRADE I",
