@@ -32,6 +32,21 @@ function serveStatic(req, res, pathname) {
   return true;
 }
 
+// App « AgriSecur Admin » (back-office) : fichiers rangés dans admin/, hors
+// de public/, et servis uniquement à ces deux adresses. Non indexée, jamais
+// mise en cache : le site public ne contient ni lien ni code admin.
+const ADMIN_DIR = path.join(__dirname, "admin");
+const FICHIERS_APP_ADMIN = {
+  "/admin": ["index.html", "text/html; charset=utf-8"],
+  "/admin/": ["index.html", "text/html; charset=utf-8"],
+  "/admin.webmanifest": ["admin.webmanifest", "application/manifest+json"],
+};
+function servirAppAdmin(res, pathname) {
+  const [fichier, type] = FICHIERS_APP_ADMIN[pathname];
+  res.writeHead(200, { "Content-Type": type, "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" });
+  res.end(fs.readFileSync(path.join(ADMIN_DIR, fichier)));
+}
+
 // Extrait le jeton "Authorization: Bearer xxx" et résout la session.
 // Renvoie null si absent/invalide — chaque route décide si c'est bloquant.
 function getAuth(req) {
@@ -1654,6 +1669,7 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://${req.headers.host}`);
 
   if (req.method === "GET" && !url.pathname.startsWith("/api")) {
+    if (FICHIERS_APP_ADMIN[url.pathname]) return servirAppAdmin(res, url.pathname);
     if (serveStatic(req, res, url.pathname)) return;
   }
 

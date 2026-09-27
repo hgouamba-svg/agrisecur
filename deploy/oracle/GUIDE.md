@@ -67,7 +67,7 @@ Ce que le script met en place :
 
 ## 3. Transférer la base
 
-1. Sur www.agrisecur.com/#admin (Railway), onglet **Rentabilité** →
+1. Dans l'app admin www.agrisecur.com/admin (Railway), onglet **Rentabilité** →
    **Télécharger une sauvegarde de la base**.
 2. Depuis le Mac :
 
