@@ -782,7 +782,7 @@
       <div class="ls-ctas">
         <a class="ls-btn ls-btn-orange ls-btn-lg" href="/depot" data-i18n="hero.ctaDepot">Déposer mon fichier</a>
         <a class="ls-btn ls-btn-line ls-btn-lg" href="https://wa.me/33745984195" target="_blank" rel="noopener" data-i18n="hero.whatsapp">Écrire sur WhatsApp</a>
-        <a style="display:none" class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
+        <a class="ls-btn ls-btn-line ls-btn-lg" href="/decouvrir.html"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg><span data-i18n="hero.film">Voir le film · 51 s</span></a>
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
@@ -933,8 +933,8 @@
       <img class="ls-founder" src="/photos/fondateur.jpg" alt="Houle Gouamba, fondateur d'AgriSecur" loading="lazy" width="800" height="1067">
       <div>
         <p class="ls-eyebrow" data-i18n="mission.eyebrow">Notre mission</p>
-        <h2 class="ls-h2" data-i18n="mission.title">Sécuriser chaque transaction agricole en Côte d'Ivoire</h2>
-        <p class="ls-body" data-i18n="mission.lead">AgriSecur est né d'un constat simple : le risque d'impayé et de livraison non conforme freine les échanges entre producteurs et acheteurs. Notre rôle est d'apporter la confiance nécessaire, sans jamais devenir acheteur ni vendeur nous-mêmes.</p>
+        <h2 class="ls-h2" data-i18n="mission.title">Sécuriser chaque vente agricole, de la parcelle à l'acheteur</h2>
+        <p class="ls-body" data-i18n="mission.lead">AgriSecur est né d'un constat simple : une vente agricole échoue pour deux raisons, une parcelle non conforme ou un paiement qui n'arrive pas. Nous commençons par la conformité, parce que sans elle le cacao ne part plus vers l'Europe : audit RDUE, cartographie et suivi annuel des parcelles. Ensuite, notre place de marché aide ces coopératives à vendre leurs lots conformes en confiance, sans jamais devenir acheteur ni vendeur nous-mêmes.</p>
         <div class="ls-sign">
           <div><b>Houle Gouamba</b><span data-i18n="founder.role">FONDATEUR</span></div>
           <a href="https://www.linkedin.com/in/gouamba-houle-966251429" target="_blank" rel="noopener" data-i18n="founder.linkedin">Profil LinkedIn</a>
@@ -1053,7 +1053,7 @@
       <div class="trust-tiles">
         <div class="trust-tile">
           <div class="icon-wrap"><svg><use href="#icon-lock-check"/></svg></div>
-          <div><strong>Paiement protégé</strong><span>Le vendeur est payé une fois la réception confirmée.</span></div>
+          <div><strong>Paiement à la réception</strong><span>Le vendeur est payé une fois la réception confirmée.</span></div>
         </div>
         <div class="trust-tile">
           <div class="icon-wrap"><svg><use href="#icon-leaf"/></svg></div>
@@ -1260,7 +1260,7 @@
       <div class="card">
         <strong>Questions fréquentes</strong>
         <details class="help-item" open>
-          <summary>Comment mes fonds sont-ils protégés ?</summary>
+          <summary>Quand le vendeur est-il payé ?</summary>
           <p>Quand vous commandez, le montant total n'est pas versé immédiatement au vendeur. Le vendeur n'est payé qu'une fois que vous avez validé la conformité de la marchandise, ou automatiquement après le délai de contestation (24 à 48h) si vous n'avez rien signalé.</p>
         </details>
         <details class="help-item">
@@ -1520,8 +1520,8 @@ const TRADUCTIONS = {
     "prices.loading": "Loading market prices…",
     "avis.eyebrow": "Reviews", "avis.title": "First reviews coming soon",
     "avis.lead": "AgriSecur just launched — the first testimonials from sellers and buyers will appear here from the very first transactions. Be among the first.",
-    "mission.eyebrow": "Our mission", "mission.title": "Securing every agricultural transaction in Côte d'Ivoire",
-    "mission.lead": "AgriSecur was born from a simple observation: the risk of non-payment and non-compliant delivery holds back trade between producers and buyers. Our role is to bring the trust needed for every transaction to close smoothly, without ever becoming a buyer or seller ourselves.",
+    "mission.eyebrow": "Our mission", "mission.title": "Securing every agricultural sale, from the plot to the buyer",
+    "mission.lead": "AgriSecur was born from a simple observation: an agricultural sale fails for two reasons, a non-compliant plot or a payment that never arrives. We start with compliance, because without it cocoa no longer reaches Europe: EUDR audit, plot mapping and yearly monitoring. Then our marketplace helps these cooperatives sell their compliant lots with confidence, without ever becoming a buyer or seller ourselves.",
     "founder.eyebrow": "The team", "founder.title": "Who's behind AgriSecur",
     "founder.role": "Founder of AgriSecur — Securing agricultural transactions", "founder.linkedin": "💼 View LinkedIn profile",
     "filieres.eyebrow": "Coverage", "filieres.title": "Seven sectors, and soon more",
@@ -1622,7 +1622,7 @@ Object.assign(TRADUCTIONS.en, {
   "pro.card": "MEMBER CARD",
   "pro.month": "FCFA / month",
   "pro.cta": "Go Pro",
-  "mission.lead": "AgriSecur was born from a simple observation: the risk of non-payment and non-compliant delivery holds back trade between producers and buyers. Our role is to bring the trust needed, without ever becoming a buyer or seller ourselves.",
+  "mission.lead": "AgriSecur was born from a simple observation: an agricultural sale fails for two reasons, a non-compliant plot or a payment that never arrives. We start with compliance, because without it cocoa no longer reaches Europe: EUDR audit, plot mapping and yearly monitoring. Then our marketplace helps these cooperatives sell their compliant lots with confidence, without ever becoming a buyer or seller ourselves.",
   "founder.role": "FOUNDER",
   "founder.linkedin": "LinkedIn profile",
   "ctabanner.title": "Ready for<br><span>the EU deadline?</span>",
@@ -2957,12 +2957,12 @@ function renderOrder(o) {
 }
 
 function statutLabel(s) {
-  return { attente_virement: "En attente de virement", sequestre: "Fonds sécurisés", expedie: "En transit", en_controle: "En contrôle", litige: "Litige en cours", cloture: "Clôturée", rembourse: "Remboursée" }[s] || s;
+  return { attente_virement: "En attente de virement", sequestre: "Paiement enregistré", expedie: "En transit", en_controle: "En contrôle", litige: "Litige en cours", cloture: "Clôturée", rembourse: "Remboursée" }[s] || s;
 }
 
 function renderOrderStepper(o) {
   if (o.statut === "litige") {
-    return `<div class="msg" style="background:#F8DADA;color:#8A2C2C;margin:12px 0;">⚠️ Litige en cours d'instruction — les fonds restent bloqués jusqu'à la décision de médiation.</div>`;
+    return `<div class="msg" style="background:#F8DADA;color:#8A2C2C;margin:12px 0;">⚠️ Litige en cours d'instruction — le versement au vendeur reste suspendu jusqu'à la décision de médiation.</div>`;
   }
   if (o.statut === "rembourse") {
     return `<div class="msg" style="background:#EFEFEF;color:var(--ink-soft);margin:12px 0;">Litige tranché en faveur de l'acheteur — fonds remboursés.</div>`;
