@@ -586,6 +586,32 @@
   .ls-rdue-line { background:transparent; color:#FFFFFF; border:2px solid #FFFFFF; }
   .ls-rdue-note { margin:0; font-size:13px; color:#BFD3C4; }
   @media (max-width: 900px) { .ls-rdue-grid { grid-template-columns:1fr; gap:32px; } .ls-rdue { padding:64px 0; } }
+  /* ---------- Back-office : même identité que le site, et utilisable au téléphone ---------- */
+  .admin-shell .card, .admin-shell .kpi-card, .auth-box { border:2px solid var(--ink); border-radius:0; box-shadow:none; }
+  .admin-shell button, .admin-shell input, .admin-shell select, .admin-shell textarea, .admin-shell .tag, .admin-shell .status-pill, .admin-shell .msg,
+  .auth-box input, .auth-box button { border-radius:0; }
+  .prix-off-ligne { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,1.3fr) 36px; gap:8px; align-items:center; margin-bottom:8px; }
+  .prix-off-ligne > * { min-width:0; width:100%; }
+  @media (max-width: 760px) {
+    .layout { flex-direction:column; }
+    nav { width:auto; padding:12px 12px 0; gap:0; flex-direction:row; flex-wrap:wrap; align-items:center; position:sticky; top:0; z-index:400; }
+    .admin-topbar { flex:1 1 auto; }
+    .who-box { order:1; margin:0 0 0 auto; padding:0; border:0; display:flex; align-items:center; gap:8px; }
+    .who-box .label, .who-box .val { display:none; }
+    .who-box button { margin:0; width:auto; padding:7px 10px; white-space:nowrap; }
+    nav button.tab { order:2; flex:0 0 auto; border-left:0; border-bottom:3px solid transparent; border-radius:0; padding:12px 10px 10px; font-size:13.5px; white-space:nowrap; }
+    nav button.tab.active { background:transparent; border-bottom-color:var(--gold); }
+    nav::after { content:""; order:1; flex-basis:100%; height:6px; }
+    main { padding:20px 16px 60px; max-width:none; width:100%; min-width:0; }
+    .auth-box { width:100%; max-width:400px; padding:26px 20px; }
+    .grid, .trust-tiles { grid-template-columns:minmax(0,1fr) !important; }
+    .list-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; }
+    .list-row-head { display:none; }
+    table { display:block; overflow-x:auto; }
+    .prix-off-ligne { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding-bottom:10px; border-bottom:1px solid var(--line); }
+    .prix-off-ligne > button { grid-column:2; justify-self:end; width:44px; }
+  }
+
 </style>
 </head>
 <body>
@@ -976,16 +1002,16 @@ async function loadAdminKyc() {
         </div>
         ${s.kyc_document_identite_url || s.kyc_document_rccm_url ? `
         <div style="display:flex; gap:14px; margin:12px 0; flex-wrap:wrap;">
-          ${s.kyc_document_identite_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">🪪 Pièce d'identité / attestation</div><img src="${esc(s.kyc_document_identite_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
-          ${s.kyc_document_rccm_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📄 Justificatif RCCM</div><img src="${esc(s.kyc_document_rccm_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+          ${s.kyc_document_identite_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">Pièce d'identité / attestation</div><img src="${esc(s.kyc_document_identite_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+          ${s.kyc_document_rccm_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">Justificatif RCCM</div><img src="${esc(s.kyc_document_rccm_url)}" style="width:140px;height:140px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
         </div>
         <p class="sub" style="margin:0 0 12px; font-size:12px;">Dossier soumis le ${new Date(s.kyc_soumis_le).toLocaleDateString("fr-FR")}</p>
-        ` : `<p class="sub" style="margin:10px 0 12px; font-size:12px;">⚠️ Aucun document soumis pour l'instant.</p>`}
+        ` : `<p class="sub" style="margin:10px 0 12px; font-size:12px;">Aucun document soumis pour l'instant.</p>`}
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           ${s.kyc_statut !== "valide" ? `<button class="dark" onclick="setKyc(${Number(s.id)},'valide')">Valider</button>` : ""}
           ${s.kyc_statut !== "rejete" ? `<button class="danger-outline" onclick="setKyc(${Number(s.id)},'rejete')">Rejeter</button>` : ""}
           <button class="outline" onclick="resetSellerPassword(${Number(s.id)})">Réinitialiser MDP</button>
-          <button class="danger-outline" onclick="supprimerVendeur(${Number(s.id)}, ${jsArg(s.nom)})">🗑️ Supprimer</button>
+          <button class="danger-outline" onclick="supprimerVendeur(${Number(s.id)}, ${jsArg(s.nom)})">Supprimer</button>
         </div>
       </div>
     `).join("");
@@ -1032,7 +1058,7 @@ async function supprimerVendeur(id, nom) {
   } catch (e) {
     if (!/commande/i.test(e.message)) return msg(msgEl, "Suppression impossible. " + e.message, false);
     const forcer = confirm(
-      `⚠️ SUPPRESSION FORCÉE ⚠️\n\n${e.message}\n\nSi vous continuez, TOUTES les commandes de "${nom}" seront effacées définitivement, avec tout leur historique. Cette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain qu'il s'agit d'un compte de test, et non d'un vrai client ?`
+      `SUPPRESSION FORCÉE \n\n${e.message}\n\nSi vous continuez, TOUTES les commandes de "${nom}" seront effacées définitivement, avec tout leur historique. Cette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain qu'il s'agit d'un compte de test, et non d'un vrai client ?`
     );
     if (!forcer) return;
     try {
@@ -1067,7 +1093,7 @@ async function loadAdminLitiges() {
         ${(o.photo_expedition_url || o.photo_reclamation_url) ? `
         <div style="display:flex; gap:14px; margin:12px 0; flex-wrap:wrap;">
           ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Preuve du vendeur (à l'expédition)</div><img src="${esc(o.photo_expedition_url)}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : `<div class="sub" style="font-size:12px;">📦 Le vendeur n'a fourni aucune photo à l'expédition.</div>`}
-          ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Preuve de l'acheteur (réclamation)</div><img src="${esc(o.photo_reclamation_url)}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+          ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">Preuve de l'acheteur (réclamation)</div><img src="${esc(o.photo_reclamation_url)}" style="width:160px;height:160px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
         </div>` : ""}
         <table>
           <tr><td>Montant total</td><td>${fmt(o.montant_total_fcfa)} FCFA</td></tr>
@@ -1143,7 +1169,7 @@ async function loadAdminAcheteurs() {
         <span>${esc(b.type)}</span>
         <span>${new Date(b.created_at).toLocaleDateString("fr-FR")}</span>
         <span><button class="outline" onclick="resetBuyerPassword(${Number(b.id)})">Réinitialiser MDP</button></span>
-        <span><button class="danger-outline" onclick="supprimerAcheteur(${Number(b.id)}, ${jsArg(b.nom)})">🗑️ Supprimer</button></span>
+        <span><button class="danger-outline" onclick="supprimerAcheteur(${Number(b.id)}, ${jsArg(b.nom)})">Supprimer</button></span>
       </div>
     `).join("");
   } catch (e) {
@@ -1173,7 +1199,7 @@ async function supprimerAcheteur(id, nom) {
   } catch (e) {
     if (!/commande|parrainage|parrainé/i.test(e.message)) return msg(msgEl, "Suppression impossible. " + e.message, false);
     const forcer = confirm(
-      `⚠️ SUPPRESSION FORCÉE ⚠️\n\n${e.message}\n\nSi vous continuez, tout ce qui bloque (commandes, liens de parrainage) sera effacé ou détaché définitivement pour "${nom}". Cette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain qu'il s'agit d'un compte de test, et non d'un vrai client ?`
+      `SUPPRESSION FORCÉE \n\n${e.message}\n\nSi vous continuez, tout ce qui bloque (commandes, liens de parrainage) sera effacé ou détaché définitivement pour "${nom}". Cette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain qu'il s'agit d'un compte de test, et non d'un vrai client ?`
     );
     if (!forcer) return;
     try {
@@ -1407,7 +1433,7 @@ const FILIERES_PRIX_ADMIN = ["cacao","cafe","anacarde","coton","hevea","palmier"
 function lignePrixOfficiel(o = {}) {
   const opts = FILIERES_PRIX_ADMIN.map((f) => `<option value="${f}" ${o.filiere === f ? "selected" : ""}>${filiereLabel(f)}</option>`).join("");
   const v = esc;
-  return `<div class="prix-off-ligne" style="display:grid; grid-template-columns:120px 110px 1.2fr 1.2fr 140px 1.2fr 36px; gap:8px; align-items:center; margin-bottom:8px;">
+  return `<div class="prix-off-ligne">
     <select data-k="filiere">${opts}</select>
     <input data-k="prix_fcfa_kg" type="number" min="1" placeholder="FCFA/kg" value="${v(o.prix_fcfa_kg)}">
     <input data-k="campagne" placeholder="Campagne (ex. 2026-2027)" value="${v(o.campagne)}">
