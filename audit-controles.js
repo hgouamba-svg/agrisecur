@@ -23,6 +23,13 @@ const DECIMALES_MIN = 6;           // RDUE : au moins 6 décimales
 const SURFACE_MIN_HA = 0.05;       // en dessous : surface anormalement petite
 const SURFACE_MAX_HA = 50;         // au-dessus : surface anormalement grande pour une parcelle paysanne
 const ECART_SURFACE_MAX = 0.3;     // 30 % d'écart entre surface déclarée et mesurée
+// Plafond de calcul des contrôles géométriques (comparaisons de segments) pour
+// un fichier. Ces contrôles coûtent le carré du nombre de sommets : sans plafond,
+// un fichier piégé de quelques Mo déposé sur /depot bloquait le serveur pendant
+// de longues secondes pour tous les utilisateurs. Un vrai fichier de coopérative
+// (quelques milliers de parcelles de quelques dizaines de sommets) reste loin
+// en dessous ; au-delà, les parcelles concernées sont signalées « à vérifier ».
+const BUDGET_COMPARAISONS = 30000000;
 
 function nombreDecimales(n) {
   if (!Number.isFinite(n)) return 0;
@@ -167,6 +174,7 @@ function superficieDeclaree(props) {
  */
 function controlerParcelles(features, pays) {
   if (!PAYS[pays]) throw new Error("pays inconnu");
+  let budget = BUDGET_COMPARAISONS;
   const parcelles = features.map((f, i) => {
     const props = (f && f.properties) || {};
     const p = {
@@ -213,7 +221,13 @@ function controlerParcelles(features, pays) {
         if (ring.length < 4) { ajouter("bloquante", "polygone_incomplet", "Polygone de moins de 3 sommets"); return p; }
         const [a, b] = [ring[0], ring[ring.length - 1]];
         if (a[0] !== b[0] || a[1] !== b[1]) { ajouter("bloquante", "polygone_ouvert", "Polygone non fermé"); return p; }
-        if (anneauSeRecoupe(ring)) { ajouter("bloquante", "polygone_croise", "Contour qui se recoupe (polygone invalide)"); return p; }
+        const cout = (ring.length * ring.length) / 2;
+        if (cout > budget) {
+          ajouter("a_verifier", "controle_partiel", "Contour trop détaillé pour le contrôle automatique de croisement : à vérifier à la main");
+        } else {
+          budget -= cout;
+          if (anneauSeRecoupe(ring)) { ajouter("bloquante", "polygone_croise", "Contour qui se recoupe (polygone invalide)"); return p; }
+        }
       }
     }
     const s = surfaceHa(g);
@@ -249,10 +263,14 @@ function controlerParcelles(features, pays) {
     const ring = anneaux(features[p.index].geometry)[0][0];
     return { p, ring, bb: bbox(ring) };
   });
-  for (let i = 0; i < polys.length; i++) {
+  let chevauchementsPartiels = false;
+  for (let i = 0; i < polys.length && !chevauchementsPartiels; i++) {
     for (let j = i + 1; j < polys.length; j++) {
       const A = polys[i], B = polys[j];
       if (!bboxSeCroisent(A.bb, B.bb)) continue;
+      const cout = A.ring.length * B.ring.length;
+      if (cout > budget) { chevauchementsPartiels = true; break; }
+      budget -= cout;
       if (polygonesSeChevauchent(A.ring, B.ring)) {
         A.p.anomalies.push({ gravite: "a_corriger", code: "chevauchement", texte: `Chevauche la parcelle ${B.p.id}` });
         B.p.anomalies.push({ gravite: "a_corriger", code: "chevauchement", texte: `Chevauche la parcelle ${A.p.id}` });
@@ -269,6 +287,7 @@ function controlerParcelles(features, pays) {
     sans_anomalie: parcelles.filter((p) => p.anomalies.length === 0).length,
     polygones: parcelles.filter((p) => p.type === "Polygon" || p.type === "MultiPolygon").length,
     points: parcelles.filter((p) => p.type === "Point").length,
+    chevauchements_partiels: chevauchementsPartiels,
   };
   return { parcelles, resume };
 }

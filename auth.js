@@ -31,19 +31,28 @@ function verifyPassword(password, stored) {
 
 const SESSION_DUREE_MS = 7 * 24 * 3600 * 1000; // 7 jours
 
+// La base ne garde que l'empreinte SHA-256 du jeton, jamais le jeton lui-même :
+// une copie de la base (sauvegarde, export admin) ne permet pas d'ouvrir les
+// sessions des utilisateurs.
+function empreinte(token) {
+  return crypto.createHash("sha256").update(String(token)).digest("hex");
+}
+
 function createSession(userType, userId) {
   const token = crypto.randomBytes(32).toString("hex");
   const expires = new Date(Date.now() + SESSION_DUREE_MS).toISOString(); // 7 jours
   db.prepare(`INSERT INTO sessions (token, user_type, user_id, expires_at) VALUES (?, ?, ?, ?)`)
-    .run(token, userType, userId, expires);
+    .run(empreinte(token), userType, userId, expires);
   return token;
 }
 
 function getSession(token) {
-  const session = db.prepare(`SELECT * FROM sessions WHERE token = ?`).get(token);
+  if (typeof token !== "string" || !/^[0-9a-f]{64}$/.test(token)) return null;
+  const cle = empreinte(token);
+  const session = db.prepare(`SELECT * FROM sessions WHERE token = ?`).get(cle);
   if (!session) return null;
   if (new Date(session.expires_at) < new Date()) {
-    db.prepare(`DELETE FROM sessions WHERE token = ?`).run(token);
+    db.prepare(`DELETE FROM sessions WHERE token = ?`).run(cle);
     return null;
   }
   return session;
@@ -51,7 +60,7 @@ function getSession(token) {
 
 // Déconnexion : le jeton devient immédiatement inutilisable côté serveur.
 function supprimerSession(token) {
-  if (typeof token === "string" && token) db.prepare(`DELETE FROM sessions WHERE token = ?`).run(token);
+  if (typeof token === "string" && token) db.prepare(`DELETE FROM sessions WHERE token = ?`).run(empreinte(token));
 }
 
 // Révoque toutes les sessions d'un compte (changement / réinitialisation de mot de passe).
@@ -70,13 +79,25 @@ setInterval(purgerSessionsExpirees, 3600 * 1000);
 // médiation de litige) — le temps qu'un vrai panneau d'administration avec
 // ses propres comptes existe. Change tout le temps qu'on la garde par défaut.
 const ADMIN_KEY_DEFAUT = "changez-cette-cle-admin";
-const ADMIN_KEY = process.env.ADMIN_KEY || ADMIN_KEY_DEFAUT;
+const ADMIN_KEY_MIN = 16;
+const cleAdminFournie = process.env.ADMIN_KEY || "";
+const cleAdminValable = !!cleAdminFournie && cleAdminFournie !== ADMIN_KEY_DEFAUT;
+// Une clé absente ou laissée à sa valeur par défaut (publique, puisqu'elle
+// figure dans ce fichier) n'ouvre plus le back-office, même hors production :
+// elle est remplacée par une clé aléatoire que personne ne connaît.
+const ADMIN_KEY = cleAdminValable ? cleAdminFournie : crypto.randomBytes(32).toString("hex");
+if (!cleAdminValable && process.env.NODE_ENV !== "production") {
+  console.warn("[admin] ADMIN_KEY absente ou laissée par défaut : back-office désactivé. Définissez ADMIN_KEY pour y accéder.");
+}
+if (cleAdminValable && cleAdminFournie.length < ADMIN_KEY_MIN) {
+  console.warn(`[admin] ADMIN_KEY fait moins de ${ADMIN_KEY_MIN} caractères : remplacez-la par une clé longue et aléatoire (ex. openssl rand -hex 24).`);
+}
 
 // Filet de sécurité : si NODE_ENV=production est réglé (à ajouter comme
 // variable d'environnement sur votre hébergeur, en plus d'ADMIN_KEY) et que
 // la clé est restée à sa valeur par défaut, le serveur refuse de démarrer
 // plutôt que de tourner avec un accès admin ouvert à tous.
-if (process.env.NODE_ENV === "production" && ADMIN_KEY === ADMIN_KEY_DEFAUT) {
+if (process.env.NODE_ENV === "production" && !cleAdminValable) {
   console.error(
     "ERREUR CRITIQUE : NODE_ENV=production est réglé mais ADMIN_KEY n'a pas été " +
     "défini (ou est resté à sa valeur par défaut). Définissez une vraie clé " +
