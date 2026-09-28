@@ -117,14 +117,10 @@
     nav .tab-lien { order: 3; flex: 0 0 auto; padding: 8px 10px 10px; font-size: 12.5px; white-space: nowrap; margin-top: 0; }
     nav::after { content: ""; order: 1; flex-basis: 100%; height: 6px; }
     main { padding: 20px 16px 140px; max-width: none; width: 100%; }
-    .hero-banner { padding: 22px 20px; border-radius: 16px; }
-    .hero-banner .hero-icon { width: 48px; height: 74px; }
-    #app-layout .trust-tiles { grid-template-columns: minmax(0, 1fr); gap: 12px; }
     #app-layout .grid { grid-template-columns: minmax(0, 1fr); }
     #vendeur-kpis, #parrainage-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 10px; }
     #vendeur-kpis .kpi-card, #parrainage-kpis .kpi-card { padding: 14px; }
     #vendeur-kpis .kpi-val, #parrainage-kpis .kpi-val { font-size: 18px; }
-    #app-layout .hero-banner { padding: 22px 20px; }
   }
   h1 { font-family: 'Archivo', sans-serif; font-size: 27px; margin: 0 0 6px; font-weight: 600; letter-spacing: -.01em; }
   .eyebrow { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--gold-dark); margin: 0 0 6px; }
@@ -185,27 +181,6 @@
   .kpi-card .kpi-label { font-size: 11.5px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 8px; }
   .kpi-card .kpi-val { font-family: 'Archivo', sans-serif; font-size: 22px; color: var(--ink); font-weight: 600; }
 
-  /* Bandeau d'accueil (façon EDF) + tuiles de confiance */
-  .hero-banner { background: var(--green); border-radius: 20px; padding: 32px 34px; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; overflow: hidden; position: relative; }
-  .hero-banner .hero-text h2 { font-family: 'Archivo', sans-serif; color: var(--paper); font-size: 22px; margin: 0 0 8px; font-weight: 600; }
-  .hero-banner .hero-text p { color: #CFE0D5; font-size: 13.5px; margin: 0; max-width: 420px; line-height: 1.5; }
-  .hero-banner .hero-icon { width: 76px; height: 116px; flex-shrink: 0; opacity: .95; }
-  .trust-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
-  .trust-tile { border-radius: 18px; padding: 20px; display: flex; gap: 12px; align-items: flex-start; box-shadow: var(--shadow-hard); border: 2px solid var(--ink); }
-  .trust-tile:nth-child(1) { background: var(--clay); }
-  .trust-tile:nth-child(2) { background: var(--ink); }
-  .trust-tile:nth-child(3) { background: var(--gold); }
-  .trust-tile .icon-wrap { width: 34px; height: 34px; border-radius: 9px; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--paper); }
-  .trust-tile:nth-child(3) .icon-wrap { color: var(--green); background: rgba(31,61,46,.15); }
-  .trust-tile .icon-wrap svg { width: 18px; height: 18px; }
-  .trust-tile strong { font-size: 14px; display: block; margin-bottom: 3px; font-family: 'Archivo', sans-serif; font-weight: 700; color: var(--paper); }
-  .trust-tile:nth-child(3) strong { color: var(--green); }
-  .trust-tile span { font-size: 12.5px; line-height: 1.45; display: block; color: rgba(255,255,255,.82); }
-  .trust-tile:nth-child(3) span { color: rgba(31,61,46,.82); }
-  .hero-banner.compact { padding: 20px 28px; margin-bottom: 22px; }
-  .hero-banner.compact .hero-text h2 { font-size: 18px; margin-bottom: 4px; }
-  .hero-banner.compact .hero-text p { font-size: 13px; max-width: 480px; }
-  .hero-banner.compact .hero-icon { width: 46px; height: 70px; }
   .app-footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--line); }
   .app-footer-links { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 10px; }
   .app-footer-links a { font-size: 12.5px; color: var(--ink-soft); text-decoration: underline; cursor: pointer; }
@@ -381,8 +356,8 @@
   .ls-eyebrow-light { color:#FFA64D; }
   .ls-h1 { margin:0; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(60px,7.6vw,112px); line-height:.88; text-transform:uppercase; color:var(--ls-ink); letter-spacing:.005em; }
   .ls-h1 span { color:var(--ls-green); }
-  .ls-h2 { margin:0; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(46px,5.6vw,84px); line-height:.9; text-transform:uppercase; }
-  .ls-h2-xl { font-size:clamp(56px,7vw,104px); }
+  .ls-h2 { margin:0; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(32px,3.6vw,50px); line-height:1.08; letter-spacing:-.015em; text-wrap:balance; }
+  .ls-h2-xl { font-size:clamp(36px,4.4vw,60px); }
   .ls-lead { margin:0; font-size:20px; line-height:1.5; color:#333333; max-width:34em; }
   .ls-body { margin:0; font-size:18px; line-height:1.6; color:#333333; max-width:34em; }
 
@@ -401,30 +376,9 @@
   .ls-ctas-mini .ls-btn { padding:10px 16px; font-size:13.5px; }
   @media (max-width:760px){ .ls-doors { grid-template-columns:1fr; } }
 
-  .ls-hero-art { background:var(--ls-or); border-left:2px solid var(--ls-ink); padding:64px max(48px, calc((100vw - 1248px) / 2 + 48px)) 56px 64px; display:flex; flex-direction:column; justify-content:center; gap:12px; }
-  .ls-sack { position:relative; min-height:560px; padding:44px 44px 40px; border:2px solid var(--ls-ink); box-shadow:12px 12px 0 var(--ls-ink); overflow:hidden; color:#2A2016; display:flex; flex-direction:column; gap:12px;
-    background-color:var(--ls-jute);
-    background-image:repeating-linear-gradient(0deg, rgba(70,45,15,.13) 0 2px, transparent 2px 6px), repeating-linear-gradient(90deg, rgba(70,45,15,.11) 0 2px, transparent 2px 6px); }
-  .ls-sack-stitch { position:absolute; left:0; right:0; top:14px; border-top:3px dashed rgba(42,32,22,.55); }
-  .ls-sack p { margin:0; font-family:var(--ls-stencil); opacity:.88; }
-  .ls-sack-origin { margin-top:16px !important; font-weight:800; font-size:24px; letter-spacing:.2em; }
-  .ls-sack-name { font-weight:900; font-size:clamp(96px,11vw,160px); line-height:.82; }
-  .ls-sack-grade { font-weight:800; font-size:32px; letter-spacing:.12em; }
-  .ls-sack-rule { border-top:3px solid rgba(42,32,22,.6); margin-top:8px; }
-  .ls-sack-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 24px; font-family:var(--ls-mono); font-size:16px; font-weight:600; opacity:.9; }
-  .ls-stamp-held { position:absolute; right:30px; bottom:56px; transform:rotate(-9deg); border:4px solid #B35A00; color:#B35A00; background:rgba(255,255,255,.3); padding:10px 18px 8px; font-family:var(--ls-stencil); font-weight:900; font-size:34px; line-height:.95; letter-spacing:.06em; text-align:center; }
-  .ls-stamp-held small { display:block; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.1em; }
-  .ls-stamp-kyc { position:absolute; left:40px; bottom:44px; transform:rotate(5deg); border:3px solid var(--ls-ok); color:var(--ls-ok); border-radius:999px; padding:8px 16px; font-family:var(--ls-mono); font-size:13px; font-weight:600; letter-spacing:.1em; }
-  .ls-art-note { margin:8px 0 0; font-family:var(--ls-mono); font-size:12px; font-weight:600; color:var(--ls-ink); }
-
-  /* ticket de chiffres */
-  .ls-ticket { background:var(--ls-ink); color:#FFFFFF; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); padding:0 max(16px, calc((100vw - 1248px) / 2 + 16px)); }
-  .ls-ticket > div { padding:30px 32px; display:flex; flex-direction:column; gap:6px; }
-  .ls-ticket > div + div { border-left:2px dashed rgba(255,255,255,.35); }
-  .ls-t-lab { font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.14em; color:#BDBDBD; }
-  .ls-t-val { font-family:var(--ls-stencil); font-weight:900; font-size:64px; line-height:1; }
-  .ls-t-val.ls-or { color:var(--ls-or); }
-  .ls-t-txt { font-size:15px; color:#D6D6D6; }
+  .ls-hero-art { position:relative; margin:0; min-height:560px; border-left:2px solid var(--ls-ink); background:#3A2A1C; overflow:hidden; }
+  .ls-hero-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
+  .ls-hero-art figcaption { position:absolute; left:0; bottom:0; background:rgba(17,17,17,.78); color:#FFFFFF; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.06em; padding:8px 14px; }
 
   /* comment ça marche */
   .ls-how { background:var(--ls-green); color:#FFFFFF; padding:120px 0; }
@@ -432,17 +386,11 @@
   .ls-how-text { display:flex; flex-direction:column; gap:24px; padding-top:12px; }
   .ls-how .ls-body { color:#D5E2D8; }
   .ls-link-light { color:#FFFFFF; font-weight:700; text-decoration:underline; text-underline-offset:5px; align-self:flex-start; }
-  .ls-bordereau { position:relative; background:#FFFFFF; color:var(--ls-ink); border:2px solid var(--ls-ink); box-shadow:12px 12px 0 var(--ls-or); }
-  .ls-perf { height:14px; border-bottom:2px dashed var(--ls-ink); background-image:radial-gradient(circle at 9px 0, var(--ls-green) 6px, transparent 6.5px); background-size:18px 14px; background-repeat:repeat-x; }
-  .ls-bord-body { padding:26px 34px 30px; font-family:var(--ls-mono); }
-  .ls-bord-head { display:flex; justify-content:space-between; gap:12px; font-size:13px; font-weight:600; letter-spacing:.1em; padding-bottom:16px; border-bottom:2px solid var(--ls-ink); }
-  .ls-bord-row { display:grid; grid-template-columns:48px minmax(0,1fr) 26px; gap:16px; align-items:start; padding:20px 0; border-bottom:1px dashed #9A9A9A; }
-  .ls-bord-row b { display:block; font-family:'Archivo',sans-serif; font-size:19px; font-weight:800; }
-  .ls-bord-row small { display:block; font-size:14px; color:var(--ls-mute); margin-top:3px; }
-  .ls-bord-row svg { width:26px; height:26px; fill:none; stroke:var(--ls-ok); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-  .ls-bord-last { border-bottom:0; padding-bottom:40px; }
-  .ls-bord-n { font-size:22px; font-weight:600; color:var(--ls-or-txt); }
-  .ls-stamp-paid { position:absolute; right:28px; bottom:22px; transform:rotate(-11deg); border:5px double var(--ls-ok); color:var(--ls-ok); padding:6px 22px 2px; font-family:var(--ls-stencil); font-weight:900; font-size:56px; letter-spacing:.08em; line-height:1; }
+  .ls-steps { list-style:none; margin:0; padding:0; counter-reset:etape; border-top:1px solid rgba(255,255,255,.28); }
+  .ls-steps li { counter-increment:etape; display:grid; grid-template-columns:56px minmax(0,1fr); column-gap:8px; padding:22px 0; border-bottom:1px solid rgba(255,255,255,.28); }
+  .ls-steps li::before { content:counter(etape, decimal-leading-zero); grid-row:span 2; font-family:var(--ls-mono); font-size:20px; font-weight:600; color:#FFA64D; }
+  .ls-steps b { font-size:20px; font-weight:800; }
+  .ls-steps span { color:#D5E2D8; font-size:15px; margin-top:2px; }
 
   /* marché */
   .ls-market { padding:110px 0 90px; }
@@ -469,16 +417,17 @@
   .ls-lot-price { font-family:var(--ls-mono); font-size:20px; font-weight:600; }
   .ls-lot-price small { font-size:13px; color:var(--ls-mute); }
   .ls-empty { border:2px dashed var(--ls-ink); padding:48px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; }
-  .ls-empty b { font-family:var(--ls-stencil); font-weight:900; font-size:40px; text-transform:uppercase; line-height:1; }
+  .ls-empty b { font-weight:800; font-size:26px; line-height:1.15; }
   .ls-empty span { color:var(--ls-mute); font-size:16px; max-width:34em; }
 
   /* bande filières */
   .ls-band { background:var(--ls-or); border-top:2px solid var(--ls-ink); border-bottom:2px solid var(--ls-ink); padding:44px 0; }
   .ls-band-lab { margin:0 0 16px; font-family:var(--ls-mono); font-size:14px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
   .ls-band-list { display:flex; flex-wrap:wrap; gap:4px 26px; align-items:baseline; }
-  .ls-band-list button { all:unset; cursor:pointer; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(40px,5.2vw,76px); line-height:1.05; text-transform:uppercase; color:var(--ls-ink); position:relative; }
-  .ls-band-list button::after { content:"·"; color:#FFFFFF; margin-left:26px; }
-  .ls-band-list button:last-child::after { content:""; margin:0; }
+  .ls-band-list button, .ls-band-list span { all:unset; cursor:pointer; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(40px,5.2vw,76px); line-height:1.05; text-transform:uppercase; color:var(--ls-ink); position:relative; }
+  .ls-band-list span { cursor:default; }
+  .ls-band-list > ::after { content:"·"; color:#FFFFFF; margin-left:26px; }
+  .ls-band-list > :last-child::after { content:""; margin:0; }
   .ls-band-list button:hover, .ls-band-list button.active { color:#FFFFFF; }
   .ls-band-list button:focus-visible { outline:3px solid var(--ls-ink); outline-offset:4px; }
 
@@ -495,9 +444,10 @@
   .ls-field { background:var(--ls-ink); color:#FFFFFF; padding:100px 0; }
   .ls-field .ls-h2 span { color:var(--ls-or); }
   .ls-field .ls-body { color:#D6D6D6; }
-  .ls-photos { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:20px; }
+  .ls-photos { display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:20px; }
   .ls-photos figure { margin:0; display:flex; flex-direction:column; gap:12px; }
-  .ls-photos img { width:100%; height:380px; object-fit:cover; display:block; border:2px solid #FFFFFF; }
+  .ls-photos img { width:100%; height:420px; object-fit:cover; display:block; border:2px solid #FFFFFF; }
+  .ls-photos figure:first-child img { object-position:50% 30%; }
   .ls-photos figcaption { font-family:var(--ls-mono); font-size:13px; color:#D6D6D6; }
 
   /* vendeur pro */
@@ -516,10 +466,10 @@
   .ls-card-pro .ls-btn-orange { box-shadow:none; }
 
   /* mission */
-  .ls-mission { padding:0 0 120px; }
+  .ls-mission { padding:120px 0; }
   .ls-mission-grid { display:grid; grid-template-columns:360px minmax(0,1fr); gap:72px; align-items:center; }
   .ls-founder { width:100%; height:440px; object-fit:cover; object-position:50% 20%; border:2px solid var(--ls-ink); box-shadow:8px 8px 0 var(--ls-ink); display:block; }
-  .ls-mission .ls-h2 { font-size:clamp(44px,5vw,76px); margin-bottom:22px; }
+  .ls-mission .ls-h2 { margin-bottom:22px; }
   .ls-sign { display:flex; align-items:center; gap:24px; flex-wrap:wrap; border-top:2px solid var(--ls-ink); padding-top:20px; margin-top:24px; }
   .ls-sign b { display:block; font-size:20px; }
   .ls-sign span { display:block; font-family:var(--ls-mono); font-size:13px; color:var(--ls-mute); letter-spacing:.08em; }
@@ -528,8 +478,7 @@
   /* appel final + pied */
   .ls-cta { background:var(--ls-or); border-top:2px solid var(--ls-ink); padding:100px 0 90px; }
   .ls-cta-grid { display:flex; justify-content:space-between; align-items:flex-end; gap:60px; }
-  .ls-cta .ls-h2 span { color:transparent; -webkit-text-stroke:2.5px var(--ls-ink); }
-  .ls-cta .ls-body { color:var(--ls-ink); margin-top:18px; }
+    .ls-cta .ls-body { color:var(--ls-ink); margin-top:18px; }
   .ls-cta-btns { display:flex; flex-direction:column; gap:14px; flex-shrink:0; }
   .ls-foot { background:var(--ls-ink); color:#D6D6D6; }
   .ls-foot-row { display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; padding-top:30px; padding-bottom:30px; font-family:var(--ls-mono); font-size:13px; }
@@ -540,7 +489,7 @@
   @media (max-width: 1360px) {
     .ls-top-row { flex-wrap:wrap; row-gap:4px; }
     .ls-actions { margin-left:auto; }
-    nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; }
+    nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
     nav.ls-links::-webkit-scrollbar { display:none; }
     .ls-links a { font-size:14px; }
   }
@@ -551,49 +500,27 @@
     .ls-seal { width:36px; height:36px; }
     .ls-hero { grid-template-columns:minmax(0,1fr); }
     .ls-hero-text { padding:40px 20px 44px; gap:20px; }
-    .ls-hero-art { border-left:0; border-top:2px solid var(--ls-ink); padding:32px 28px 28px 20px; }
-    .ls-sack { min-height:0; padding:30px 22px 110px; box-shadow:7px 7px 0 var(--ls-ink); }
-    .ls-sack-origin { font-size:16px; }
-    .ls-sack-grade { font-size:22px; }
-    .ls-sack-data { font-size:13px; }
-    .ls-stamp-held { right:16px; bottom:22px; font-size:24px; padding:6px 12px 5px; }
-    .ls-stamp-held small { font-size:10px; }
+    .ls-hero-art { order:-1; min-height:0; height:300px; border-left:0; border-bottom:2px solid var(--ls-ink); }
     .ls-lead { font-size:17px; }
     .ls-ctas .ls-btn { width:100%; }
-    .ls-ticket { grid-template-columns:repeat(2,minmax(0,1fr)); padding:0; }
-    .ls-ticket > div { padding:18px 16px; }
-    .ls-ticket > div + div { border-left:0; }
-    .ls-ticket > div:nth-child(even) { border-left:2px dashed rgba(255,255,255,.35); }
-    .ls-ticket > div:nth-child(-n+2) { border-bottom:2px dashed rgba(255,255,255,.35); }
-    .ls-t-val { font-size:44px; }
-    .ls-t-txt { font-size:13px; }
     .ls-how, .ls-market, .ls-prices, .ls-field, .ls-pro, .ls-cta { padding:64px 0; }
     .ls-how-grid, .ls-pro-grid, .ls-mission-grid { grid-template-columns:minmax(0,1fr); gap:36px; }
-    .ls-bord-body { padding:18px 18px 22px; }
-    .ls-bord-row { grid-template-columns:34px minmax(0,1fr) 22px; gap:10px; padding:16px 0; }
-    .ls-bord-row b { font-size:17px; }
-    .ls-bord-row small { font-size:13px; }
-    .ls-bord-head { font-size:11px; }
-    .ls-stamp-paid { font-size:36px; right:16px; bottom:14px; }
-    .ls-bord-last { padding-bottom:76px; }
     .ls-sec-head { flex-direction:column; align-items:flex-start; gap:16px; }
     .ls-lots { grid-template-columns:1fr; gap:20px; }
     .ls-band { padding:32px 0; }
     .ls-band-list { gap:2px 14px; }
-    .ls-band-list button::after { margin-left:14px; }
+    .ls-band-list > ::after { margin-left:14px; }
     .ls-ticker .ticker-row { grid-template-columns:1.3fr 1fr .6fr; padding:14px 16px; font-size:14px; }
     .ls-ticker .ticker-row > span:nth-child(3), .ls-ticker .ticker-row > span:nth-child(4) { display:none; }
     .ls-photos { grid-template-columns:1fr; }
-    .ls-photos img { height:260px; }
-    .ls-photos figure:nth-child(2) { display:none; }
+    .ls-photos img { height:280px; }
     .ls-card-pro { padding:22px 20px; min-height:0; box-shadow:7px 7px 0 var(--ls-or); }
     .ls-card-name { font-size:34px; }
     .ls-card-price { font-size:26px; }
     .ls-seal-or { width:60px; height:60px; }
-    .ls-mission { padding-bottom:64px; }
+    .ls-mission { padding:64px 0; }
     .ls-founder { height:360px; }
     .ls-cta-grid { flex-direction:column; align-items:stretch; gap:32px; }
-    .ls-cta .ls-h2 span { -webkit-text-stroke:2px var(--ls-ink); }
     .ls-body { font-size:16px; }
     .ls-checks { font-size:16px; }
   }
@@ -610,17 +537,11 @@
   .fab:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 #111111; }
   .fab:active { transform:translate(2px,2px); box-shadow:1px 1px 0 #111111; }
   .fab svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
-  .fab-report { bottom:20px; padding:0 16px; background:#111111; color:#FFFFFF; box-shadow:3px 3px 0 #F07E00; }
-  .fab-report:hover { box-shadow:4px 4px 0 #F07E00; }
   .fab-sq { width:44px; padding:0; }
-  .fab-voice { bottom:78px; }
-  .fab-top { bottom:132px; }
+  .fab-voice { bottom:20px; }
   @media (max-width: 600px) {
     .fab { right:12px; }
-    .fab-report { bottom:14px; width:44px; padding:0; }
-    .fab-report .fab-label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-    .fab-voice { bottom:66px; }
-    .fab-top { bottom:118px; }
+    .fab-voice { bottom:14px; }
   }
   @media (prefers-reduced-motion: reduce) { .fab { transition:none; } }
 
@@ -679,10 +600,49 @@
   .ls-rdue-line { background:transparent; color:#FFFFFF; border:2px solid #FFFFFF; }
   .ls-rdue-note { margin:0; font-size:13px; color:#BFD3C4; }
   @media (max-width: 900px) { .ls-rdue-grid { grid-template-columns:1fr; gap:32px; } .ls-rdue { padding:64px 0; } }
+  /* ---------- Espace connecté : même identité que le site ----------
+     Angles droits, bordures noires franches, pas d'ombres floues. */
+  #app-layout .card, #app-layout .kpi-card { border:2px solid var(--ink); border-radius:0; box-shadow:none; }
+  #app-layout button.primary, #app-layout button.dark, #app-layout button.outline, #app-layout button.danger-outline,
+  #app-layout .filter-chip, #app-layout input, #app-layout select, #app-layout textarea { border-radius:0; }
+  #app-layout input, #app-layout select, #app-layout textarea { border:1.5px solid #8A8A8A; }
+  #app-layout input:focus, #app-layout select:focus, #app-layout textarea:focus { border-color:var(--ink); box-shadow:0 0 0 2px var(--gold); }
+  #app-layout button.primary { border-color:var(--ink); color:var(--ink); box-shadow:3px 3px 0 var(--ink); }
+  #app-layout .tag, #app-layout .status-pill, #app-layout .badge-role { border-radius:0; }
+  #app-layout nav button.tab { border-radius:0; }
+  #app-layout .who-box button { border-radius:0; }
+  #app-layout .msg { border-radius:0; }
+  #app-layout .kpi-card .kpi-val { font-family:'IBM Plex Mono', monospace; font-weight:600; }
+  #app-layout h1 { font-weight:800; font-size:30px; letter-spacing:-.015em; }
+  .auth-box { border:2px solid var(--ink); border-radius:0; box-shadow:8px 8px 0 var(--gold); }
+  .auth-box input, .auth-box select, .auth-box button, .role-switch, .role-switch button { border-radius:0; }
+
+  /* Formulaire « Publier un lot » : un libellé visible au-dessus de chaque champ */
+  .form-lot { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px 16px; margin-top:14px; }
+  .form-lot > div, .form-lot > button { grid-column:1 / -1; }
+  .form-lot > button { justify-self:start; }
+  .fld { display:flex; flex-direction:column; gap:6px; min-width:0; }
+  .fld > span:first-child { font-size:13px; font-weight:600; color:var(--ink); }
+  .fld input, .fld select { width:100%; min-width:0; font-size:15px; padding:11px 12px; }
+  .fld-large { grid-column:1 / -1; }
+
+  /* « Mes lots » : les mêmes colonnes pour l'en-tête et chaque ligne */
+  .lots-row { grid-template-columns:minmax(0,1.6fr) minmax(0,.8fr) minmax(0,.8fr) minmax(0,.8fr) minmax(0,2fr); }
+  .lots-actions { display:flex; gap:6px; flex-wrap:wrap; }
+  @media (max-width: 760px) {
+    .form-lot { grid-template-columns:minmax(0,1fr); }
+    .lots-row.list-row-head { display:none; }
+    .lots-row { grid-template-columns:minmax(0,1fr) auto; row-gap:6px; }
+    .lots-row > span:first-child { grid-column:1 / -1; font-weight:700; font-size:15px; }
+    .lots-row > span:nth-child(2), .lots-row > span:nth-child(3) { color:var(--ink-soft); }
+    .lots-row > span:nth-child(4) { grid-column:1 / -1; }
+    .lots-actions { grid-column:1 / -1; }
+    .lots-actions button { flex:1 1 auto; }
+  }
+
 </style>
 </head>
 <body>
-<button id="btn-signalement" class="fab fab-report" onclick="ouvrirModaleSignalement()" title="Signaler un problème ou une suggestion" aria-label="Signaler un problème"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span class="fab-label" data-i18n="report.button">Signaler un problème</span></button>
 
 <div id="ecran-aide-publique" style="display:none; min-height:100vh; background:var(--cream);">
   <nav class="landing-nav" style="border-bottom:1px solid var(--line); padding:16px 32px; display:flex; align-items:center; justify-content:space-between;">
@@ -694,7 +654,6 @@
 
 <button id="btn-lire-voix" class="fab fab-sq fab-voice" onclick="basculerLectureVoix()" title="Écouter cette page" aria-label="Écouter cette page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
 
-<button id="btn-retour-haut" class="fab fab-sq fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut" aria-label="Retour en haut" style="display:none;"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
 <div id="modale-signalement" style="display:none; position:fixed; inset:0; background:rgba(36,26,18,.45); z-index:600; align-items:center; justify-content:center;">
   <div style="background:var(--paper); border-radius:16px; padding:26px; width:92%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,.3);">
@@ -813,19 +772,10 @@
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
-    <div class="ls-hero-art">
-      <div class="ls-sack">
-        <div class="ls-sack-stitch"></div>
-        <p class="ls-sack-origin" data-i18n="sack.origin">PRODUIT DE CÔTE D'IVOIRE</p>
-        <p class="ls-sack-name" data-i18n="sack.name">CACAO</p>
-        <p class="ls-sack-grade" data-i18n="sack.grade">FÈVES · GRADE I</p>
-        <div class="ls-sack-rule"></div>
-        <div class="ls-sack-data"><span>LOT AS-0142</span><span>62,5 KG NET</span><span class="ls-hide-xs">PARCELLE P-0317</span><span class="ls-hide-xs">SOUBRÉ</span></div>
-        <div class="ls-stamp-held" data-i18n="sack.stamp">PARCELLES<small>VÉRIFIÉES PAR SATELLITE</small></div>
-        <div class="ls-stamp-kyc ls-hide-xs" data-i18n="sack.kyc">GÉOLOCALISÉE</div>
-      </div>
-      <p class="ls-art-note" data-i18n="sack.note">Marquage d'exemple — lot fictif</p>
-    </div>
+    <figure class="ls-hero-art">
+      <img src="/photos/mains-feves-cacao.jpg" alt="Mains tenant des fèves de cacao séchées, dans un village de Côte d'Ivoire" width="1600" height="1066" fetchpriority="high">
+      <figcaption data-i18n="hero.photo">Fèves de cacao au séchage · Côte d'Ivoire</figcaption>
+    </figure>
   </section>
 
   <section class="ls-rdue" id="landing-rdue">
@@ -853,32 +803,18 @@
     </div>
   </section>
 
-  <section class="ls-ticket" aria-label="L'audit en chiffres">
-    <div><span class="ls-t-lab" data-i18n="stats.l1">PREMIER AVIS</span><span class="ls-t-val">48 h</span><span class="ls-t-txt" data-i18n="stats.filieres">Ouvrées, dès le dépôt du fichier</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l2">RAPPORT</span><span class="ls-t-val ls-or" data-i18n="stats.v2">7 jours</span><span class="ls-t-txt" data-i18n="stats.commission">Ouvrés, après fichier exploitable et acompte</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l3">PRIX</span><span class="ls-t-val">250 000</span><span class="ls-t-txt" data-i18n="stats.escrow">FCFA jusqu'à 500 parcelles</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l4">ÉCHÉANCE UE</span><span class="ls-t-val">30.12.26</span><span class="ls-t-txt" data-i18n="stats.delay">Grandes et moyennes entreprises · petites : 30.06.2027</span></div>
-  </section>
-
   <section class="ls-how" id="landing-comment">
     <div class="ls-wrap ls-how-grid">
       <div class="ls-how-text">
-        <p class="ls-eyebrow ls-eyebrow-light" data-i18n="how.eyebrow">Comment ça marche</p>
         <h2 class="ls-h2" data-i18n="how.title">Du fichier au rapport, en 7 jours ouvrés.</h2>
         <p class="ls-body" data-i18n="diff.text">Vous déposez le fichier de parcelles sur notre page sécurisée. Nous le contrôlons, nous analysons chaque parcelle par satellite avec l'outil WHISP de la FAO, puis nous vous remettons un rapport clair avec les corrections à faire. Le rapport aide à préparer la diligence raisonnable européenne ; ce n'est pas une certification.</p>
-        <a class="ls-link-light" href="/depot" data-i18n="how.link">Déposer mon fichier</a>
       </div>
-      <div class="ls-bordereau">
-        <div class="ls-perf"></div>
-        <div class="ls-bord-body">
-          <div class="ls-bord-head"><span data-i18n="bord.title">BORDEREAU D'AUDIT</span><span>N° AS-0142</span></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Dépôt du fichier</b><small data-i18n="bord.s1t">Sur agrisecur.com/depot, en quelques minutes</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">02</span><span><b data-i18n="bord.s2">Premier avis</b><small data-i18n="bord.s2t">Sous 48 heures ouvrées</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">03</span><span><b data-i18n="bord.s3">Analyse satellite</b><small data-i18n="bord.s3t">Après l'acompte de 50 %</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row ls-bord-last"><span class="ls-bord-n">04</span><span><b data-i18n="bord.s4">Rapport et plan d'action</b><small data-i18n="bord.s4t">En 7 jours ouvrés</small></span></div>
-        </div>
-        <div class="ls-stamp-paid" data-i18n="bord.paid">LIVRÉ</div>
-      </div>
+      <ol class="ls-steps">
+        <li><b data-i18n="bord.s1">Dépôt du fichier</b><span data-i18n="bord.s1t">Sur agrisecur.com/depot, en quelques minutes</span></li>
+        <li><b data-i18n="bord.s2">Premier avis</b><span data-i18n="bord.s2t">Sous 48 heures ouvrées</span></li>
+        <li><b data-i18n="bord.s3">Analyse satellite</b><span data-i18n="bord.s3t">Après l'acompte de 50 %</span></li>
+        <li><b data-i18n="bord.s4">Rapport et plan d'action</b><span data-i18n="bord.s4t">En 7 jours ouvrés</span></li>
+      </ol>
     </div>
   </section>
 
@@ -886,7 +822,6 @@
     <div class="ls-wrap">
       <div class="ls-sec-head">
         <div>
-          <p class="ls-eyebrow" data-i18n="filieres.eyebrow">Au marché en ce moment</p>
           <h2 class="ls-h2" data-i18n="filieres.title">Des lots vérifiés, parcelle comprise</h2>
         </div>
         <button class="ls-btn ls-btn-line" onclick="goToAuth('register')" data-i18n="filieres.all">Tout le catalogue</button>
@@ -906,7 +841,6 @@
     <div class="ls-wrap">
       <div class="ls-sec-head">
         <div>
-          <p class="ls-eyebrow" data-i18n="prices.eyebrow">Prix du jour</p>
           <h2 class="ls-h2" data-i18n="prices.title">Les vrais prix, filière par filière</h2>
         </div>
         <p class="ls-body ls-sec-note" data-i18n="prices.lead">Prix officiels fixés par l'État et cours des bourses mondiales, actualisés en continu.</p>
@@ -924,8 +858,8 @@
         <p class="ls-body ls-sec-note" data-i18n="field.lead">Chaque lot publié vient d'un vendeur dont l'identité a été vérifiée, avec la position GPS de sa parcelle.</p>
       </div>
       <div class="ls-photos">
-        <figure><img src="/photos/sechage-cacao.jpg" alt="Producteur étalant des fèves de cacao sur une claie de séchage" loading="lazy" width="1200" height="800"><figcaption data-i18n="field.c1">Séchage des fèves sur claies</figcaption></figure>
-        <figure><img src="/photos/feves-sechage.jpg" alt="Fèves de cacao étalées au séchage" loading="lazy" width="1200" height="800"><figcaption data-i18n="field.c2">Fèves de cacao au soleil</figcaption></figure>
+        <figure><img src="/photos/agricultrice-panier.jpg" alt="Agricultrice souriante, panier sur le dos, au travail dans son champ" loading="lazy" width="1100" height="1456"><figcaption data-i18n="field.c1">Au champ, le travail de toute une saison</figcaption></figure>
+        <figure><img src="/photos/etalage-feves.jpg" alt="Mains étalant des fèves de cacao sur une claie de séchage" loading="lazy" width="1400" height="933"><figcaption data-i18n="field.c2">Les fèves étalées au séchage</figcaption></figure>
         <figure><img src="/photos/sacs-jute.jpg" alt="Sacs de jute empilés dans un entrepôt" loading="lazy" width="1200" height="673"><figcaption data-i18n="field.c3">Sacs prêts à partir</figcaption></figure>
       </div>
     </div>
@@ -959,7 +893,6 @@
     <div class="ls-wrap ls-mission-grid">
       <img class="ls-founder" src="/photos/fondateur.jpg" alt="Houle Gouamba, fondateur d'AgriSecur" loading="lazy" width="800" height="1067">
       <div>
-        <p class="ls-eyebrow" data-i18n="mission.eyebrow">Notre mission</p>
         <h2 class="ls-h2" data-i18n="mission.title">Sécuriser chaque vente agricole, de la parcelle à l'acheteur</h2>
         <p class="ls-body" data-i18n="mission.lead">AgriSecur est né d'un constat simple : une vente agricole échoue pour deux raisons, une parcelle non conforme ou un paiement qui n'arrive pas. Nous commençons par la conformité, parce que sans elle le cacao ne part plus vers l'Europe : audit RDUE, cartographie et suivi annuel des parcelles. Ensuite, notre place de marché aide ces coopératives à vendre leurs lots conformes en confiance, sans jamais devenir acheteur ni vendeur nous-mêmes.</p>
         <div class="ls-sign">
@@ -993,6 +926,7 @@
         <a onclick="afficherInstallationApp()" data-i18n="footer.install">Installer l'app</a>
         <a onclick="ouvrirAidePublique('cookies')" data-i18n="footer.cookies">Cookies</a>
         <a onclick="ouvrirAidePublique('contact')" data-i18n="footer.contact">Nous contacter</a>
+        <a onclick="ouvrirModaleSignalement()" data-i18n="report.button">Signaler un problème</a>
       </div>
     </div>
     <div class="ls-flag" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -1060,58 +994,27 @@
     <button data-tab="compte" class="tab" data-i18n="app.tabAccount">Mon compte</button>
     <a href="/depot" class="tab-lien" data-i18n="app.tabAudit">Audit RDUE · déposer un fichier</a>
     <button type="button" class="tab-lien" onclick="goToLanding(); window.scrollTo(0,0);" data-i18n="app.tabSite">Accueil du site</button>
+    <button type="button" class="tab-lien" onclick="ouvrirModaleSignalement()" data-i18n="report.button">Signaler un problème</button>
     <div class="who-box">
       <div class="label" data-i18n="app.loggedAs">Connecté en tant que</div>
       <div class="val" id="who-name"></div>
       <span class="badge-role" id="who-role"></span>
-      <div class="label" style="margin-top:14px;" data-i18n="app.commission">Commission plateforme</div>
-      <div class="val" id="who-commission">4% HT</div>
+      <div class="label who-commission-bloc" style="margin-top:14px;" data-i18n="app.commission">Commission plateforme</div>
+      <div class="val who-commission-bloc" id="who-commission">4% HT</div>
       <button id="btn-logout" data-i18n="app.logout">Se déconnecter</button>
     </div>
   </nav>
   <main>
 
     <section id="panel-catalogue" class="panel active">
-      <div class="hero-banner">
-        <div class="hero-text">
-          <h2>Sécuriser chaque vente agricole</h2>
-          <p>Des lots vérifiés, de la parcelle à l'acheteur. Le vendeur est payé une fois la réception confirmée. Vos parcelles doivent être prêtes pour l'Europe ? Commencez par l'<a href="/depot" style="color:inherit;text-decoration:underline;">audit RDUE</a>.</p>
-        </div>
-        <svg class="hero-icon" viewBox="0 0 44 68"><use href="#icon-cabosse"/></svg>
-      </div>
-
-      <div class="trust-tiles">
-        <div class="trust-tile">
-          <div class="icon-wrap"><svg><use href="#icon-lock-check"/></svg></div>
-          <div><strong>Paiement à la réception</strong><span>Le vendeur est payé une fois la réception confirmée.</span></div>
-        </div>
-        <div class="trust-tile">
-          <div class="icon-wrap"><svg><use href="#icon-leaf"/></svg></div>
-          <div><strong>Vendeurs vérifiés</strong><span>Chaque coopérative et producteur passe par un contrôle d'identité KYC.</span></div>
-        </div>
-        <div class="trust-tile" onclick="landingScrollTo('landing-filieres')" style="cursor:pointer;">
-          <div class="icon-wrap"><svg><use href="#icon-sac"/></svg></div>
-          <div><strong>Multi-filières</strong><span>Cacao, anacarde, café, coton, hévéa, palmier à huile, riz et vivrier. Cliquez pour voir les lots →</span></div>
-        </div>
-      </div>
-
-      <div class="eyebrow">Catalogue</div>
       <h1>Lots disponibles</h1>
-      <p class="sub">Parcourez les lots publiés par nos producteurs et coopératives, filtrez par filière, et commandez en toute sécurité.</p>
+      <p class="sub">Les lots publiés par des producteurs et coopératives vérifiés. Filtrez par filière et commandez.</p>
       <div id="catalogue-filters" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px;"></div>
       <div id="catalogue-msg"></div>
       <div id="catalogue-grid" class="grid"></div>
     </section>
 
     <section id="panel-vendeur" class="panel">
-      <div class="hero-banner compact">
-        <div class="hero-text">
-          <h2>Votre activité, vendue au juste prix</h2>
-          <p>Vérifiez votre identité, publiez vos lots et suivez vos ventes dans toutes vos filières — le suivi des paiements sécurise chaque vente.</p>
-        </div>
-        <svg class="hero-icon" viewBox="0 0 48 52"><use href="#icon-sac"/></svg>
-      </div>
-      <div class="eyebrow">Espace vendeur</div>
       <h1>Vos lots &amp; votre activité</h1>
       <p class="sub">Vérification d'identité, suivi de vos ventes et gestion de vos lots, toutes filières confondues.</p>
       <div id="vendeur-msg"></div>
@@ -1143,7 +1046,7 @@
           </div>
         </div>
         <div id="kyc-soumis-info" style="display:none; margin-top:12px; font-size:12.5px; color:var(--ink-soft);"></div>
-        <button id="kyc-modifier-btn" class="outline" style="display:none; margin-top:10px;" onclick="basculerModificationKyc()">✏️ Modifier mon dossier</button>
+        <button id="kyc-modifier-btn" class="outline" style="display:none; margin-top:10px;" onclick="basculerModificationKyc()">Modifier mon dossier</button>
       </div>
 
       <div class="grid" id="vendeur-kpis" style="margin-bottom:16px;"></div>
@@ -1168,9 +1071,9 @@
 
       <div class="card" id="publish-card" style="display:none;">
         <strong>Publier un nouveau lot</strong>
-        <form class="inline" id="form-product" style="margin-top:12px;">
-          <input name="nom" placeholder="Nom du lot (ex. Cacao Lot A12)" required style="flex:2;min-width:180px;" />
-          <select name="filiere" required>
+        <form class="form-lot" id="form-product">
+          <label class="fld fld-large"><span>Nom du lot</span><input name="nom" placeholder="ex. Cacao lot A12" required /></label>
+          <label class="fld"><span>Filière</span><select name="filiere" required>
             <option value="cacao">Cacao</option>
             <option value="anacarde">Anacarde (cajou)</option>
             <option value="cafe">Café</option>
@@ -1183,25 +1086,25 @@
             <option value="fruits">Fruits</option>
             <option value="elevage">Élevage</option>
             <option value="autre">Autre</option>
-          </select>
-          <input name="quantite_kg" type="number" placeholder="Quantité (kg)" required />
-          <input name="prix_unitaire_fcfa" type="number" placeholder="Prix / kg sans transport (FCFA)" required />
-          <input name="prix_avec_transport_fcfa" type="number" placeholder="Prix / kg avec transport (facultatif)" />
-          <select name="mode_livraison" required>
+          </select></label>
+          <label class="fld"><span>Quantité disponible (kg)</span><input name="quantite_kg" type="number" min="1" inputmode="numeric" required /></label>
+          <label class="fld"><span>Prix par kg, sans transport (FCFA)</span><input name="prix_unitaire_fcfa" type="number" min="1" inputmode="numeric" required /></label>
+          <label class="fld"><span>Prix par kg, transport compris (FCFA, facultatif)</span><input name="prix_avec_transport_fcfa" type="number" min="1" inputmode="numeric" /></label>
+          <label class="fld fld-large"><span>Transport</span><select name="mode_livraison" required>
             <option value="acheteur">Sans transport uniquement</option>
             <option value="vendeur">Avec transport uniquement (inclus)</option>
             <option value="a_convenir">Sans et avec transport (l'acheteur choisit)</option>
-          </select>
+          </select></label>
           <div style="display:flex; flex-direction:column; gap:6px; width:100%;">
             <label style="font-size:12.5px; color:var(--ink-soft);">Photo du lot (facultatif — compressée automatiquement)</label>
             <input type="file" id="product-photo-input" accept="image/*" />
             <img id="product-photo-preview" style="display:none; max-width:140px; border-radius:8px; border:1px solid var(--line); margin-top:4px;" />
           </div>
           <div style="display:flex; flex-direction:column; gap:8px; width:100%; border-top:1px dashed var(--line); padding-top:14px; margin-top:4px;">
-            <label style="font-size:12.5px; color:var(--ink-soft);">🌍 Traçabilité de la parcelle (facultatif — renforce la confiance des acheteurs export)</label>
+            <label style="font-size:12.5px; color:var(--ink-soft);">Position GPS de la parcelle (facultatif, mais les acheteurs export la demandent)</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-              <input name="parcelle_latitude" type="text" inputmode="decimal" placeholder="Latitude (ex. 6.827)" style="flex:1;min-width:160px;" />
-              <input name="parcelle_longitude" type="text" inputmode="decimal" placeholder="Longitude (ex. -5.289)" style="flex:1;min-width:160px;" />
+              <input name="parcelle_latitude" type="text" inputmode="decimal" placeholder="Latitude, ex. 6.827" aria-label="Latitude" style="flex:1;min-width:160px;" />
+              <input name="parcelle_longitude" type="text" inputmode="decimal" placeholder="Longitude, ex. -5.289" aria-label="Longitude" style="flex:1;min-width:160px;" />
             </div>
             <label style="display:flex; gap:8px; align-items:flex-start; font-size:12.5px; color:var(--ink-soft); cursor:pointer;">
               <input type="checkbox" name="declaration_non_deforestation" value="1" style="margin-top:2px;" />
@@ -1214,22 +1117,14 @@
 
       <div class="card" id="mes-lots-card" style="display:none; padding:0; overflow:hidden;">
         <div style="padding:16px 20px 0;"><strong>Mes lots</strong></div>
-        <div class="list-row list-row-head" style="grid-template-columns: 2fr 1fr 1fr 1fr auto;">
-          <span>Lot</span><span>Filière</span><span>Quantité</span><span>Statut</span><span></span>
+        <div class="list-row list-row-head lots-row">
+          <span>Lot</span><span>Filière</span><span>Quantité</span><span>Statut</span><span>Actions</span>
         </div>
         <div id="mes-lots-list"></div>
       </div>
     </section>
 
     <section id="panel-sequestre" class="panel">
-      <div class="hero-banner compact">
-        <div class="hero-text">
-          <h2>Vos fonds, protégés jusqu'à la livraison</h2>
-          <p>Chaque commande suit un circuit contrôlé : l'argent n'est versé au vendeur qu'après votre validation, ou à l'expiration du délai de contestation.</p>
-        </div>
-        <svg class="hero-icon" viewBox="0 0 24 24" style="width:44px;height:44px;color:var(--gold);"><use href="#icon-lock-check"/></svg>
-      </div>
-      <div class="eyebrow">Sécurité des paiements</div>
       <h1>Suivi des paiements</h1>
       <p class="sub">Vos commandes, avec leur statut réel et l'historique complet de chaque étape.</p>
       <div id="orders-msg"></div>
@@ -1237,9 +1132,8 @@
     </section>
 
     <section id="panel-aide" class="panel">
-      <div class="eyebrow">Support</div>
       <h1>Aide &amp; contact</h1>
-      <p class="sub">🌱 Nous sommes là pour vous aider. Comment fonctionne AgriSecur, vos droits, et comment nous joindre.</p>
+      <p class="sub">Nous sommes là pour vous aider. Comment fonctionne AgriSecur, vos droits, et comment nous joindre.</p>
 
       <!-- Bordereau de contact : même langage que la page d'accueil
            (pochoir des sacs de cacao, tampon, bordures noires, ombres orange). -->
@@ -1553,7 +1447,7 @@ const TRADUCTIONS = {
     "mission.eyebrow": "Our mission", "mission.title": "Securing every agricultural sale, from the plot to the buyer",
     "mission.lead": "AgriSecur was born from a simple observation: an agricultural sale fails for two reasons, a non-compliant plot or a payment that never arrives. We start with compliance, because without it cocoa no longer reaches Europe: EUDR audit, plot mapping and yearly monitoring. Then our marketplace helps these cooperatives sell their compliant lots with confidence, without ever becoming a buyer or seller ourselves.",
     "founder.eyebrow": "The team", "founder.title": "Who's behind AgriSecur",
-    "founder.role": "Founder of AgriSecur — Securing agricultural transactions", "founder.linkedin": "💼 View LinkedIn profile",
+    "founder.role": "Founder of AgriSecur — Securing agricultural transactions", "founder.linkedin": "View LinkedIn profile",
     "filieres.eyebrow": "Coverage", "filieres.title": "Seven sectors, and soon more",
     "filieres.lead": "Click on a sector to see the lots actually available right now on AgriSecur.",
     "ctabanner.title": "Ready for<br><span>the EU deadline?</span>", "ctabanner.text": "Upload your plot file: first feedback within 48 working hours.", "ctabanner.login": "I already have an account",
@@ -1563,7 +1457,7 @@ const TRADUCTIONS = {
     "auth.email": "Email address", "auth.password": "Password", "auth.forgot": "Forgot password?",
     "auth.name": "Name / company name", "auth.coop": "Cooperative", "auth.producer": "Individual producer", "auth.gie": "GIE", "auth.processor": "Processor",
     "auth.location": "Location", "auth.rccm": "RCCM number (if available)", "auth.passwordMin": "Password (10 characters min.)", "auth.referral": "Referral code (optional)",
-    "auth.payoutHint": "💡 No account to receive your payments? See how to open one", "auth.createAccount": "Create my account", "auth.backHome": "← Back to home",
+    "auth.payoutHint": "No account to receive your payments? See how to open one", "auth.createAccount": "Create my account", "auth.backHome": "← Back to home",
     "admin.tagline": "Seller account validation and dispute mediation.", "admin.key": "Administrator access key", "admin.access": "Access back-office", "admin.backToUser": "Back to seller / buyer area",
     "app.tagline": "Securing every farm sale", "app.tabCatalogue": "Catalogue & buying", "app.tabSeller": "Seller area", "app.tabEscrow": "Payment tracking", "app.tabHelp": "Help & contact", "app.tabAccount": "My account", "app.tabAudit": "EUDR audit · upload a file", "app.tabSite": "Website home",
     "app.loggedAs": "Logged in as", "app.commission": "Platform commission", "app.logout": "Log out",
@@ -1643,8 +1537,9 @@ Object.assign(TRADUCTIONS.en, {
   "prices.lead": "Official prices set by the State and world exchange quotes, updated continuously.",
   "field.title": "From the field<br><span>to the truck</span>",
   "field.lead": "Every published lot comes from a seller whose identity has been verified, with the GPS position of their plot.",
-  "field.c1": "Drying beans on racks",
-  "field.c2": "Cocoa beans in the sun",
+  "field.c1": "In the field, a whole season's work",
+  "field.c2": "Beans spread out to dry",
+  "hero.photo": "Cocoa beans drying · Côte d'Ivoire",
   "field.c3": "Bags ready to ship",
   "pro.title": "Pro Seller",
   "pro.f1.text": "<b>Trust badge</b> visible to all buyers, on your listings.",
@@ -1898,7 +1793,8 @@ function goToLanding() {
 }
 
 function landingScrollTo(id) {
-  const el = document.getElementById(id);
+  let el = document.getElementById(id);
+  if (el && el.hidden) el = el.nextElementSibling;
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   setActiveNavLink(id);
 }
@@ -1957,9 +1853,8 @@ async function loadMarketTicker() {
   }).join("");
 
   const mondiaux = d.mondiaux || [];
-  let blocMondial;
+  let blocMondial = "";
   if (!mondiaux.length) {
-    blocMondial = `<div class="ls-px-wait">${en ? "Connecting to the exchanges — quotes will appear in a moment." : "Connexion aux bourses en cours — les cours s'afficheront dans un instant."}</div>`;
     clearTimeout(window._pxRetry); window._pxRetry = setTimeout(loadMarketTicker, 20000);
   } else {
     const lignes = mondiaux.map((m) => {
@@ -1998,21 +1893,13 @@ async function loadMarketTicker() {
       <div class="ls-px-head"><b>${en ? "OFFICIAL FARM-GATE PRICES" : "PRIX OFFICIELS BORD CHAMP"}</b><span>${en ? "Set by the State · Côte d'Ivoire" : "Fixés par l'État · Côte d'Ivoire"}</span></div>
       <div class="ls-px-cards">${officiels}</div>
     </div>
-    <div class="ls-px-block">
-      <div class="ls-px-head"><b>${en ? "WORLD MARKETS" : "COURS MONDIAUX"}</b>${mondiaux.length ? `<span class="ls-px-live"><i></i>${en ? "LIVE" : "EN DIRECT"} · ${en ? "updated at" : "mis à jour à"} ${heure(d.mondiaux_calcules_le)}</span>` : ""}</div>
+    ${blocMondial ? `<div class="ls-px-block">
+      <div class="ls-px-head"><b>${en ? "WORLD MARKETS" : "COURS MONDIAUX"}</b><span class="ls-px-live"><i></i>${en ? "LIVE" : "EN DIRECT"} · ${en ? "updated at" : "mis à jour à"} ${heure(d.mondiaux_calcules_le)}</span></div>
       ${blocMondial}
-    </div>
+    </div>` : ""}
     ${blocLots}`;
 }
 
-// Bouton "retour en haut" — apparaît après un défilement significatif,
-// pour ne pas encombrer l'écran dès l'arrivée sur la page.
-const btnRetourHaut = document.getElementById("btn-retour-haut");
-if (btnRetourHaut) {
-  window.addEventListener("scroll", () => {
-    btnRetourHaut.style.display = window.scrollY > 600 ? "flex" : "none";
-  });
-}
 
 loadMarketTicker();
 setInterval(loadMarketTicker, 60000); // rafraîchi chaque minute, tant que la page d'accueil reste ouverte
@@ -2199,6 +2086,14 @@ async function loadLandingCatalogue() {
     const visibles = landingFiltreActif === "tous" ? landingProductsCache : landingProductsCache.filter((p) => p.filiere === landingFiltreActif);
     const filtreNom = landingFiltreActif === "tous" ? "" : filiereLabel(landingFiltreActif);
 
+    const marcheVide = landingProductsCache.length === 0;
+    document.getElementById("landing-filieres").hidden = marcheVide;
+    if (marcheVide) {
+      chipsEl.innerHTML = toutesLesFilieres.map((f) => `<span>${filiereLabel(f)}</span>`).join("");
+      const lab = document.querySelector(".ls-band-lab");
+      if (lab) lab.textContent = en ? "8 sectors covered" : "8 filières accompagnées";
+      return;
+    }
     if (visibles.length === 0) {
       const titre = landingFiltreActif === "tous"
         ? (en ? "The market opens" : "Le marché ouvre")
@@ -2356,9 +2251,11 @@ function showApp() {
   } else {
     commissionEl.textContent = "4% HT";
   }
-  refreshKycCard();
+  // Pas de commission côté acheteur : la ligne ne concerne que les vendeurs.
+  document.querySelectorAll(".who-commission-bloc").forEach((el) => { el.style.display = session.role === "seller" ? "" : "none"; });
   if (session.role === "buyer") loadParrainageCard();
-  loadCatalogue();
+  // Un vendeur arrive directement sur son espace, un acheteur sur le catalogue.
+  ouvrirOnglet(session.role === "seller" ? "vendeur" : "catalogue");
 }
 
 const PARRAINAGE_PALIERS = [
@@ -2384,11 +2281,11 @@ async function loadParrainageCard() {
     const palier = palierParrainage(fresh.nb_filleuls_recompenses);
     const prochain = [...PARRAINAGE_PALIERS].reverse().find((p) => fresh.nb_filleuls_recompenses < p.seuil);
     const palierBadge = palier
-      ? `<span class="tag" style="background:${palier.couleur};color:${palier.texte};font-weight:700;">🏅 Parrain ${palier.nom}</span>`
+      ? `<span class="tag" style="background:${palier.couleur};color:${palier.texte};font-weight:700;">Parrain ${palier.nom}</span>`
       : `<span class="tag" style="background:var(--cream);color:var(--ink-soft);">Pas encore parrain</span>`;
     const prochainTexte = prochain
       ? `<span class="sub" style="margin:0 0 0 8px;">Plus que ${prochain.seuil - fresh.nb_filleuls_recompenses} filleul${prochain.seuil - fresh.nb_filleuls_recompenses > 1 ? "s" : ""} pour le palier ${prochain.nom}</span>`
-      : `<span class="sub" style="margin:0 0 0 8px;">Palier maximum atteint 🎉</span>`;
+      : `<span class="sub" style="margin:0 0 0 8px;">Palier maximum atteint</span>`;
 
     document.getElementById("parrainage-kpis").innerHTML = `
       <div class="kpi-card"><div class="kpi-label">Filleuls récompensés</div><div class="kpi-val">${fresh.nb_filleuls_recompenses}</div></div>
@@ -2471,7 +2368,7 @@ async function refreshKycCard() {
     publishCard.style.display = "none";
     uploadZone.style.display = "none";
     soumisInfo.style.display = "block";
-    soumisInfo.textContent = `📎 Dossier soumis le ${new Date(session.user.kyc_soumis_le).toLocaleDateString("fr-FR")} — en attente d'examen.`;
+    soumisInfo.textContent = `Dossier soumis le ${new Date(session.user.kyc_soumis_le).toLocaleDateString("fr-FR")} — en attente d'examen.`;
     modifierBtn.style.display = "inline-block"; // pas encore validé : on peut encore corriger un document mal envoyé
   } else {
     hint.textContent = "Complétez votre dossier ci-dessous pour démarrer la vérification de votre identité.";
@@ -2581,12 +2478,12 @@ async function loadMesLots() {
     list.innerHTML = lots.map((l) => {
       const enAvant = l.mis_en_avant_jusqua && new Date(l.mis_en_avant_jusqua) > now;
       return `
-      <div class="list-row" style="grid-template-columns: 2fr 1fr 1fr 1fr auto;">
+      <div class="list-row lots-row">
         <span>${esc(l.nom)} ${enAvant ? '<span class="tag" style="background:#FBF0D6;color:#9A6A15;margin-left:4px;">★</span>' : ""}</span>
         <span>${esc(filiereLabel(l.filiere))}</span>
         <span>${fmt(l.quantite_kg)} kg</span>
-        <span class="status-pill ${LOT_STATUT_CLASS[l.statut] || ""}">${esc(LOT_STATUT_LABEL[l.statut] || l.statut)}</span>
-        <span style="display:flex; gap:6px; flex-wrap:wrap;">
+        <span><span class="status-pill ${LOT_STATUT_CLASS[l.statut] || ""}">${esc(LOT_STATUT_LABEL[l.statut] || l.statut)}</span></span>
+        <span class="lots-actions">
           ${l.statut === "disponible" ? `<button class="outline" onclick="boosterLot(${Number(l.id)})">${enAvant ? "Prolonger" : "Booster"}</button>` : ""}
           ${l.statut === "disponible" ? `<button class="danger-outline" onclick="retirerLot(${Number(l.id)})">Retirer</button>` : ""}
           ${l.parcelle_latitude && l.parcelle_longitude ? boutonWhisp(l) : ""}
@@ -2634,16 +2531,16 @@ function boutonWhisp(l) {
   whispStatutsVus[l.id] = l.whisp_statut;
   const nouveau = avant === "en_cours" && l.whisp_statut === "termine" ? " as-whisp-new" : "";
   if (l.whisp_statut === "en_cours") {
-    return `<span class="tag as-whisp-wait" style="background:#F0EAD6;color:#8A6D15;">🛰️ Analyse en cours…</span>`;
+    return `<span class="tag as-whisp-wait" style="background:#F0EAD6;color:#8A6D15;">Analyse satellite en cours…</span>`;
   }
   if (l.whisp_statut === "termine" && l.whisp_risque) {
     const labels = { faible: "Risque faible", eleve: "Risque élevé", indetermine: "À approfondir" };
-    return `<button class="outline${nouveau}" onclick="verifierDeforestationLot(${Number(l.id)})" title="Relancer une nouvelle analyse">🛰️ ${esc(labels[l.whisp_risque] || l.whisp_risque)} · relancer</button>`;
+    return `<button class="outline${nouveau}" onclick="verifierDeforestationLot(${Number(l.id)})" title="Relancer une nouvelle analyse">${esc(labels[l.whisp_risque] || l.whisp_risque)} · relancer</button>`;
   }
   if (l.whisp_statut === "erreur") {
-    return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">🛰️ Analyse échouée · réessayer</button>`;
+    return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">Analyse échouée · réessayer</button>`;
   }
-  return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">🛰️ Vérifier le risque de déforestation</button>`;
+  return `<button class="outline" onclick="verifierDeforestationLot(${Number(l.id)})">Vérifier le risque de déforestation</button>`;
 }
 
 async function verifierDeforestationLot(id) {
@@ -2661,16 +2558,17 @@ if (session) showApp();
 
 // ---------------- Navigation (app utilisateur) ----------------
 
+// Déclarée comme fonction (et non dans l'écouteur de clic) pour pouvoir être
+// appelée par showApp() dès le chargement, avant que les écouteurs existent.
+function ouvrirOnglet(tab) {
+  document.querySelectorAll("#app-layout nav button.tab").forEach((b) => b.classList.toggle("active", b.dataset.tab === tab));
+  document.querySelectorAll("#app-layout .panel").forEach((p) => p.classList.toggle("active", p.id === "panel-" + tab));
+  if (tab === "catalogue") loadCatalogue();
+  if (tab === "sequestre") loadOrders();
+  if (tab === "vendeur") refreshKycCard();
+}
 document.querySelectorAll("#app-layout nav button.tab").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll("#app-layout nav button.tab").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll("#app-layout .panel").forEach((p) => p.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
-    if (btn.dataset.tab === "catalogue") loadCatalogue();
-    if (btn.dataset.tab === "sequestre") loadOrders();
-    if (btn.dataset.tab === "vendeur") refreshKycCard();
-  });
+  btn.addEventListener("click", () => ouvrirOnglet(btn.dataset.tab));
 });
 
 // ---------------- Catalogue ----------------
@@ -2703,10 +2601,10 @@ function livraisonLabel(m) { return LIVRAISON_LABELS[m] || "Modalités de transp
 function badgeRisqueWhisp(p) {
   if (!p.parcelle_latitude || !p.parcelle_longitude) return "";
   const config = {
-    en_cours:            { style: "background:#F0EAD6;color:#8A6D15;", label: "🛰️ Analyse satellite en cours" },
-    termine_faible:      { style: "background:#E3F0E8;color:#2C6B3F;", label: "🛰️ Risque de déforestation : faible (indication satellite)" },
-    termine_eleve:       { style: "background:#F5E3E3;color:#8A2B2B;", label: "🛰️ Risque de déforestation : élevé (indication satellite)" },
-    termine_indetermine: { style: "background:#EDEDED;color:#5A5A5A;", label: "🛰️ Risque de déforestation : à approfondir (indication satellite)" },
+    en_cours:            { style: "background:#F0EAD6;color:#8A6D15;", label: "Analyse satellite en cours" },
+    termine_faible:      { style: "background:#E3F0E8;color:#2C6B3F;", label: "Risque de déforestation : faible (indication satellite)" },
+    termine_eleve:       { style: "background:#F5E3E3;color:#8A2B2B;", label: "Risque de déforestation : élevé (indication satellite)" },
+    termine_indetermine: { style: "background:#EDEDED;color:#5A5A5A;", label: "Risque de déforestation : à approfondir (indication satellite)" },
   };
   let cle = null;
   if (p.whisp_statut === "en_cours") cle = "en_cours";
@@ -2740,18 +2638,18 @@ async function loadCatalogue() {
             ${p.en_avant ? '<span class="tag" style="background:#FBF0D6;color:#9A6A15;">★ En avant</span>' : ""}
             ${p.vendeur_pro ? '<span class="tag" style="background:var(--green);color:var(--paper);">Vendeur Pro</span>' : ""}
             ${p.vendeur_fondateur ? '<span class="tag" style="background:var(--gold);color:var(--green);">★ Fondateur</span>' : ""}
-            ${p.vendeur_reactif ? '<span class="tag" style="background:#E3F0E8;color:var(--green-soft);">⚡ Expédie en &lt;24h</span>' : ""}
-            ${p.parcelle_latitude && p.parcelle_longitude ? `<span class="tag" style="background:#E3EEF5;color:#2B5C8A;cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${Number(p.parcelle_latitude)},${Number(p.parcelle_longitude)}','_blank')">🌍 Parcelle traçable</span>` : ""}
+            ${p.vendeur_reactif ? '<span class="tag" style="background:#E3F0E8;color:var(--green-soft);">Expédie en moins de 24 h</span>' : ""}
+            ${p.parcelle_latitude && p.parcelle_longitude ? `<span class="tag" style="background:#E3EEF5;color:#2B5C8A;cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${Number(p.parcelle_latitude)},${Number(p.parcelle_longitude)}','_blank')">Parcelle géolocalisée</span>` : ""}
             ${badgeRisqueWhisp(p)}
           </div>
           <div class="prod-name">${esc(p.nom)}</div>
           <div class="sub" style="margin:0;">${esc(p.localisation || "Localisation non précisée")} · ${esc(p.vendeur_nom)}</div>
           <div class="price">${fmt(p.prix_unitaire_fcfa)} <small>FCFA / kg sans transport · ${fmt(p.quantite_kg)} kg disponibles</small></div>
           ${p.prix_avec_transport_fcfa ? `<div class="price" style="margin-top:-4px;">${fmt(p.prix_avec_transport_fcfa)} <small>FCFA / kg avec transport inclus</small></div>` : ""}
-          <div class="sub" style="margin:0 0 8px; font-size:12px;">🚚 ${livraisonLabel(p.mode_livraison)}</div>
+          <div class="sub" style="margin:0 0 8px; font-size:12px;">${livraisonLabel(p.mode_livraison)}</div>
           ${session.role === "buyer"
             ? `<button class="primary" onclick="commander(${Number(p.id)}, ${Number(p.quantite_kg)}, ${Number(p.prix_avec_transport_fcfa) || "null"}, ${Number(p.prix_unitaire_fcfa)})">Commander</button>`
-            : `<p class="sub" style="margin:8px 0 0;">Connectez-vous avec un compte acheteur pour commander.</p>`}
+            : `<p class="sub" style="margin:8px 0 0;">Vous êtes connecté en vendeur : les achats se font depuis un compte acheteur.</p>`}
         </div>
       </div>
     `).join("");
@@ -2849,7 +2747,7 @@ function basculerModificationKyc() {
   const ouverture = uploadZone.style.display === "none";
   uploadZone.style.display = ouverture ? "block" : "none";
   soumisInfo.style.display = ouverture ? "none" : "block";
-  modifierBtn.textContent = ouverture ? "← Annuler la modification" : "✏️ Modifier mon dossier";
+  modifierBtn.textContent = ouverture ? "← Annuler la modification" : "Modifier mon dossier";
 }
 
 function lierChampPhoto(inputId, previewId, onReady) {
@@ -2996,10 +2894,10 @@ function renderOrder(o) {
     actions.push(`<button class="outline" onclick="reclamer(${o.id})">Ouvrir une réclamation</button>`);
   }
   if (isBuyer && o.statut === "cloture") {
-    actions.push(`<button class="outline" onclick="partagerAchatWhatsapp(${o.id})">📤 Partager sur WhatsApp</button>`);
+    actions.push(`<button class="outline" onclick="partagerAchatWhatsapp(${o.id})">Partager sur WhatsApp</button>`);
   }
   if ((isSeller || isBuyer) && o.statut !== "attente_virement") {
-    actions.push(`<button class="outline" onclick="telechargerBonCommande(${o.id})">📄 Bon de commande (PDF)</button>`);
+    actions.push(`<button class="outline" onclick="telechargerBonCommande(${o.id})">Bon de commande (PDF)</button>`);
   }
   return `
     <div class="card">
@@ -3008,13 +2906,13 @@ function renderOrder(o) {
         <span class="status-pill st-${o.statut}">${statutLabel(o.statut)}</span>
       </div>
       <div class="sub" style="margin:4px 0 0;"><span class="tag" style="margin-right:6px;">${esc(filiereLabel(o.filiere))}</span>${esc(o.produit_nom)}</div>
-      <div class="sub" style="margin:2px 0 0; font-size:12px;">🚚 Commande ${o.avec_transport ? "avec transport inclus" : "sans transport"}</div>
-      <div class="sub" style="margin:2px 0 0; font-size:12px;">${o.mode_paiement === "virement" ? `🏦 Virement bancaire${o.virement_reference ? " — réf. " + esc(o.virement_reference) : ""}` : "📱 Mobile money"}</div>
+      <div class="sub" style="margin:2px 0 0; font-size:12px;">Commande ${o.avec_transport ? "avec transport inclus" : "sans transport"}</div>
+      <div class="sub" style="margin:2px 0 0; font-size:12px;">${o.mode_paiement === "virement" ? `Virement bancaire${o.virement_reference ? " — réf. " + esc(o.virement_reference) : ""}` : "Mobile money"}</div>
       ${renderOrderStepper(o)}
       ${(o.photo_expedition_url || o.photo_reclamation_url) ? `
       <div style="display:flex; gap:12px; margin:10px 0; flex-wrap:wrap;">
-        ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">📦 Photo à l'expédition</div><img src="${esc(o.photo_expedition_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
-        ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">⚠️ Photo de la réclamation</div><img src="${esc(o.photo_reclamation_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+        ${o.photo_expedition_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">Photo à l'expédition</div><img src="${esc(o.photo_expedition_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
+        ${o.photo_reclamation_url ? `<div><div class="sub" style="margin:0 0 4px;font-size:11.5px;">Photo de la réclamation</div><img src="${esc(o.photo_reclamation_url)}" style="width:110px;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--clay);cursor:pointer;" onclick="ouvrirImage(this)" /></div>` : ""}
       </div>` : ""}
       <table>
         <tr><td>Montant marchandise</td><td>${fmt(o.montant_total_fcfa)} FCFA</td></tr>
@@ -3037,7 +2935,7 @@ function statutLabel(s) {
 
 function renderOrderStepper(o) {
   if (o.statut === "litige") {
-    return `<div class="msg" style="background:#F8DADA;color:#8A2C2C;margin:12px 0;">⚠️ Litige en cours d'instruction — le versement au vendeur reste suspendu jusqu'à la décision de médiation.</div>`;
+    return `<div class="msg" style="background:#F8DADA;color:#8A2C2C;margin:12px 0;">Litige en cours d'instruction — le versement au vendeur reste suspendu jusqu'à la décision de médiation.</div>`;
   }
   if (o.statut === "rembourse") {
     return `<div class="msg" style="background:#EFEFEF;color:var(--ink-soft);margin:12px 0;">Litige tranché en faveur de l'acheteur — fonds remboursés.</div>`;
@@ -3060,7 +2958,7 @@ function renderOrderStepper(o) {
   let countdown = "";
   if (o.statut === "expedie" && o.expedie_at) {
     const estimee = new Date(new Date(o.expedie_at).getTime() + o.delai_livraison_estime_jours * 24 * 3600 * 1000);
-    countdown = `<div class="order-countdown">🚚 Livraison estimée le ${estimee.toLocaleDateString("fr-FR")} — confirmez la réception dès que vous avez la marchandise pour ouvrir le délai de contestation.</div>`;
+    countdown = `<div class="order-countdown">Livraison estimée le ${estimee.toLocaleDateString("fr-FR")} — confirmez la réception dès que vous avez la marchandise pour ouvrir le délai de contestation.</div>`;
   }
   if (o.statut === "en_controle" && o.controle_ouvert_at) {
     const limite = new Date(new Date(o.controle_ouvert_at).getTime() + o.delai_contestation_heures * 3600 * 1000);
