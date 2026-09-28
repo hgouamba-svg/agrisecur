@@ -221,3 +221,15 @@ ensureColumn("orders", "photo_expedition_url", "TEXT");
 ensureColumn("orders", "photo_reclamation_url", "TEXT");
 ensureColumn("orders", "reference_paiement_agregateur", "TEXT");
 ensureColumn("orders", "reference_reversement_agregateur", "TEXT");
+
+// SVA (Boost, Vendeur Pro) : passage d'un octroi immédiat à un paiement
+// confirmé par le back-office. Les colonnes ci-dessous sont ajoutées aux
+// bases existantes. statut par défaut 'paye' pour que les anciens achats
+// (déjà accordés) restent comptés comme payés ; les nouvelles demandes
+// sont créées en 'en_attente'.
+ensureColumn("sva_achats", "statut", "TEXT NOT NULL DEFAULT 'paye'");
+ensureColumn("sva_achats", "jours", "INTEGER");
+ensureColumn("sva_achats", "product_id", "INTEGER");
+ensureColumn("sva_achats", "reference", "TEXT");
+ensureColumn("sva_achats", "mode_paiement", "TEXT");
+ensureColumn("sva_achats", "confirme_le", "TEXT");

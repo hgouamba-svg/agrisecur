@@ -243,6 +243,22 @@ const BOOST_TARIFS = { 3: 5000, 7: 9000, 14: 15000 }; // jours -> FCFA
 const ABONNEMENT_PRO_FCFA = 10000; // par mois
 const ABONNEMENT_PRO_DUREE_JOURS = 30;
 
+// Coordonnées de paiement affichées au vendeur pour régler un Boost ou un
+// abonnement Pro. Réglables sans toucher au code (variables d'environnement).
+// Tant qu'aucun paiement en ligne n'est branché, le vendeur paie par Mobile
+// Money ou virement, puis le back-office confirme la réception.
+const SVA_PAIEMENT_MOMO = process.env.SVA_PAIEMENT_MOMO || ""; // ex. "+225 07 00 00 00 00 (Wave / Orange Money)"
+const SVA_PAIEMENT_INFO = process.env.SVA_PAIEMENT_INFO || ""; // ex. "Virement : IBAN CI... — libellé = la référence"
+const SVA_WHATSAPP = process.env.SVA_WHATSAPP || "33745984195";
+
+function instructionsPaiementSva(reference, montant) {
+  const lignes = [];
+  if (SVA_PAIEMENT_MOMO) lignes.push(`Mobile Money : ${SVA_PAIEMENT_MOMO}`);
+  if (SVA_PAIEMENT_INFO) lignes.push(SVA_PAIEMENT_INFO);
+  lignes.push(`Indiquez la référence « ${reference} » lors du paiement, puis prévenez-nous sur WhatsApp (+${SVA_WHATSAPP}). Votre avantage est activé dès que le paiement est confirmé.`);
+  return { reference, montant_fcfa: montant, whatsapp: SVA_WHATSAPP, momo: SVA_PAIEMENT_MOMO || null, details: lignes.join("\n") };
+}
+
 // ---------- Analyse satellite de risque de déforestation (WHISP / FAO) ----------
 // API publique WHISP (Forest Data Partnership / FAO) : whisp.openforis.org.
 // Fournit une INDICATION automatisée de risque basée sur des données
@@ -816,7 +832,7 @@ router.get("/api/admin/marge-nette", (req, res) => {
   const margeNette = commissionBrute - fraisAbsorbes;
   const impotEstime = Math.round(commissionBrute * TAUX_IMPOT_ESTIME);
   const SEUIL_MICROENTREPRISE_FCFA = 50000000;
-  const totalSva = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats`).get().total;
+  const totalSva = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats WHERE statut = 'paye'`).get().total;
   const totalDepenses = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM depenses`).get().total;
   const resultatNet = margeNette - impotEstime + totalSva - totalDepenses;
 
@@ -842,13 +858,71 @@ router.get("/api/admin/marge-nette", (req, res) => {
 
 router.get("/api/admin/revenue-sva", (req, res) => {
   if (!isAdminAvecLimite(req, res)) return;
-  const total = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total, COUNT(*) AS n FROM sva_achats`).get();
-  const parType = db.prepare(`SELECT type, COUNT(*) AS n, COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats GROUP BY type`).all();
+  const total = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total, COUNT(*) AS n FROM sva_achats WHERE statut = 'paye'`).get();
+  const enAttente = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total, COUNT(*) AS n FROM sva_achats WHERE statut = 'en_attente'`).get();
+  const parType = db.prepare(`SELECT type, COUNT(*) AS n, COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats WHERE statut = 'paye' GROUP BY type`).all();
   const recents = db.prepare(`
     SELECT sva.*, s.nom AS vendeur_nom FROM sva_achats sva JOIN sellers s ON s.id = sva.seller_id
-    ORDER BY sva.created_at DESC LIMIT 20
+    WHERE sva.statut = 'paye' ORDER BY sva.created_at DESC LIMIT 20
   `).all();
-  send(res, 200, { total_fcfa: total.total, nb_achats: total.n, par_type: parType, recents });
+  send(res, 200, { total_fcfa: total.total, nb_achats: total.n, en_attente_fcfa: enAttente.total, nb_en_attente: enAttente.n, par_type: parType, recents });
+});
+
+// Demandes de Boost / Pro en attente de paiement (back-office).
+router.get("/api/admin/sva-demandes", (req, res) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const rows = db.prepare(`
+    SELECT sva.id, sva.type, sva.description, sva.montant_fcfa, sva.reference, sva.jours,
+           sva.created_at, sva.product_id, s.nom AS vendeur_nom, s.id AS seller_id, p.nom AS produit_nom, p.statut AS produit_statut
+    FROM sva_achats sva
+    JOIN sellers s ON s.id = sva.seller_id
+    LEFT JOIN products p ON p.id = sva.product_id
+    WHERE sva.statut = 'en_attente'
+    ORDER BY sva.id ASC
+  `).all();
+  send(res, 200, rows);
+});
+
+// Confirme la réception du paiement d'une demande et active l'avantage
+// (mise en avant du lot, ou prolongation de l'abonnement Pro) de façon atomique.
+router.post("/api/admin/sva-demandes/:id/confirmer", (req, res, params, body) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const demande = db.prepare(`SELECT * FROM sva_achats WHERE id = ?`).get(params.id);
+  if (!demande) return send(res, 404, { error: "demande introuvable" });
+  if (demande.statut !== "en_attente") return send(res, 409, { error: "cette demande n'est plus en attente" });
+  const mode = ["mobile_money", "virement", "especes", "autre"].includes(body && body.mode_paiement) ? body.mode_paiement : "autre";
+
+  try {
+    executerEnTransaction(() => {
+      const now = new Date().toISOString();
+      if (demande.type === "boost") {
+        const product = db.prepare(`SELECT * FROM products WHERE id = ?`).get(demande.product_id);
+        if (!product) throw new Error("le lot associé n'existe plus");
+        const base = new Date(product.mis_en_avant_jusqua && new Date(product.mis_en_avant_jusqua) > new Date() ? product.mis_en_avant_jusqua : Date.now());
+        const jusqua = new Date(base.getTime() + demande.jours * 24 * 3600 * 1000).toISOString();
+        db.prepare(`UPDATE products SET mis_en_avant_jusqua = ? WHERE id = ?`).run(jusqua, product.id);
+      } else if (demande.type === "abonnement_pro") {
+        const seller = db.prepare(`SELECT * FROM sellers WHERE id = ?`).get(demande.seller_id);
+        const base = new Date(seller.abonnement_pro_jusqua && new Date(seller.abonnement_pro_jusqua) > new Date() ? seller.abonnement_pro_jusqua : Date.now());
+        const jusqua = new Date(base.getTime() + (demande.jours || ABONNEMENT_PRO_DUREE_JOURS) * 24 * 3600 * 1000).toISOString();
+        db.prepare(`UPDATE sellers SET abonnement_pro_jusqua = ? WHERE id = ?`).run(jusqua, seller.id);
+      }
+      db.prepare(`UPDATE sva_achats SET statut = 'paye', mode_paiement = ?, confirme_le = ? WHERE id = ?`).run(mode, now, demande.id);
+    });
+  } catch (err) {
+    return send(res, 409, { error: err.message });
+  }
+  send(res, 200, { ok: true, id: demande.id, type: demande.type, montant_fcfa: demande.montant_fcfa });
+});
+
+// Rejette une demande (paiement jamais reçu, doublon…).
+router.post("/api/admin/sva-demandes/:id/rejeter", (req, res, params) => {
+  if (!isAdminAvecLimite(req, res)) return;
+  const demande = db.prepare(`SELECT * FROM sva_achats WHERE id = ?`).get(params.id);
+  if (!demande) return send(res, 404, { error: "demande introuvable" });
+  if (demande.statut !== "en_attente") return send(res, 409, { error: "cette demande n'est plus en attente" });
+  db.prepare(`UPDATE sva_achats SET statut = 'annule' WHERE id = ?`).run(demande.id);
+  send(res, 200, { ok: true });
 });
 
 // ---------- Catalogue ----------
@@ -949,6 +1023,9 @@ router.get("/api/sva/tarifs", (req, res) => {
   send(res, 200, { boost: BOOST_TARIFS, abonnement_pro: { fcfa: ABONNEMENT_PRO_FCFA, duree_jours: ABONNEMENT_PRO_DUREE_JOURS } });
 });
 
+// Boost : le vendeur demande une mise en avant. On enregistre une demande
+// « en attente » avec le prix bloqué et le nombre de jours choisi ; le lot
+// n'est PAS mis en avant avant confirmation du paiement par le back-office.
 router.post("/api/products/:id/booster", (req, res, params, body) => {
   const auth = getAuth(req);
   if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
@@ -961,27 +1038,62 @@ router.post("/api/products/:id/booster", (req, res, params, body) => {
   if (!BOOST_TARIFS[jours]) return send(res, 400, { error: "durée invalide (3, 7 ou 14 jours)" });
   const montant = BOOST_TARIFS[jours];
 
-  const base = new Date(product.mis_en_avant_jusqua && new Date(product.mis_en_avant_jusqua) > new Date() ? product.mis_en_avant_jusqua : Date.now());
-  const jusqua = new Date(base.getTime() + jours * 24 * 3600 * 1000).toISOString();
-  db.prepare(`UPDATE products SET mis_en_avant_jusqua = ? WHERE id = ?`).run(jusqua, product.id);
-  db.prepare(`INSERT INTO sva_achats (seller_id, type, description, montant_fcfa) VALUES (?, 'boost', ?, ?)`)
-    .run(auth.id, `Mise en avant ${jours}j — lot "${product.nom}"`, montant);
+  // Une seule demande de boost en attente par lot à la fois.
+  const dejaEnAttente = db.prepare(`SELECT * FROM sva_achats WHERE seller_id = ? AND type = 'boost' AND product_id = ? AND statut = 'en_attente'`).get(auth.id, product.id);
+  if (dejaEnAttente) {
+    return send(res, 200, { deja_en_attente: true, demande: dejaEnAttente, paiement: instructionsPaiementSva(dejaEnAttente.reference, dejaEnAttente.montant_fcfa) });
+  }
 
-  send(res, 200, { ...db.prepare(`SELECT * FROM products WHERE id = ?`).get(product.id), montant_paye_fcfa: montant });
+  const info = db.prepare(`INSERT INTO sva_achats (seller_id, type, description, montant_fcfa, statut, jours, product_id) VALUES (?, 'boost', ?, ?, 'en_attente', ?, ?)`)
+    .run(auth.id, `Mise en avant ${jours}j — lot "${product.nom}"`, montant, jours, product.id);
+  const reference = `BOOST-${info.lastInsertRowid}`;
+  db.prepare(`UPDATE sva_achats SET reference = ? WHERE id = ?`).run(reference, info.lastInsertRowid);
+
+  send(res, 201, { en_attente: true, reference, montant_fcfa: montant, paiement: instructionsPaiementSva(reference, montant) });
 });
 
+// Abonnement Pro : même principe — demande « en attente », rien n'est activé
+// avant confirmation du paiement.
 router.post("/api/sellers/me/abonnement-pro", (req, res) => {
   const auth = getAuth(req);
   if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
-  const seller = db.prepare(`SELECT * FROM sellers WHERE id = ?`).get(auth.id);
 
-  const base = new Date(seller.abonnement_pro_jusqua && new Date(seller.abonnement_pro_jusqua) > new Date() ? seller.abonnement_pro_jusqua : Date.now());
-  const jusqua = new Date(base.getTime() + ABONNEMENT_PRO_DUREE_JOURS * 24 * 3600 * 1000).toISOString();
-  db.prepare(`UPDATE sellers SET abonnement_pro_jusqua = ? WHERE id = ?`).run(jusqua, auth.id);
-  db.prepare(`INSERT INTO sva_achats (seller_id, type, description, montant_fcfa) VALUES (?, 'abonnement_pro', ?, ?)`)
-    .run(auth.id, `Abonnement Vendeur Pro — ${ABONNEMENT_PRO_DUREE_JOURS} jours`, ABONNEMENT_PRO_FCFA);
+  const dejaEnAttente = db.prepare(`SELECT * FROM sva_achats WHERE seller_id = ? AND type = 'abonnement_pro' AND statut = 'en_attente'`).get(auth.id);
+  if (dejaEnAttente) {
+    return send(res, 200, { deja_en_attente: true, demande: dejaEnAttente, paiement: instructionsPaiementSva(dejaEnAttente.reference, dejaEnAttente.montant_fcfa) });
+  }
 
-  send(res, 200, { abonnement_pro_jusqua: jusqua, montant_paye_fcfa: ABONNEMENT_PRO_FCFA });
+  const info = db.prepare(`INSERT INTO sva_achats (seller_id, type, description, montant_fcfa, statut, jours) VALUES (?, 'abonnement_pro', ?, ?, 'en_attente', ?)`)
+    .run(auth.id, `Abonnement Vendeur Pro — ${ABONNEMENT_PRO_DUREE_JOURS} jours`, ABONNEMENT_PRO_FCFA, ABONNEMENT_PRO_DUREE_JOURS);
+  const reference = `PRO-${info.lastInsertRowid}`;
+  db.prepare(`UPDATE sva_achats SET reference = ? WHERE id = ?`).run(reference, info.lastInsertRowid);
+
+  send(res, 201, { en_attente: true, reference, montant_fcfa: ABONNEMENT_PRO_FCFA, paiement: instructionsPaiementSva(reference, ABONNEMENT_PRO_FCFA) });
+});
+
+// Le vendeur consulte ses demandes de Boost / Pro (en attente et confirmées).
+router.get("/api/sellers/me/sva-demandes", (req, res) => {
+  const auth = getAuth(req);
+  if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
+  const rows = db.prepare(`
+    SELECT sva.id, sva.type, sva.description, sva.montant_fcfa, sva.statut, sva.reference, sva.jours,
+           sva.created_at, sva.confirme_le, sva.mode_paiement, p.nom AS produit_nom
+    FROM sva_achats sva LEFT JOIN products p ON p.id = sva.product_id
+    WHERE sva.seller_id = ? AND sva.statut IN ('en_attente','paye')
+    ORDER BY sva.id DESC LIMIT 50
+  `).all(auth.id);
+  send(res, 200, rows.map((r) => ({ ...r, paiement: r.statut === "en_attente" ? instructionsPaiementSva(r.reference, r.montant_fcfa) : null })));
+});
+
+// Le vendeur peut annuler sa propre demande tant qu'elle n'est pas payée.
+router.post("/api/sellers/me/sva-demandes/:id/annuler", (req, res, params) => {
+  const auth = getAuth(req);
+  if (!auth || auth.type !== "seller") return send(res, 401, { error: "connexion vendeur requise" });
+  const demande = db.prepare(`SELECT * FROM sva_achats WHERE id = ?`).get(params.id);
+  if (!demande || demande.seller_id !== auth.id) return send(res, 404, { error: "demande introuvable" });
+  if (demande.statut !== "en_attente") return send(res, 409, { error: "seule une demande en attente peut être annulée" });
+  db.prepare(`UPDATE sva_achats SET statut = 'annule' WHERE id = ?`).run(demande.id);
+  send(res, 200, { ok: true });
 });
 
 // Analytique comparative — réservée aux vendeurs Pro : prix moyen constaté
@@ -1038,7 +1150,7 @@ router.get("/api/sellers/me/dashboard", (req, res) => {
 
   const seller = db.prepare(`SELECT abonnement_pro_jusqua FROM sellers WHERE id = ?`).get(auth.id);
   const estPro = !!(seller.abonnement_pro_jusqua && new Date(seller.abonnement_pro_jusqua) > new Date());
-  const sva = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats WHERE seller_id = ?`).get(auth.id);
+  const sva = db.prepare(`SELECT COALESCE(SUM(montant_fcfa),0) AS total FROM sva_achats WHERE seller_id = ? AND statut = 'paye'`).get(auth.id);
 
   send(res, 200, {
     ventes_nettes_fcfa: completees.net,

@@ -664,6 +664,21 @@
 <button id="btn-lire-voix" class="fab fab-sq fab-voice" onclick="basculerLectureVoix()" title="Écouter cette page" aria-label="Écouter cette page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
 
 
+<div id="modale-paiement" style="display:none; position:fixed; inset:0; background:rgba(36,26,18,.45); z-index:600; align-items:center; justify-content:center;">
+  <div style="background:var(--paper); border:2px solid var(--ink); padding:26px; width:92%; max-width:460px; box-shadow:8px 8px 0 var(--gold);">
+    <strong style="font-family:'Archivo', sans-serif; font-size:19px; color:var(--green);">Demande enregistrée — à régler</strong>
+    <p class="sub" style="margin:8px 0 14px;">Votre avantage sera activé dès que nous aurons confirmé votre paiement. Rien n'est prélevé automatiquement.</p>
+    <div style="border:2px solid var(--ink); padding:14px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span class="sub" style="margin:0;">Montant</span><strong id="paiement-montant" style="font-family:'IBM Plex Mono',monospace;"></strong></div>
+      <div style="display:flex; justify-content:space-between; gap:10px;"><span class="sub" style="margin:0;">Référence à indiquer</span><strong id="paiement-ref" style="font-family:'IBM Plex Mono',monospace; color:var(--clay);"></strong></div>
+    </div>
+    <p id="paiement-details" class="sub" style="margin:0 0 16px; white-space:pre-line;"></p>
+    <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;">
+      <button type="button" class="outline" onclick="document.getElementById('modale-paiement').style.display='none'">Fermer</button>
+      <a id="paiement-wa" class="dark" style="text-decoration:none; display:inline-flex; align-items:center;" target="_blank" rel="noopener">Prévenir sur WhatsApp</a>
+    </div>
+  </div>
+</div>
 <div id="modale-signalement" style="display:none; position:fixed; inset:0; background:rgba(36,26,18,.45); z-index:600; align-items:center; justify-content:center;">
   <div style="background:var(--paper); border-radius:16px; padding:26px; width:92%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,.3);">
     <strong style="font-family:'Archivo', sans-serif; font-size:19px; color:var(--green);" data-i18n="report.title">Signaler un problème</strong>
@@ -1077,6 +1092,8 @@
           <div id="pro-analytics-table" style="margin-top:10px;"></div>
         </div>
       </div>
+
+      <div id="sva-demandes-zone" style="display:none;"></div>
 
       <div class="card" id="publish-card" style="display:none;">
         <strong>Publier un nouveau lot</strong>
@@ -2405,17 +2422,29 @@ function refreshProCard(d) {
   } else {
     pill.textContent = "Inactif";
     pill.className = "status-pill st-en_attente";
-    hint.textContent = "Débloquez le badge Vendeur Pro, la comparaison de vos prix avec le marché, et une meilleure visibilité dans le catalogue.";
-    btn.textContent = "S'abonner — 10 000 FCFA / mois";
+    hint.textContent = "Débloquez le badge Vendeur Pro, la comparaison de vos prix avec le marché, et une meilleure visibilité dans le catalogue. Activé après paiement (Mobile Money ou virement).";
+    btn.textContent = "Demander l'abonnement — 10 000 FCFA / mois";
     analytics.style.display = "none";
   }
+}
+
+// Affiche la fenêtre d'instructions de paiement pour une demande de Boost / Pro.
+function montrerInstructionsPaiement(reference, montant, paiement) {
+  document.getElementById("paiement-montant").textContent = fmt(montant) + " FCFA";
+  document.getElementById("paiement-ref").textContent = reference;
+  document.getElementById("paiement-details").textContent = (paiement && paiement.details) || "";
+  const wa = document.getElementById("paiement-wa");
+  const numero = (paiement && paiement.whatsapp) || "33745984195";
+  wa.href = `https://wa.me/${numero}?text=${encodeURIComponent("Bonjour, je viens de régler la demande " + reference + " (" + montant + " FCFA) sur AgriSecur.")}`;
+  document.getElementById("modale-paiement").style.display = "flex";
 }
 
 async function souscrirePro() {
   const msgEl = document.getElementById("vendeur-msg");
   try {
     const res = await api("/api/sellers/me/abonnement-pro", { method: "POST" });
-    msg(msgEl, `Abonnement Pro actif jusqu'au ${new Date(res.abonnement_pro_jusqua).toLocaleDateString("fr-FR")} — ${fmt(res.montant_paye_fcfa)} FCFA (enregistré, paiement à activer).`, true);
+    montrerInstructionsPaiement(res.reference, res.montant_fcfa, res.paiement);
+    if (res.deja_en_attente) msg(msgEl, "Une demande d'abonnement Pro est déjà en attente de paiement.", true);
     loadVendeurDashboard();
   } catch (e) {
     msg(msgEl, "Impossible de souscrire. " + e.message, false);
@@ -2466,8 +2495,40 @@ async function loadVendeurDashboard() {
     } else {
       breakdown.style.display = "none";
     }
+    loadDemandesSva();
   } catch (e) {
     kpis.innerHTML = "";
+  }
+}
+
+// Demandes de Boost / Pro en attente de paiement, rappelées au vendeur.
+async function loadDemandesSva() {
+  const zone = document.getElementById("sva-demandes-zone");
+  if (!zone) return;
+  try {
+    const rows = await api("/api/sellers/me/sva-demandes");
+    const attente = rows.filter((r) => r.statut === "en_attente");
+    if (attente.length === 0) { zone.style.display = "none"; zone.innerHTML = ""; return; }
+    zone.style.display = "block";
+    zone.innerHTML = `<div class="card"><strong>Demandes en attente de paiement</strong>
+      <p class="sub" style="margin:8px 0 12px;">Votre avantage s'active dès que nous confirmons votre paiement.</p>
+      ${attente.map((r) => `<div class="list-row" style="grid-template-columns:minmax(0,1fr) auto auto; align-items:center;">
+        <span><b>${r.type === "boost" ? "Mise en avant" : "Abonnement Pro"}</b>${r.produit_nom ? " — " + esc(r.produit_nom) : ""}<br><span class="sub" style="margin:0; font-family:'IBM Plex Mono',monospace;">Réf. ${esc(r.reference)} · ${fmt(r.montant_fcfa)} FCFA</span></span>
+        <button class="outline" onclick='montrerInstructionsPaiement(${JSON.stringify(r.reference)}, ${Number(r.montant_fcfa)}, ${JSON.stringify(r.paiement || {})})'>Comment payer</button>
+        <button class="danger-outline" onclick="annulerDemandeSva(${Number(r.id)})">Annuler</button>
+      </div>`).join("")}
+    </div>`;
+  } catch (e) {
+    zone.style.display = "none";
+  }
+}
+
+async function annulerDemandeSva(id) {
+  try {
+    await api(`/api/sellers/me/sva-demandes/${id}/annuler`, { method: "POST" });
+    loadVendeurDashboard();
+  } catch (e) {
+    msg(document.getElementById("vendeur-msg"), "Annulation impossible. " + e.message, false);
   }
 }
 
@@ -2512,7 +2573,8 @@ async function boosterLot(id) {
   const msgEl = document.getElementById("vendeur-msg");
   try {
     const res = await api(`/api/products/${id}/booster`, { method: "POST", body: JSON.stringify({ jours }) });
-    msg(msgEl, `Lot mis en avant jusqu'au ${new Date(res.mis_en_avant_jusqua).toLocaleDateString("fr-FR")} — ${fmt(res.montant_paye_fcfa)} FCFA (enregistré, paiement à activer).`, true);
+    montrerInstructionsPaiement(res.reference, res.montant_fcfa, res.paiement);
+    if (res.deja_en_attente) msg(msgEl, "Une demande de mise en avant est déjà en attente de paiement pour ce lot.", true);
     loadMesLots();
   } catch (e) {
     msg(msgEl, "Impossible de booster ce lot. " + e.message, false);
