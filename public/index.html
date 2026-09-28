@@ -326,12 +326,15 @@
 
   /* en-tête */
   .ls-top { position:sticky; top:0; z-index:20; background:#FFFFFF; border-bottom:2px solid var(--ls-ink); }
-  .ls-top-row { max-width:1344px; margin:0 auto; padding:14px 48px; display:flex; align-items:center; gap:32px; }
+  .ls-top-row { max-width:1560px; margin:0 auto; padding:14px 48px; display:flex; align-items:center; gap:32px; }
   .ls-brand { display:flex; align-items:center; gap:12px; color:var(--ls-ink); text-decoration:none; flex-shrink:0; }
   .ls-brand span { font-family:var(--ls-stencil); font-weight:900; font-size:30px; letter-spacing:.04em; line-height:1; }
   .ls-seal { width:46px; height:46px; color:var(--ls-green); flex-shrink:0; }
   .ls-seal-or { color:var(--ls-or); width:84px; height:84px; }
-  nav.ls-links { all:unset; display:flex; gap:24px; flex:1; min-width:0; }
+  /* Si les liens ne tiennent pas (petite fenêtre, police de secours plus large),
+     le menu défile au lieu de passer sous « Se connecter ». */
+  nav.ls-links { all:unset; display:flex; gap:24px; flex:1; min-width:0; overflow-x:auto; scrollbar-width:none; }
+  nav.ls-links::-webkit-scrollbar { display:none; }
   .ls-links a { font-size:15px; font-weight:600; color:var(--ls-ink); text-decoration:none; white-space:nowrap; padding:6px 0; border-bottom:2px solid transparent; }
   .ls-links a:hover { color:var(--ls-or-txt); }
   .ls-links a.active { border-bottom-color:var(--ls-or); }
@@ -486,7 +489,9 @@
   .ls-foot-links a { color:#D6D6D6; text-decoration:underline; text-underline-offset:3px; }
   .ls-foot-links a:hover { color:#FFFFFF; }
 
-  @media (max-width: 1360px) {
+  /* Le menu passe sur sa propre ligne avant de toucher les boutons de droite
+     (à 1366 px, « Contact » passait sous « Se connecter »). */
+  @media (max-width: 1440px) {
     .ls-top-row { flex-wrap:wrap; row-gap:4px; }
     .ls-actions { margin-left:auto; }
     nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
@@ -602,7 +607,11 @@
   @media (max-width: 900px) { .ls-rdue-grid { grid-template-columns:1fr; gap:32px; } .ls-rdue { padding:64px 0; } }
   /* ---------- Espace connecté : même identité que le site ----------
      Angles droits, bordures noires franches, pas d'ombres floues. */
-  #app-layout .card, #app-layout .kpi-card { border:2px solid var(--ink); border-radius:0; box-shadow:none; }
+  #app-layout .card, #app-layout .kpi-card, #ecran-aide-publique .card { border:2px solid var(--ink); border-radius:0; box-shadow:none; }
+  #ecran-aide-publique input, #ecran-aide-publique select, #ecran-aide-publique button { border-radius:0; }
+  /* Fenêtres « Signaler un problème » et « Installer l'app » */
+  #modale-signalement > div, #pwa-install-banner { border-radius:0 !important; border:2px solid var(--ink) !important; box-shadow:6px 6px 0 var(--gold) !important; }
+  #modale-signalement input, #modale-signalement select, #modale-signalement textarea, #modale-signalement button, #pwa-install-banner button { border-radius:0 !important; }
   #app-layout button.primary, #app-layout button.dark, #app-layout button.outline, #app-layout button.danger-outline,
   #app-layout .filter-chip, #app-layout input, #app-layout select, #app-layout textarea { border-radius:0; }
   #app-layout input, #app-layout select, #app-layout textarea { border:1.5px solid #8A8A8A; }

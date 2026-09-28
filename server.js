@@ -375,6 +375,7 @@ function erreurInscription({ nom, email, password }) {
 }
 
 router.post("/api/auth/register-seller", (req, res, params, body) => {
+  if (!limiterTentatives(req, res, "inscription", { max: 10 })) return;
   const { nom, type, localisation, rccm, email, password } = body;
   if (!nom || !type || !email || !password) return send(res, 400, { error: "nom, type, email, password requis" });
   const erreur = erreurInscription(body);
@@ -430,6 +431,7 @@ function genererCodeParrainage() {
 }
 
 router.post("/api/auth/register-buyer", (req, res, params, body) => {
+  if (!limiterTentatives(req, res, "inscription", { max: 10 })) return;
   const { nom, type, email, password, code_parrainage_saisi } = body;
   if (!nom || !email || !password) return send(res, 400, { error: "nom, email, password requis" });
   const erreur = erreurInscription(body);
@@ -719,8 +721,11 @@ router.post("/api/admin/depenses/:id/supprimer", (req, res, params) => {
 
 function genererCsv(colonnes, lignes) {
   const echapper = (v) => {
-    const s = v === null || v === undefined ? "" : String(v);
-    return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    let s = v === null || v === undefined ? "" : String(v);
+    // Un nom de lot ou de compte commençant par = + - @ deviendrait une
+    // formule exécutée par Excel à l'ouverture (injection CSV).
+    if (typeof v === "string" && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return /[;"\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   const entete = colonnes.map(echapper).join(";");
   const corps = lignes.map((ligne) => ligne.map(echapper).join(";")).join("\n");
@@ -1423,6 +1428,7 @@ router.post("/api/orders/:id/reclamer", (req, res, params, body) => {
   if (order.buyer_id !== auth.id) return send(res, 403, { error: "cette commande n'appartient pas à cet acheteur" });
   if (!["expedie", "en_controle"].includes(order.statut)) return send(res, 409, { error: `réclamation impossible depuis l'état '${order.statut}'` });
   if (!motif) return send(res, 400, { error: "motif requis (Article 5 : réserve motivée)" });
+  if (!texteValide(motif, 1000, true)) return send(res, 400, { error: "motif invalide (1000 caractères max)" });
   if (!photo_reclamation_url) return send(res, 400, { error: "une photo du problème constaté est requise pour ouvrir une réclamation" });
   if (!photoValide(photo_reclamation_url)) return send(res, 400, { error: "photo invalide ou trop volumineuse (compressez avant envoi)" });
 
@@ -1575,7 +1581,8 @@ router.post("/api/signalements", (req, res, params, body) => {
   if (!limiterTentatives(req, res, "signalement")) return;
   const { type, description, contexte, contact } = body;
   if (!["bug", "suggestion", "connexion", "contact"].includes(type)) return send(res, 400, { error: "type invalide" });
-  if (!description || description.trim().length < 5) return send(res, 400, { error: "description trop courte" });
+  if (typeof description !== "string" || description.trim().length < 5) return send(res, 400, { error: "description trop courte" });
+  if (!texteValide(contexte, 500, false) || !texteValide(contact, 200, false)) return send(res, 400, { error: "contexte ou contact trop long" });
   if (description.length > 2000) return send(res, 400, { error: "description trop longue (2000 caractères max)" });
 
   const auth = getAuth(req);
@@ -1688,8 +1695,10 @@ function verifierAccesSite(req, res) {
   if (!SITE_PASSWORD) return true; // verrou désactivé
   const header = req.headers.authorization || "";
   if (header.startsWith("Basic ")) {
-    const [user, pass] = Buffer.from(header.slice(6), "base64").toString().split(":");
-    if (user === SITE_USER && pass === SITE_PASSWORD) return true;
+    const decode = Buffer.from(header.slice(6), "base64").toString();
+    const i = decode.indexOf(":");
+    const egal = (a, b) => crypto.timingSafeEqual(crypto.createHash("sha256").update(a).digest(), crypto.createHash("sha256").update(b).digest());
+    if (i > 0 && egal(decode.slice(0, i), SITE_USER) && egal(decode.slice(i + 1), SITE_PASSWORD)) return true;
   }
   res.writeHead(401, { "WWW-Authenticate": 'Basic realm="AgriSecur - acces restreint"', "Content-Type": "text/plain; charset=utf-8" });
   res.end("Accès restreint — identifiants requis.");
@@ -1697,22 +1706,61 @@ function verifierAccesSite(req, res) {
 }
 
 // En-têtes de sécurité posés sur toutes les réponses (statiques et API).
-// Pas de Content-Security-Policy : la page repose sur des scripts/handlers inline.
+// CSP : les pages gardent leurs scripts inline ('unsafe-inline'), mais ne
+// peuvent charger du code, des styles ou des polices que depuis le site et
+// Google Fonts, et ne peuvent envoyer de données qu'au site lui-même
+// (connect-src 'self') : un script injecté ne pourrait pas exfiltrer un jeton.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "img-src 'self' data: blob:",
+  "media-src 'self'",
+  "connect-src 'self'",
+  "manifest-src 'self'",
+  "worker-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+].join("; ");
 const EN_TETES_SECURITE = {
+  "Content-Security-Policy": CSP,
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "same-origin",
   "Strict-Transport-Security": "max-age=31536000",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=(self)",
+  "Permissions-Policy": "camera=(), microphone=(self), geolocation=(self)",
+  "Cross-Origin-Opener-Policy": "same-origin",
 };
 
 const server = http.createServer((req, res) => {
+  // Filet de sécurité : aucune erreur imprévue pendant le traitement d'une
+  // requête ne doit pouvoir arrêter le serveur pour tous les utilisateurs.
+  try {
+    traiterRequete(req, res);
+  } catch (err) {
+    console.error("[requête]", err);
+    if (!res.headersSent) send(res, 500, { error: "erreur serveur" });
+    else res.end();
+  }
+});
+
+function traiterRequete(req, res) {
   for (const [nom, valeur] of Object.entries(EN_TETES_SECURITE)) res.setHeader(nom, valeur);
   if (req.method === "OPTIONS") return send(res, 204, {});
   // /api/health reste accessible pour le contrôle de santé de l'hébergeur.
   if (!req.url.startsWith("/api/health") && !verifierAccesSite(req, res)) return;
 
-  const url = new URL(req.url, `http://${req.headers.host}`);
+  // L'adresse est lue avec une base fixe : un en-tête Host invalide (« [bad »)
+  // faisait lever une exception non rattrapée et arrêtait tout le serveur.
+  let url;
+  try {
+    url = new URL(req.url, "http://localhost");
+  } catch {
+    return send(res, 400, { error: "adresse invalide" });
+  }
 
   if (req.method === "GET" && !url.pathname.startsWith("/api")) {
     if (FICHIERS_APP_ADMIN[url.pathname]) return servirAppAdmin(res, url.pathname);
@@ -1755,7 +1803,7 @@ const server = http.createServer((req, res) => {
       erreurServeur(err);
     }
   });
-});
+}
 
 process.on("unhandledRejection", (err) => {
   console.error("[unhandledRejection]", err);
