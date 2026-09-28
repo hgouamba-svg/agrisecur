@@ -590,8 +590,14 @@
   .admin-shell .card, .admin-shell .kpi-card, .auth-box { border:2px solid var(--ink); border-radius:0; box-shadow:none; }
   .admin-shell button, .admin-shell input, .admin-shell select, .admin-shell textarea, .admin-shell .tag, .admin-shell .status-pill, .admin-shell .msg,
   .auth-box input, .auth-box button { border-radius:0; }
-  .prix-off-ligne { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,1.3fr) 36px; gap:8px; align-items:center; margin-bottom:8px; }
-  .prix-off-ligne > * { min-width:0; width:100%; }
+  /* Éditeur des prix officiels : champs libellés qui s'enroulent, jamais de
+     débordement ni de texte coupé, quelle que soit la largeur de l'écran. */
+  .prix-off-ligne { display:flex; flex-wrap:wrap; gap:10px 12px; align-items:flex-end; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .prix-off-ligne .pf { display:flex; flex-direction:column; gap:4px; flex:1 1 150px; min-width:0; font-size:12px; font-weight:600; color:var(--ink-soft); }
+  .prix-off-ligne .pf-sm { flex:0 1 120px; }
+  .prix-off-ligne .pf-src { flex:2 1 220px; }
+  .prix-off-ligne .pf input, .prix-off-ligne .pf select { width:100%; min-width:0; font-weight:400; }
+  .prix-off-ligne .pf-del { flex:0 0 auto; align-self:flex-end; height:40px; }
   @media (max-width: 760px) {
     .layout { flex-direction:column; }
     nav { width:auto; padding:12px 12px 0; gap:0; flex-direction:row; flex-wrap:wrap; align-items:center; position:sticky; top:0; z-index:400; }
@@ -608,8 +614,8 @@
     .list-row { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; }
     .list-row-head { display:none; }
     table { display:block; overflow-x:auto; }
-    .prix-off-ligne { grid-template-columns:minmax(0,1fr) minmax(0,1fr); padding-bottom:10px; border-bottom:1px solid var(--line); }
-    .prix-off-ligne > button { grid-column:2; justify-self:end; width:44px; }
+    .prix-off-ligne .pf { flex:1 1 45%; }
+    .prix-off-ligne .pf-del { width:100%; }
   }
 
 </style>
@@ -1485,13 +1491,13 @@ function lignePrixOfficiel(o = {}) {
   const opts = FILIERES_PRIX_ADMIN.map((f) => `<option value="${f}" ${o.filiere === f ? "selected" : ""}>${filiereLabel(f)}</option>`).join("");
   const v = esc;
   return `<div class="prix-off-ligne">
-    <select data-k="filiere">${opts}</select>
-    <input data-k="prix_fcfa_kg" type="number" min="1" placeholder="FCFA/kg" value="${v(o.prix_fcfa_kg)}">
-    <input data-k="campagne" placeholder="Campagne (ex. 2026-2027)" value="${v(o.campagne)}">
-    <input data-k="detail" placeholder="Détail (facultatif)" value="${v(o.detail)}">
-    <input data-k="depuis" type="date" value="${v(o.depuis)}">
-    <input data-k="source" placeholder="Source" value="${v(o.source)}">
-    <button class="danger-outline" style="padding:6px 0;" title="Retirer" aria-label="Retirer cette ligne" onclick="this.parentElement.remove()">×</button>
+    <label class="pf"><span>Filière</span><select data-k="filiere">${opts}</select></label>
+    <label class="pf pf-sm"><span>Prix (FCFA/kg)</span><input data-k="prix_fcfa_kg" type="number" min="1" placeholder="1200" value="${v(o.prix_fcfa_kg)}"></label>
+    <label class="pf"><span>Campagne</span><input data-k="campagne" placeholder="ex. 2026-2027" value="${v(o.campagne)}"></label>
+    <label class="pf"><span>Détail (facultatif)</span><input data-k="detail" placeholder="—" value="${v(o.detail)}"></label>
+    <label class="pf pf-sm"><span>Depuis</span><input data-k="depuis" type="date" value="${v(o.depuis)}"></label>
+    <label class="pf pf-src"><span>Source</span><input data-k="source" placeholder="Conseil…" value="${v(o.source)}"></label>
+    <button class="danger-outline pf-del" title="Retirer cette filière" aria-label="Retirer cette ligne" onclick="this.parentElement.remove()">Retirer</button>
   </div>`;
 }
 async function loadAdminPrixOfficiels() {
