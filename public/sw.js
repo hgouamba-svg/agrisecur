@@ -8,7 +8,7 @@
 // direct, jamais d'un cache local, pour ne jamais afficher une
 // information financière périmée.
 
-const CACHE_NAME = "agrisecur-static-v6";
+const CACHE_NAME = "agrisecur-static-v7";
 const FICHIERS_A_METTRE_EN_CACHE = [
   "/",
   "/index.html",
@@ -38,6 +38,10 @@ self.addEventListener("fetch", (event) => {
 
   // Jamais de cache sur l'API — toujours des données fraîches.
   if (url.pathname.startsWith("/api/")) return;
+
+  // Sons et vidéos du film : lus par morceaux (réponses 206), que le cache ne
+  // sait pas stocker. Le navigateur s'en charge directement.
+  if (url.pathname.startsWith("/film/") || event.request.headers.has("range")) return;
 
   // Pour le reste (interface, icônes) : réseau en priorité, cache en secours
   // si hors-ligne — pour ne jamais servir une vieille version de l'app tant
