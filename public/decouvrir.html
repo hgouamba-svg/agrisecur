@@ -1,216 +1,244 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Découvrir AgriSecur en 51 secondes</title>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Découvrir AgriSecur en 1 minute</title>
 <meta name="description" content="Le film AgriSecur : l'Audit RDUE express des coopératives de cacao. Premier avis sous 48 heures ouvrées, rapport en 7 jours ouvrés, analyse satellite de chaque parcelle.">
-<meta property="og:title" content="AgriSecur en 51 secondes">
+<meta property="og:title" content="AgriSecur en 1 minute">
 <meta property="og:description" content="Sécuriser chaque vente agricole : l'Audit RDUE des coopératives, puis la place de marché de leurs lots conformes.">
+<meta property="og:image" content="https://www.agrisecur.com/film/affiche.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@800;900&family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
-  --bg:#FFFFFF; --surface:#FFFFFF; --ink:#111111; --muted:#5C5C5C; --line:#111111;
-  --accent:#F77F00; --accent-ink:#A95500; --leaf:#1E7A48; --teal:#0F7C74; --danger:#B8352A;
-  --seal-bg:#F2F5EF;
-  /* stage: one fixed look, like a film frame */
+  --bg:#FFFFFF; --ink:#111111; --muted:#4A4A4A;
+  --accent:#F07E00; --accent-ink:#A85200;
+  /* le plateau : une seule ambiance, comme une image de film */
   --st-bg:#0E3526; --st-bg2:#0A2A1E; --st-ink:#F1F5EE; --st-dim:#A7C0B1; --st-or:#F77F00;
-  --st-teal:#43C7B6; --st-line:rgba(241,245,238,.14); --st-card:#134433;
-  --display:"Archivo", "Arial Narrow", Arial, sans-serif;
+  --st-teal:#43C7B6; --st-line:rgba(241,245,238,.16); --st-card:#134433;
+  --stencil:"Big Shoulders Stencil","Archivo","Arial Narrow",sans-serif;
   --body:"Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
- *{box-sizing:border-box}
-body{background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55}
-.wrap{max-width:1040px; margin:0 auto; padding-inline:16px; padding-block:28px 64px; display:flex; flex-direction:column; gap:40px}
+*{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.55}
+.wrap{max-width:1040px; margin:0 auto; padding:28px 16px 64px; display:flex; flex-direction:column; gap:40px}
 @media (min-width:700px){.wrap{padding-inline:28px}}
 .mono{font-family:var(--mono)}
 button{font:inherit; cursor:pointer}
 :focus-visible{outline:2px solid var(--accent); outline-offset:3px}
+.flagbar{display:flex; height:6px}.flagbar i{flex:1}.flagbar i:nth-child(1){background:#F07E00}.flagbar i:nth-child(2){background:#F2F2F2}.flagbar i:nth-child(3){background:#1F7A48}
 
-/* header */
-.top{display:flex; gap:16px; align-items:center}
-.top .seal{width:52px; height:52px; color:var(--accent-ink); flex:none; --seal-bg:var(--bg)}
-.top h1{font-family:var(--display); font-stretch:112%; font-weight:850; font-size:clamp(26px,4.4vw,40px); line-height:1.05; margin:0; text-wrap:balance}
-.top p{margin:4px 0 0; color:var(--muted); max-width:62ch}
+/* en-tête */
+.top{display:flex; flex-wrap:wrap; gap:16px; align-items:center; border-bottom:2px solid #111; padding-bottom:20px}
+.top .seal{width:52px; height:52px; color:#1F3D2E; flex:none; --seal-bg:var(--bg)}
+.top > div{flex:1; min-width:0}
+.top h1{font-family:var(--stencil); font-weight:900; font-size:clamp(40px,6vw,72px); line-height:.9; margin:0; text-transform:uppercase; text-wrap:balance}
+.top p{margin:6px 0 0; color:#333; max-width:62ch}
+.top a.back{margin-left:auto; color:#111; font-weight:700; font-size:14px; white-space:nowrap}
+@media (max-width:600px){.top a.back{order:-1; flex-basis:100%; margin-left:0}}
 
-/* ---------- film ---------- */
+/* ---------- plateau ---------- */
 .film{display:flex; flex-direction:column; gap:14px}
 .stage-wrap{container-type:inline-size}
 .stage{
   --u:1cqw;
-  position:relative; aspect-ratio:16/9; width:100%; overflow:hidden; border-radius:14px;
+  position:relative; aspect-ratio:16/9; width:100%; overflow:hidden;
+  border:2px solid #111; box-shadow:10px 10px 0 var(--accent);
   background:
     repeating-linear-gradient(0deg, transparent 0 calc(6*var(--u) - 1px), rgba(241,245,238,.035) calc(6*var(--u) - 1px) calc(6*var(--u))),
     repeating-linear-gradient(90deg, transparent 0 calc(6*var(--u) - 1px), rgba(241,245,238,.035) calc(6*var(--u) - 1px) calc(6*var(--u))),
     radial-gradient(120% 90% at 85% 10%, #145139 0%, var(--st-bg) 45%, var(--st-bg2) 100%);
   color:var(--st-ink); --seal-bg:var(--st-bg);
 }
+@media (max-width:600px){ .stage{box-shadow:6px 6px 0 var(--accent)} }
 .flag{position:absolute; left:0; right:0; bottom:0; height:calc(.55*var(--u)); display:flex; z-index:3}
 .flag i{flex:1}.flag i:nth-child(1){background:#F77F00}.flag i:nth-child(2){background:#F4F6F2}.flag i:nth-child(3){background:#009E60}
 .scene{position:absolute; inset:0; padding:calc(5*var(--u)); padding-bottom:calc(5.6*var(--u)); display:flex; flex-direction:column; gap:calc(2.2*var(--u)); opacity:0; visibility:hidden; transition:opacity .45s ease, visibility 0s linear .45s}
 .scene.on{opacity:1; visibility:visible; transition:opacity .45s ease}
+.scene > *{position:relative; z-index:1}
+.bg{position:absolute !important; inset:0; z-index:0 !important; overflow:hidden}
+.bg img{width:100%; height:100%; object-fit:cover; display:block}
+.bg::after{content:""; position:absolute; inset:0}
 .split{flex:1; min-height:0; display:grid; grid-template-columns:1.05fr 1fr; gap:calc(3*var(--u)); align-items:center}
 .copy{display:flex; flex-direction:column; gap:calc(1.4*var(--u))}
 .eyebrow{margin:0; font-family:var(--mono); font-size:calc(1.35*var(--u)); letter-spacing:.14em; text-transform:uppercase; color:var(--st-or)}
-.h{margin:0; font-family:var(--display); font-stretch:115%; font-weight:850; font-size:calc(4.3*var(--u)); line-height:1.02; letter-spacing:-.01em; text-wrap:balance}
+.h{margin:0; font-family:var(--stencil); font-weight:900; text-transform:uppercase; font-size:calc(4.9*var(--u)); line-height:.92; letter-spacing:.01em; text-wrap:balance}
 .h-or{color:var(--st-or)}
 .sub{margin:0; font-size:calc(1.75*var(--u)); color:var(--st-dim); line-height:1.4; max-width:40ch}
 .fig{margin:0; min-height:0; height:100%; display:flex; align-items:center; justify-content:center}
 .fig svg{width:100%; height:100%; max-height:100%; overflow:visible}
 .svg-label{font-family:var(--mono); font-size:9px; letter-spacing:.12em; fill:var(--st-dim)}
-.svg-strong{font-family:var(--display); font-weight:800; font-size:13px; fill:var(--st-ink)}
+.svg-strong{font-family:var(--body); font-weight:800; font-size:13px; fill:var(--st-ink)}
 .seal{display:block}
+.seal svg{display:block; width:100%; height:100%; overflow:visible}
 .seal .rib{stroke:var(--seal-bg); stroke-width:2.2; stroke-linecap:round}
+.chip{font-family:var(--mono); font-size:calc(1.05*var(--u)); padding:calc(.35*var(--u)) calc(.8*var(--u)); border-radius:99px; border:1px solid var(--st-teal); color:var(--st-teal); white-space:nowrap}
+.chip-or{border-color:var(--st-or); color:var(--st-or); align-self:flex-start; font-size:calc(1.2*var(--u))}
 
-/* scene 2 */
+/* 0 · ouverture */
+.sting{align-items:center; justify-content:center; gap:calc(2.4*var(--u))}
+.sting .seal{width:calc(19*var(--u)); height:calc(19*var(--u)); color:var(--st-or)}
+.sting .word{font-family:var(--stencil); font-weight:900; font-size:calc(7.4*var(--u)); letter-spacing:.06em; line-height:1; text-transform:uppercase}
+.sting .tag{font-family:var(--mono); font-size:calc(1.4*var(--u)); letter-spacing:.3em; text-transform:uppercase; color:var(--st-dim)}
+
+/* 1 · le problème */
+.s1 .bg img{transform-origin:70% 40%}
+.s1 .bg::after{background:linear-gradient(90deg, rgba(10,42,30,.97) 0%, rgba(10,42,30,.88) 42%, rgba(10,42,30,.5) 100%)}
+
+/* 2 · la solution */
 .brand{display:flex; align-items:center; gap:calc(2*var(--u))}
 .brand .seal{width:calc(11*var(--u)); height:calc(11*var(--u)); color:var(--st-or); flex:none}
-.word{font-family:var(--display); font-stretch:120%; font-weight:900; font-size:calc(5.2*var(--u)); line-height:1; letter-spacing:-.02em}
-.phone{width:100%; max-width:calc(34*var(--u)); margin-inline:auto; border:calc(.35*var(--u)) solid rgba(241,245,238,.22); border-radius:calc(3*var(--u)); padding:calc(1.6*var(--u)); display:flex; flex-direction:column; gap:calc(1.1*var(--u)); background:rgba(10,42,30,.55)}
+.word{font-family:var(--stencil); font-weight:900; text-transform:uppercase; font-size:calc(6.2*var(--u)); line-height:1; letter-spacing:.03em}
+.phone{width:100%; max-width:calc(40*var(--u)); margin-inline:auto; border:calc(.35*var(--u)) solid rgba(241,245,238,.22); border-radius:calc(3*var(--u)); padding:calc(1.6*var(--u)); display:flex; flex-direction:column; gap:calc(1.1*var(--u)); background:rgba(10,42,30,.55)}
 .phone-bar{display:flex; justify-content:space-between; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-dim); letter-spacing:.08em}
-.lot{background:var(--st-card); border-radius:calc(1.2*var(--u)); padding:calc(1.2*var(--u)) calc(1.4*var(--u)); display:grid; grid-template-columns:auto 1fr auto; gap:calc(1.2*var(--u)); align-items:center}
+.lot{background:var(--st-card); border-left:calc(.5*var(--u)) solid var(--st-teal); padding:calc(1.1*var(--u)) calc(1.3*var(--u)); display:grid; grid-template-columns:auto 1fr auto; gap:calc(1.2*var(--u)); align-items:center}
+.lot.warn{border-left-color:var(--st-or)}
 .lot b{display:block; font-size:calc(1.65*var(--u)); font-weight:700; line-height:1.2}
 .lot small{display:block; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-dim)}
-.swatch{width:calc(4*var(--u)); height:calc(4*var(--u)); border-radius:calc(.8*var(--u))}
-.chip{font-family:var(--mono); font-size:calc(1.05*var(--u)); padding:calc(.35*var(--u)) calc(.8*var(--u)); border-radius:99px; border:1px solid var(--st-teal); color:var(--st-teal); white-space:nowrap}
+.swatch{width:calc(4*var(--u)); height:calc(4*var(--u))}
+.lot .chip{font-size:calc(1*var(--u))}
+.lot.warn .chip{border-color:var(--st-or); color:var(--st-or)}
 
-/* scene 3 */
+/* 3 · le parcours */
+.s3 .copy{max-width:78%}
 .rail{position:relative; margin-top:calc(2*var(--u)); display:grid; grid-template-columns:repeat(4,1fr); gap:calc(1*var(--u))}
-.track{position:absolute; left:12.5%; right:12.5%; top:calc(2.2*var(--u)); height:calc(.45*var(--u)); background:var(--st-line); border-radius:9px; overflow:hidden}
+.track{position:absolute; left:12.5%; right:12.5%; top:calc(2.2*var(--u)); height:calc(.45*var(--u)); background:var(--st-line); overflow:hidden}
 .track-fill{position:absolute; inset:0; background:var(--st-teal); transform-origin:left center}
 .node{position:relative; display:flex; flex-direction:column; align-items:center; text-align:center; gap:calc(1*var(--u))}
-.dot{width:calc(4.8*var(--u)); height:calc(4.8*var(--u)); border-radius:50%; background:var(--st-teal); color:var(--st-bg); display:grid; place-items:center; font-family:var(--mono); font-weight:500; font-size:calc(1.7*var(--u)); box-shadow:0 0 0 calc(.6*var(--u)) var(--st-bg)}
+.dot{width:calc(4.8*var(--u)); height:calc(4.8*var(--u)); border-radius:50%; background:var(--st-teal); color:var(--st-bg); display:grid; place-items:center; font-family:var(--mono); font-weight:600; font-size:calc(1.7*var(--u)); box-shadow:0 0 0 calc(.6*var(--u)) var(--st-bg)}
 .node b{font-size:calc(1.6*var(--u)); line-height:1.2}
 .node small{font-family:var(--mono); font-size:calc(1.1*var(--u)); color:var(--st-dim); line-height:1.3}
-.held{align-self:flex-start; display:flex; gap:calc(1*var(--u)); align-items:center; font-family:var(--mono); font-size:calc(1.3*var(--u)); color:var(--st-teal); border:1px dashed var(--st-teal); border-radius:calc(1*var(--u)); padding:calc(.7*var(--u)) calc(1.2*var(--u))}
-.stamp-abs{position:absolute; right:calc(5*var(--u)); bottom:calc(6*var(--u)); width:calc(13*var(--u)); height:calc(13*var(--u)); color:var(--st-or)}
+.held{align-self:flex-start; display:flex; gap:calc(1*var(--u)); align-items:center; font-family:var(--mono); font-size:calc(1.3*var(--u)); color:var(--st-teal); border:1px dashed var(--st-teal); padding:calc(.7*var(--u)) calc(1.2*var(--u))}
+.stamp-abs{position:absolute !important; right:calc(4.5*var(--u)); top:calc(4*var(--u)); width:calc(13*var(--u)); height:calc(13*var(--u)); color:var(--st-or)}
 
-/* scene 4 */
-.badge{display:flex; gap:calc(1.2*var(--u)); align-items:center; background:var(--st-card); border:1px solid rgba(67,199,182,.4); border-radius:calc(1.3*var(--u)); padding:calc(1.1*var(--u)) calc(1.5*var(--u)); align-self:flex-start}
+/* 4 · satellite */
+.badge{display:flex; gap:calc(1.2*var(--u)); align-items:center; background:var(--st-card); border:1px solid rgba(67,199,182,.5); padding:calc(1.1*var(--u)) calc(1.5*var(--u)); align-self:flex-start}
 .badge .led{width:calc(1.6*var(--u)); height:calc(1.6*var(--u)); border-radius:50%; background:#3DDC84; box-shadow:0 0 0 calc(.5*var(--u)) rgba(61,220,132,.2); flex:none}
 .badge b{display:block; font-size:calc(1.7*var(--u)); line-height:1.2}
 .badge small{display:block; font-family:var(--mono); font-size:calc(1.1*var(--u)); color:var(--st-dim); letter-spacing:.06em}
-.chip-or{border-color:var(--st-or); color:var(--st-or); align-self:flex-start; font-size:calc(1.2*var(--u))}
-.parcel{fill:rgba(247,127,0,.16); stroke:var(--st-or); stroke-width:2.2; stroke-linejoin:round}
-.scan{fill:rgba(67,199,182,.18)}
+.parcel{fill:rgba(247,127,0,.18); stroke:var(--st-or); stroke-width:2.4; stroke-linejoin:round}
+.reveal, .sweep{transform-box:view-box}
 
-/* scene 5 */
-.trio{flex:1; min-height:0; display:grid; grid-template-columns:repeat(3,1fr); gap:calc(2*var(--u)); align-items:stretch}
-.who{background:var(--st-card); border-radius:calc(1.6*var(--u)); padding:calc(2*var(--u)); display:flex; flex-direction:column; gap:calc(1*var(--u))}
+/* 5 · chacun y gagne */
+.s5 .bg img{filter:saturate(.8)}
+.s5 .bg::after{background:linear-gradient(180deg, rgba(10,42,30,.93) 0%, rgba(10,42,30,.86) 100%)}
+.flow{flex:1; min-height:0; display:grid; grid-template-columns:1fr auto 1fr auto 1fr; gap:calc(1.2*var(--u)); align-items:center}
+.who{background:var(--st-card); border:2px solid rgba(241,245,238,.25); padding:calc(2*var(--u)); display:flex; flex-direction:column; gap:calc(.9*var(--u)); box-shadow:calc(.7*var(--u)) calc(.7*var(--u)) 0 rgba(0,0,0,.35)}
+.who .num{font-family:var(--mono); font-size:calc(1.1*var(--u)); color:var(--st-dim); letter-spacing:.14em}
 .who svg{width:calc(5*var(--u)); height:calc(5*var(--u)); color:var(--st-or)}
-.who b{font-family:var(--display); font-stretch:112%; font-weight:800; font-size:calc(2.2*var(--u)); line-height:1.1}
+.who b{font-family:var(--stencil); font-weight:900; font-size:calc(3*var(--u)); line-height:1; text-transform:uppercase}
 .who p{margin:0; font-size:calc(1.5*var(--u)); color:var(--st-dim); line-height:1.4}
-.tick{margin-top:auto; font-family:var(--mono); font-size:calc(1.15*var(--u)); color:var(--st-teal); letter-spacing:.06em}
+.tick{margin-top:calc(.6*var(--u)); align-self:flex-start; font-family:var(--mono); font-weight:600; font-size:calc(1.15*var(--u)); color:var(--st-bg); background:var(--st-teal); padding:calc(.3*var(--u)) calc(.8*var(--u)); letter-spacing:.06em}
+.who.win{background:var(--st-or); color:#111; border-color:#111; box-shadow:calc(.7*var(--u)) calc(.7*var(--u)) 0 #111}
+.who.win svg{color:#111}.who.win p{color:#2A1A00}.who.win .num{color:#4A2A00}
+.who.win .tick{background:#111; color:var(--st-or)}
+.arrow{width:calc(3.4*var(--u)); height:calc(3.4*var(--u)); color:var(--st-or)}
+.arrow svg{width:100%; height:100%; display:block}
 
-/* scene 6 */
+/* 6 · fin */
 .end{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:calc(1.6*var(--u))}
 .end .seal{width:calc(15*var(--u)); height:calc(15*var(--u)); color:var(--st-or)}
-.url{font-family:var(--mono); font-size:calc(1.9*var(--u)); color:var(--st-ink); border-bottom:2px solid var(--st-or); padding-bottom:calc(.3*var(--u))}
+.url{position:relative; font-family:var(--mono); font-weight:600; font-size:calc(2.2*var(--u)); color:var(--st-ink); padding-bottom:calc(.4*var(--u))}
+.url::after{content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background:var(--st-or); transform-origin:left center}
 .legal{font-family:var(--mono); font-size:calc(1.05*var(--u)); color:var(--st-dim); letter-spacing:.1em; text-transform:uppercase}
 
-/* narrow stage: vertical 4:5 frame */
+/* sous-titres incrustés (vidéos exportées) */
+.cc{position:absolute; left:50%; bottom:calc(2.4*var(--u)); transform:translateX(-50%); z-index:5; width:max-content; max-width:84%; text-align:center; font-family:var(--body); font-weight:700; font-size:calc(1.9*var(--u)); line-height:1.3; color:#FFF; background:rgba(5,20,14,.82); padding:calc(.6*var(--u)) calc(1.4*var(--u)); display:none; text-wrap:balance}
+.stage.with-cc .cc:not(:empty){display:block}
+.stage.with-cc .scene{padding-bottom:calc(10*var(--u))}
+
+/* format vertical (téléphone) */
 @container (max-width: 560px){
   .stage{--u:1.9cqw; aspect-ratio:4/5}
   .split{grid-template-columns:1fr; grid-template-rows:auto minmax(0,1fr); align-items:stretch; gap:calc(2*var(--u))}
-  .h{font-size:calc(3.6*var(--u))}
+  .h{font-size:calc(4.2*var(--u))}
   .sub{font-size:calc(1.6*var(--u))}
-  .lot:nth-child(4){display:none}
   .brand .seal{width:calc(8*var(--u)); height:calc(8*var(--u))}
-  .word{font-size:calc(4.2*var(--u))}
-  .trio{grid-template-columns:1fr; gap:calc(1.2*var(--u))}
-  .who{flex-direction:row; flex-wrap:wrap; align-items:center; padding:calc(1.3*var(--u))}
-  .who svg{width:calc(3.6*var(--u)); height:calc(3.6*var(--u))}
-  .who p{flex-basis:100%}
-  .tick{display:none}
-  .stamp-abs{width:calc(10*var(--u)); height:calc(10*var(--u)); bottom:calc(5*var(--u))}
+  .word{font-size:calc(4.6*var(--u))}
+  .sting .word{font-size:calc(6.4*var(--u))}
+  .s1 .bg::after{background:linear-gradient(180deg, rgba(10,42,30,.97) 0%, rgba(10,42,30,.86) 50%, rgba(10,42,30,.6) 100%)}
+  .s3 .copy{max-width:none}
+  .stamp-abs{top:auto; bottom:calc(5*var(--u)); width:calc(10*var(--u)); height:calc(10*var(--u))}
   .node small{display:none}
+  .flow{grid-template-columns:1fr; grid-template-rows:auto; align-content:center; gap:calc(.8*var(--u))}
+  .who{display:grid; grid-template-columns:auto 1fr auto; align-items:center; column-gap:calc(1.4*var(--u)); row-gap:calc(.3*var(--u)); padding:calc(1.3*var(--u)) calc(1.6*var(--u))}
+  .who .num{display:none}
+  .who svg{grid-row:span 2; width:calc(4*var(--u)); height:calc(4*var(--u))}
+  .who b{font-size:calc(2.6*var(--u))}
+  .who p{grid-column:2 / 4; font-size:calc(1.45*var(--u))}
+  .who .tick{grid-column:3; grid-row:1; margin:0; font-size:calc(1*var(--u))}
+  .arrow{justify-self:center; transform:rotate(90deg); width:calc(2.6*var(--u)); height:calc(2.6*var(--u))}
+  .cc{font-size:calc(1.9*var(--u)); bottom:calc(3*var(--u)); max-width:90%}
+  .stage.with-cc .scene{padding-bottom:calc(12*var(--u))}
 }
 
-/* ---------- motion: only while a scene plays ---------- */
+/* ---------- mouvement : seulement pendant la lecture d'une scène ---------- */
 @keyframes rise{from{opacity:0; transform:translateY(.7em)}to{opacity:1; transform:none}}
 @keyframes pop{0%{opacity:0; transform:scale(.55)}70%{opacity:1; transform:scale(1.07)}100%{opacity:1; transform:scale(1)}}
 @keyframes stamp{0%{opacity:0; transform:scale(1.9) rotate(-22deg)}55%{opacity:1; transform:scale(.9) rotate(-5deg)}75%{transform:scale(1.04) rotate(-9deg)}100%{opacity:1; transform:scale(1) rotate(-8deg)}}
 @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
-@keyframes sweep{0%{transform:translateY(-40px); opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateY(200px); opacity:0}}
 @keyframes slide{from{opacity:0; transform:translateX(1.2em)}to{opacity:1; transform:none}}
-.stamped{transform:rotate(-8deg)}
-.draw{stroke-dasharray:1; stroke-dashoffset:0}
-.scan{opacity:0}
+@keyframes kenburns{from{transform:scale(1.14)}to{transform:scale(1)}}
+@keyframes sweep{0%{transform:translateX(0); opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translateX(320px); opacity:0}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes spin-in{from{opacity:0; transform:rotate(-120deg)}to{opacity:1; transform:none}}
+@keyframes sprout{0%{opacity:0; transform:scale(0)}70%{opacity:1; transform:scale(1.12)}100%{opacity:1; transform:scale(1)}}
+@keyframes nudge{0%,100%{transform:none}40%{transform:scale(1.08)}}
+@keyframes flash{0%{background:transparent; color:var(--st-or)}30%,100%{background:var(--st-or); color:#111}}
+
+.draw{stroke-dasharray:1}
 .scene.play .rise{animation:rise .7s cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
 .scene.play .pop{animation:pop .5s cubic-bezier(.3,.8,.3,1.2) var(--d,0s) both}
 .scene.play .stamped{animation:stamp .6s cubic-bezier(.3,.7,.3,1) var(--d,0s) both}
 .scene.play .draw{animation:draw var(--t,1.6s) cubic-bezier(.5,0,.3,1) var(--d,0s) both}
-.scene.play .grow{animation:grow var(--t,1s) linear var(--d,0s) both}
-.scene.play .fade{animation:fadein .6s ease var(--d,0s) both}
+.scene.play .grow{animation:grow var(--t,1s) cubic-bezier(.4,0,.2,1) var(--d,0s) both}
+.scene.play .fade{animation:fadein var(--t,.6s) ease var(--d,0s) both}
 .scene.play .slide{animation:slide .55s cubic-bezier(.2,.7,.2,1) var(--d,0s) both}
-.scene.play .scan{animation:sweep 1.8s ease-in-out var(--d,0s) both}
-.stage.paused *, .stage.paused *::before{animation-play-state:paused !important}
+.scene.play .kb{animation:kenburns var(--t,14s) cubic-bezier(.3,0,.6,1) both}
+.scene.play .reveal{animation:grow var(--t,2.6s) linear var(--d,0s) both; transform-origin:0 0}
+.scene.play .sweep{animation:sweep var(--t,2.6s) linear var(--d,0s) both}
+.scene.play .wipe{animation:wipe var(--t,.8s) cubic-bezier(.6,0,.2,1) var(--d,0s) both}
+.scene.play .nudge{animation:nudge .5s ease var(--d,0s) both}
+.scene.play .flash{animation:flash .4s ease var(--d,0s) both}
+.scene.play .url::after{animation:grow .7s cubic-bezier(.4,0,.2,1) var(--d2,0s) both}
+/* logo animé : anneaux tracés, texte qui tourne, feuille qui pousse */
+.scene.play .seal-anim .ring{stroke-dasharray:1; animation:draw .9s cubic-bezier(.6,0,.3,1) var(--d,0s) both}
+.scene.play .seal-anim .ring2{stroke-dasharray:1; animation:draw .7s cubic-bezier(.6,0,.3,1) calc(var(--d,0s) + .25s) both}
+.scene.play .seal-anim .ringtxt{transform-origin:60px 60px; animation:spin-in 1.1s cubic-bezier(.2,.7,.2,1) calc(var(--d,0s) + .2s) both}
+.scene.play .seal-anim .leaf{transform-origin:60px 82px; animation:sprout .7s cubic-bezier(.3,.8,.3,1.2) calc(var(--d,0s) + .65s) both}
+.stage.paused *, .stage.paused *::before, .stage.paused *::after{animation-play-state:paused !important}
 @media (prefers-reduced-motion: reduce){
-  .scene.play *{animation:none !important}
+  .scene.play *, .scene.play *::after{animation:none !important}
   .scene, .scene.on{transition:none}
 }
 
-/* controls */
+/* commandes */
 .controls{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
-.btn{display:inline-flex; align-items:center; gap:8px; height:40px; padding:0 16px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); font-weight:600; font-size:15px}
-.btn:hover{border-color:var(--ink)}
-.btn.primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
-.btn svg{width:16px; height:16px}
-.bar{flex:1; min-width:140px; height:6px; background:var(--line); border-radius:9px; overflow:hidden}
+.btn{display:inline-flex; align-items:center; gap:8px; height:46px; padding:0 16px; border:2px solid #111; background:#FFF; color:#111; font-weight:700; font-size:15px; text-decoration:none}
+.btn:hover{background:#F4F4F4}
+.btn.primary{background:var(--accent); color:#111; box-shadow:4px 4px 0 #111}
+.btn.primary:hover{background:var(--accent); box-shadow:6px 6px 0 #111; transform:translate(-2px,-2px)}
+.btn svg{width:16px; height:16px; flex:none}
+.bar{flex:1; min-width:140px; height:6px; background:#E3E3E0; overflow:hidden}
 .bar i{display:block; height:100%; width:0; background:var(--accent)}
 .time{font-family:var(--mono); font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
 .scenes{display:flex; gap:8px; flex-wrap:wrap; list-style:none; margin:0; padding:0}
-.scenes button{border:1.5px solid var(--line); background:transparent; color:var(--muted); border-radius:99px; padding:6px 12px; font-size:13px; display:flex; gap:8px; align-items:baseline}
+.scenes button{border:2px solid #111; background:transparent; color:#111; font-weight:600; padding:6px 12px; font-size:13px; display:flex; gap:8px; align-items:baseline}
 .scenes button .mono{font-size:11px}
-.scenes button[aria-current="true"]{border-color:var(--accent); color:var(--ink); background:var(--surface)}
-.vo{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:16px 18px; display:grid; gap:6px}
-.vo .lab{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink)}
-.vo p{margin:0; font-size:17px; max-width:68ch}
-.vo .shot{font-size:14px; color:var(--muted)}
+.scenes button[aria-current="true"]{background:#111; color:#FFF}
+.vo{border:2px solid #111; box-shadow:6px 6px 0 #111; padding:16px 18px; display:grid; gap:6px}
+.vo .lab{font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-ink); font-weight:600}
+.vo p{margin:0; font-size:17px; max-width:68ch; min-height:1.55em}
+@media (max-width:600px){ .vo{box-shadow:4px 4px 0 #111} }
+#voiceBtn[aria-pressed="false"]{color:#5C5C5C}
 
-a.btn{text-decoration:none}
-.top{flex-wrap:wrap}
-.top > div{flex:1; min-width:0}
-.top a.back{margin-left:auto; color:var(--muted); font-size:14px; white-space:nowrap}
-@media (max-width:600px){.top a.back{order:-1; flex-basis:100%; margin-left:0}}
-.cta{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px; display:flex; flex-direction:column; gap:10px}
-.cta h2{margin:0; font-family:var(--display); font-stretch:112%; font-weight:850; font-size:clamp(22px,3vw,28px); line-height:1.1}
-.cta p{margin:0; color:var(--muted)}
-.cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
-
-/* ---- identité du site : pochoir, noir, orange, angles droits ---- */
-:root{ --stencil:"Big Shoulders Stencil","Archivo",sans-serif; --accent:#F07E00; --accent-ink:#A85200 }
-body{background:#FFFFFF}
-.flagbar{display:flex; height:6px}.flagbar i{flex:1}.flagbar i:nth-child(1){background:#F07E00}.flagbar i:nth-child(2){background:#F2F2F2}.flagbar i:nth-child(3){background:#1F7A48}
-.top{border-bottom:2px solid #111; padding-bottom:20px}
-.top h1{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:clamp(40px,6vw,72px); line-height:.9; text-transform:uppercase}
-.top p{color:#333}
-.top a.back{color:#111; font-weight:700}
-.top .seal{color:#1F3D2E}
-.stage{border-radius:0; border:2px solid #111; box-shadow:10px 10px 0 var(--accent)}
-.h, .word{font-family:var(--stencil); font-stretch:normal; font-weight:900; text-transform:uppercase; letter-spacing:.01em}
-.h{font-size:calc(4.9*var(--u)); line-height:.92}
-.word{font-size:calc(6.2*var(--u)); letter-spacing:.03em}
-.who b{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:calc(2.8*var(--u)); text-transform:uppercase}
-.btn{border-radius:0; border:2px solid #111; height:46px; font-weight:700}
-.btn:hover{background:#F4F4F4}
-.btn.primary{background:var(--accent); color:#111; border-color:#111; box-shadow:4px 4px 0 #111}
-.btn.primary:hover{background:var(--accent); box-shadow:6px 6px 0 #111; transform:translate(-2px,-2px)}
-.bar{border-radius:0; background:#E3E3E0}
-.scenes button{border-radius:0; border:2px solid #111; color:#111; font-weight:600}
-.scenes button[aria-current="true"]{background:#111; color:#FFF; border-color:#111}
-.vo{border-radius:0; border:2px solid #111; box-shadow:6px 6px 0 #111}
-.vo .lab{color:var(--accent-ink); font-weight:600}
-.cta{border-radius:0; border:2px solid #111; background:var(--accent); padding:32px}
-.cta h2{font-family:var(--stencil); font-stretch:normal; font-weight:900; font-size:clamp(40px,5vw,64px); line-height:.9; text-transform:uppercase}
-.cta p{color:#111}
-.cta .btn{background:#FFF}
-.cta .btn.primary{background:#111; color:#FFF; box-shadow:4px 4px 0 #FFF}
-@media (max-width:600px){ .vo{box-shadow:4px 4px 0 #111} .stage{box-shadow:6px 6px 0 var(--accent)} }
-
-.start{position:absolute; inset:0; z-index:4; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:0; cursor:pointer; background:rgba(8,34,24,.84); color:#FFF; font:inherit}
+.start{position:absolute; inset:0; z-index:6; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; border:0; cursor:pointer; background:rgba(8,34,24,.84); color:#FFF; font:inherit}
 .start[hidden]{display:none}
 .start-ico{width:calc(9*var(--u)); height:calc(9*var(--u)); min-width:64px; min-height:64px; display:grid; place-items:center; background:var(--accent); color:#111; border:2px solid #111; box-shadow:5px 5px 0 #111}
 .start-ico svg{width:40%; height:40%}
@@ -218,15 +246,60 @@ body{background:#FFFFFF}
 .start-sub{font-family:var(--mono); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:#D6E4DA}
 .start:hover .start-ico{box-shadow:7px 7px 0 #111; transform:translate(-2px,-2px)}
 .start:focus-visible{outline:3px solid var(--accent); outline-offset:-6px}
-#voiceBtn[aria-pressed="false"]{color:#5C5C5C}
-</style>
 
+/* partager la vidéo */
+.share{border:2px solid #111; padding:24px; display:flex; flex-direction:column; gap:12px}
+.share h2, .cta h2{margin:0; font-family:var(--stencil); font-weight:900; font-size:clamp(32px,4.4vw,52px); line-height:.9; text-transform:uppercase}
+.share p, .cta p{margin:0}
+.share-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px}
+.dl{display:flex; flex-direction:column; gap:2px; padding:14px 16px; border:2px solid #111; color:#111; text-decoration:none; box-shadow:4px 4px 0 #111; background:#FFF}
+.dl:hover{transform:translate(-2px,-2px); box-shadow:6px 6px 0 #111}
+.dl b{font-size:16px}
+.dl span{font-family:var(--mono); font-size:12px; color:var(--muted)}
+.cta{border:2px solid #111; background:var(--accent); padding:32px; display:flex; flex-direction:column; gap:10px}
+.cta p{color:#111}
+.cta-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px}
+.cta .btn.primary{background:#111; color:#FFF; box-shadow:4px 4px 0 #FFF}
+
+/* ---------- mode rendu (fabrication des vidéos MP4) ---------- */
+body.render{background:#000; overflow:hidden}
+body.render .wrap{padding:0; max-width:none; display:block}
+body.render .flagbar, body.render .top, body.render .controls, body.render .scenes, body.render .vo, body.render .share, body.render .cta, body.render .start{display:none !important}
+body.render .stage{border:0; box-shadow:none}
+body.render .scene{transition:none !important}
+body.render *, body.render *::before, body.render *::after{animation-play-state:paused !important}
+body.render .stage-wrap{width:var(--rw)}
+body.render.f916 .stage{aspect-ratio:9/16}
+body.render.f11 .stage{aspect-ratio:1/1; --u:1.62cqw}
+body.render.f11 .h{font-size:calc(3.9*var(--u))}
+/* vertical et carré : contenu centré dans la hauteur, plus gros en vertical */
+body.render.f916 .stage{--u:2.3cqw}
+body.render.f11 .stage{--u:1.55cqw}
+body.render.f916 .scene, body.render.f11 .scene{justify-content:center}
+body.render.f916 .split, body.render.f11 .split, body.render.f916 .flow, body.render.f11 .flow{flex:0 0 auto; grid-template-rows:auto auto}
+body.render.f916 .fig, body.render.f11 .fig{height:auto}
+body.render.f916 .fig svg, body.render.f11 .fig svg{height:auto; max-height:none}
+body.render.f916 .end, body.render.f11 .end{flex:0 0 auto}
+body.render.f916 .s5 .eyebrow, body.render.f11 .s5 .eyebrow{margin-bottom:calc(1*var(--u))}
+body.render.f11 .s2 .sub{display:none}
+body.render.f11 .s1 .fig svg{max-height:calc(24*var(--u)); width:auto; margin-inline:auto; display:block}
+body.render.f11 .s4 .fig svg{max-height:calc(24*var(--u)); width:auto; margin-inline:auto; display:block}
+body.render.f11 .stamp-abs{bottom:calc(11*var(--u))}
+body.render.f916 .stamp-abs{position:relative !important; right:auto; top:auto; bottom:auto; align-self:center; margin-top:calc(1*var(--u)); width:calc(12*var(--u)); height:calc(12*var(--u))}
+body.render.f916 .chip-or{white-space:normal}
+body.render.f916 .who .tick{grid-column:2; grid-row:auto; justify-self:start; margin-top:calc(.4*var(--u))}
+body.render.f916 .who p{grid-column:2}
+body.render.f11 .s4 .copy .eyebrow{display:none}
+body.render.f11 .s4 .fig svg{max-height:calc(19*var(--u))}
+</style>
+</head>
+<body>
 <div class="flagbar" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
   <header class="top">
     <span class="seal" data-seal="" data-id="sh"></span>
     <div>
-      <h1>AgriSecur en 51 secondes</h1>
+      <h1>AgriSecur en 1 minute</h1>
       <p>Comment AgriSecur sécurise chaque vente agricole : d'abord vos parcelles, ensuite vos ventes.</p>
     </div>
     <a class="back" href="/">← agrisecur.com</a>
@@ -236,28 +309,36 @@ body{background:#FFFFFF}
     <div class="stage-wrap">
       <div class="stage" id="stage">
 
-        <!-- 1 -->
-        <div class="scene" data-i="0">
+        <!-- 0 · ouverture : le cachet AgriSecur -->
+        <div class="scene sting" data-i="0">
+          <span class="seal seal-anim" style="--d:.1s" data-seal="" data-id="s0"></span>
+          <span class="word wipe" style="--d:1.2s;--t:.7s">AgriSecur</span>
+          <span class="tag fade" style="--d:1.7s">Côte d'Ivoire · Cacao</span>
+        </div>
+
+        <!-- 1 · le problème -->
+        <div class="scene s1" data-i="1">
+          <div class="bg" aria-hidden="true"><img class="kb" style="--t:13s" src="/photos/sechage-cacao.jpg" alt=""></div>
           <div class="split">
             <div class="copy">
-              <p class="eyebrow rise" style="--d:.1s">Le problème</p>
-              <h2 class="h rise" style="--d:.35s">1 200 parcelles de cacao à Soubré.</h2>
-              <p class="h h-or rise" style="--d:3.4s">L'acheteur européen les acceptera-t-il&nbsp;?</p>
+              <p class="eyebrow rise" style="--d:.2s">Le problème</p>
+              <h2 class="h rise" style="--d:.45s">1 200 parcelles de cacao à Soubré.</h2>
+              <p class="h h-or rise" style="--d:10.3s">Votre fichier tiendra-t-il&nbsp;?</p>
             </div>
             <figure class="fig">
               <svg viewBox="0 0 300 200" aria-hidden="true">
-                <path class="draw" pathLength="1" style="--d:1.1s;--t:2s" d="M50 150 C 120 150, 170 60, 250 50" fill="none" stroke="rgba(241,245,238,.55)" stroke-width="2.4" stroke-linecap="round"/>
-                <g class="pop" style="--d:.6s; transform-origin:50px 150px">
-                  <circle cx="50" cy="150" r="9" fill="#F77F00"/><circle cx="50" cy="150" r="17" fill="none" stroke="#F77F00" stroke-opacity=".35" stroke-width="2"/>
+                <path class="draw" pathLength="1" style="--d:5.6s;--t:1.6s" d="M50 150 C 120 150, 170 60, 250 50" fill="none" stroke="rgba(241,245,238,.7)" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="1"/>
+                <g class="pop" style="--d:1.2s; transform-origin:50px 150px">
+                  <circle cx="50" cy="150" r="9" fill="#F77F00"/><circle cx="50" cy="150" r="17" fill="none" stroke="#F77F00" stroke-opacity=".45" stroke-width="2"/>
                   <text x="50" y="182" text-anchor="middle" class="svg-strong">Soubré</text>
-                  <text x="50" y="195" text-anchor="middle" class="svg-label">COOPÉRATIVE</text>
+                  <text x="50" y="195" text-anchor="middle" class="svg-label">1 COOPÉRATIVE</text>
                 </g>
-                <g class="pop" style="--d:2.8s; transform-origin:250px 50px">
-                  <circle cx="250" cy="50" r="9" fill="#F1F5EE"/><circle cx="250" cy="50" r="17" fill="none" stroke="#F1F5EE" stroke-opacity=".3" stroke-width="2"/>
+                <g class="pop" style="--d:6.9s; transform-origin:250px 50px">
+                  <circle cx="250" cy="50" r="9" fill="#F1F5EE"/><circle cx="250" cy="50" r="17" fill="none" stroke="#F1F5EE" stroke-opacity=".35" stroke-width="2"/>
                   <text x="250" y="20" text-anchor="middle" class="svg-strong">Europe</text>
-                  <text x="250" y="86" text-anchor="middle" class="svg-label">ACHETEUR · 30.12.2026</text>
+                  <text x="250" y="86" text-anchor="middle" class="svg-label">RDUE · 30.12.2026</text>
                 </g>
-                <g class="pop" style="--d:3.3s; transform-origin:146px 104px">
+                <g class="pop" style="--d:10.4s; transform-origin:146px 104px">
                   <circle cx="146" cy="104" r="17" fill="#0E3526" stroke="#F77F00" stroke-width="2.4"/>
                   <text x="146" y="111" text-anchor="middle" font-family="Archivo, sans-serif" font-weight="900" font-size="19" fill="#F77F00">?</text>
                 </g>
@@ -266,106 +347,121 @@ body{background:#FFFFFF}
           </div>
         </div>
 
-        <!-- 2 -->
-        <div class="scene" data-i="1">
+        <!-- 2 · la solution -->
+        <div class="scene s2" data-i="2">
           <div class="split">
             <div class="copy">
               <div class="brand">
-                <span class="seal stamped" style="--d:.2s" data-seal="" data-id="s2"></span>
-                <span class="word rise" style="--d:.7s">AgriSecur</span>
+                <span class="seal stamped" style="--d:.3s" data-seal="" data-id="s2"></span>
+                <span class="word wipe" style="--d:.8s">AgriSecur</span>
               </div>
-              <p class="h rise" style="--d:1.1s; font-size:calc(3.1*var(--u))">L'Audit RDUE express des coopératives.</p>
-              <p class="sub rise" style="--d:1.5s">Vous déposez votre fichier de parcelles. Nous le vérifions, parcelle par parcelle.</p>
+              <p class="h rise" style="--d:1.4s; font-size:calc(3.3*var(--u))">L'Audit RDUE express des coopératives.</p>
+              <p class="sub rise" style="--d:2.9s">Vous déposez votre fichier de parcelles. Nous le vérifions, parcelle par parcelle.</p>
             </div>
             <figure class="fig">
-              <div class="phone rise" style="--d:.9s">
+              <div class="phone rise" style="--d:2.9s">
                 <div class="phone-bar"><span>CONTRÔLE DU FICHIER</span><span>1 200</span></div>
-                <div class="lot slide" style="--d:2.2s"><span class="swatch" style="background:#7A4A2A"></span><span><b>Coordonnées GPS</b><small>1 188 parcelles exploitables</small></span><span class="chip">OK ✓</span></div>
-                <div class="lot slide" style="--d:2.8s"><span class="swatch" style="background:#C9A36A"></span><span><b>Doublons</b><small>7 identifiants en double</small></span><span class="chip">À corriger</span></div>
-                <div class="lot slide" style="--d:3.4s"><span class="swatch" style="background:#E3B83A"></span><span><b>Chevauchements</b><small>5 parcelles à vérifier</small></span><span class="chip">À vérifier</span></div>
+                <div class="lot slide" style="--d:5.5s"><span class="swatch" style="background:#7A4A2A"></span><span><b>Coordonnées GPS</b><small>1 188 parcelles exploitables</small></span><span class="chip">OK ✓</span></div>
+                <div class="lot warn slide" style="--d:6.4s"><span class="swatch" style="background:#C9A36A"></span><span><b>Doublons</b><small>7 identifiants en double</small></span><span class="chip">À corriger</span></div>
+                <div class="lot warn slide" style="--d:7.2s"><span class="swatch" style="background:#E3B83A"></span><span><b>Chevauchements</b><small>5 parcelles à vérifier</small></span><span class="chip">À vérifier</span></div>
               </div>
             </figure>
           </div>
         </div>
 
-        <!-- 3 -->
-        <div class="scene" data-i="2">
+        <!-- 3 · le parcours -->
+        <div class="scene s3" data-i="3">
           <div class="copy">
             <p class="eyebrow rise" style="--d:.1s">Du fichier au rapport</p>
             <h2 class="h rise" style="--d:.3s">Premier avis en 48 h, rapport en 7 jours ouvrés.</h2>
           </div>
-          <div class="held rise" style="--d:.9s"><span aria-hidden="true">◆</span> Délais comptés après fichier exploitable et acompte</div>
+          <div class="held rise" style="--d:1.1s"><span aria-hidden="true">◆</span> Délais comptés après fichier exploitable et acompte</div>
           <div class="rail">
-            <div class="track"><div class="track-fill grow" style="--d:1.3s;--t:5s"></div></div>
-            <div class="node pop" style="--d:1.2s"><span class="dot">1</span><b>Dépôt du fichier</b><small>agrisecur.com/depot</small></div>
-            <div class="node pop" style="--d:2.8s"><span class="dot">2</span><b>Premier avis</b><small>Sous 48 h ouvrées</small></div>
+            <div class="track"><div class="track-fill grow" style="--d:1.1s;--t:6.2s"></div></div>
+            <div class="node pop" style="--d:.9s"><span class="dot">1</span><b>Dépôt du fichier</b><small>agrisecur.com/depot</small></div>
+            <div class="node pop" style="--d:2.6s"><span class="dot">2</span><b>Premier avis</b><small>Sous 48 h ouvrées</small></div>
             <div class="node pop" style="--d:4.4s"><span class="dot">3</span><b>Acompte de 50 %</b><small>Analyse satellite lancée</small></div>
-            <div class="node pop" style="--d:6s"><span class="dot">4</span><b>Rapport</b><small>Et plan d'action</small></div>
+            <div class="node pop" style="--d:7.2s"><span class="dot">4</span><b>Rapport</b><small>Et plan d'action</small></div>
           </div>
-          <span class="seal stamp-abs stamped" style="--d:6.8s" data-seal="LIVRÉ" data-id="s3"></span>
+          <span class="seal stamp-abs stamped" style="--d:8.6s" data-seal="LIVRÉ" data-id="s3"></span>
         </div>
 
-        <!-- 4 -->
-        <div class="scene" data-i="3">
+        <!-- 4 · satellite -->
+        <div class="scene s4" data-i="4">
           <div class="split">
             <div class="copy">
               <p class="eyebrow rise" style="--d:.1s">Analyse satellite</p>
               <h2 class="h rise" style="--d:.3s">Chaque parcelle passée au satellite.</h2>
-              <div class="badge pop" style="--d:4.2s"><span class="led"></span><span><small>WHISP · ANALYSE SATELLITE</small><b>Risque de déforestation&nbsp;: faible</b></span></div>
-              <span class="chip chip-or rise" style="--d:5s">Aide à la diligence raisonnable · pas une certification</span>
+              <div class="badge pop" style="--d:4.2s"><span class="led"></span><span><small>WHISP · FAO</small><b>Risque de déforestation&nbsp;: faible</b></span></div>
+              <span class="chip chip-or rise flash-wrap" style="--d:5.2s"><span class="flash" style="--d:8.8s; display:inline-block; padding:0 .5em; margin:0 -.5em; border-radius:99px">Aide à la diligence raisonnable · pas une certification</span></span>
             </div>
             <figure class="fig">
-              <svg viewBox="0 0 320 220" aria-hidden="true">
-                <g stroke="rgba(241,245,238,.12)" stroke-width="1">
-                  <path d="M0 40H320M0 90H320M0 140H320M0 190H320M60 0V220M130 0V220M200 0V220M270 0V220"/>
+              <svg class="map" viewBox="0 0 320 220" aria-hidden="true">
+                <defs>
+                  <pattern id="px" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="rgba(67,199,182,.35)" stroke-width=".6"/></pattern>
+                  <linearGradient id="beam" x1="0" x2="1"><stop offset="0" stop-color="#43C7B6" stop-opacity="0"/><stop offset="1" stop-color="#43C7B6" stop-opacity=".55"/></linearGradient>
+                  <clipPath id="mapclip"><rect width="320" height="220"/></clipPath>
+                </defs>
+                <g clip-path="url(#mapclip)">
+                  <rect width="320" height="220" fill="#0A281C"/>
+                  <g id="canopy"></g>
+                  <path d="M0 150 C 60 140, 90 175, 150 168 S 260 190, 320 172" fill="none" stroke="rgba(120,170,200,.35)" stroke-width="5"/>
+                  <rect class="reveal" style="--d:.9s;--t:2.6s" width="320" height="220" fill="url(#px)"/>
+                  <polygon class="parcel draw" pathLength="1" style="--d:1.3s;--t:2.2s" points="80,62 178,42 252,88 236,168 128,182 66,134"/>
+                  <g class="sweep" style="--d:.9s;--t:2.6s"><rect x="-44" y="0" width="44" height="220" fill="url(#beam)"/><rect x="-2" y="0" width="2.4" height="220" fill="#43C7B6"/></g>
                 </g>
-                <text x="4" y="12" class="svg-label">5°47′ N</text>
-                <text x="316" y="214" text-anchor="end" class="svg-label">6°36′ O</text>
-                <polygon class="parcel draw" pathLength="1" style="--d:.7s;--t:2.4s" points="80,62 178,42 252,88 236,168 128,182 66,134"/>
-                <g class="pop" style="--d:3s">
-                  <circle cx="160" cy="112" r="5" fill="#F77F00"/>
+                <rect width="320" height="220" fill="none" stroke="rgba(241,245,238,.25)" stroke-width="1"/>
+                <g class="pop" style="--d:3.4s; transform-origin:160px 112px">
+                  <rect x="112" y="92" width="96" height="17" fill="rgba(10,42,30,.85)"/>
                   <text x="160" y="104" text-anchor="middle" class="svg-strong" style="font-size:11px">P-0317 · 2,4 ha</text>
+                  <circle cx="160" cy="120" r="4.5" fill="#F77F00"/>
                 </g>
-                <rect class="scan" style="--d:3.1s" x="60" y="0" width="200" height="16"/>
+                <text x="6" y="13" class="svg-label">5°47′ N</text>
+                <text x="314" y="212" text-anchor="end" class="svg-label">6°36′ O</text>
               </svg>
             </figure>
           </div>
         </div>
 
-        <!-- 5 -->
-        <div class="scene" data-i="4">
-          <div class="copy">
-            <p class="eyebrow rise" style="--d:.1s">Chacun y gagne</p>
-          </div>
-          <div class="trio">
+        <!-- 5 · chacun y gagne -->
+        <div class="scene s5" data-i="5">
+          <div class="bg" aria-hidden="true"><img class="kb" style="--t:13s" src="/photos/sacs-jute.jpg" alt=""></div>
+          <p class="eyebrow rise" style="--d:.1s">Chacun y gagne</p>
+          <div class="flow">
             <div class="who rise" style="--d:.4s">
-              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 36V18"/><path d="M20 22c-8 0-12-5-12-12 8 0 12 5 12 12z"/><path d="M20 18c0-6 4-10 11-10 0 7-4 10-11 10z"/><path d="M8 36h24"/></svg>
-              <b>Le producteur</b><p>Ses lots conformes se vendent sur notre place de marché.</p><span class="tick pop" style="--d:1.4s">✓ LOTS VENDUS</span>
-            </div>
-            <div class="who rise" style="--d:1.9s">
+              <span class="num">01</span>
               <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5 17L20 7l15 10v18H5z"/><path d="M14 35V24h12v11"/></svg>
-              <b>La coopérative</b><p>Elle corrige son fichier avant l'échéance.</p><span class="tick pop" style="--d:2.9s">✓ FICHIER PRÊT</span>
+              <b>La coopérative</b><p>Son fichier est en règle avant l'échéance.</p><span class="tick pop" style="--d:2.2s">✓ FICHIER PRÊT</span>
             </div>
-            <div class="who rise" style="--d:3.4s">
+            <span class="arrow fade" style="--d:3.9s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M3 12h16M13 6l6 6-6 6"/></svg></span>
+            <div class="who rise" style="--d:4.3s">
+              <span class="num">02</span>
               <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M6 14h28v20H6z"/><path d="M6 14l4-7h20l4 7"/><path d="M16 21h8"/></svg>
-              <b>L'exportateur</b><p>Il reçoit des données de parcelles propres.</p><span class="tick pop" style="--d:4.4s">✓ DONNÉES FIABLES</span>
+              <b>L'exportateur</b><p>Il reçoit des données de parcelles fiables.</p><span class="tick pop" style="--d:5.5s">✓ DONNÉES FIABLES</span>
+            </div>
+            <span class="arrow fade" style="--d:6.5s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M3 12h16M13 6l6 6-6 6"/></svg></span>
+            <div class="who win rise" style="--d:6.9s">
+              <span class="num">03</span>
+              <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M20 36V18"/><path d="M20 22c-8 0-12-5-12-12 8 0 12 5 12 12z"/><path d="M20 18c0-6 4-10 11-10 0 7-4 10-11 10z"/><path d="M8 36h24"/></svg>
+              <b>Le producteur</b><p>Ses lots conformes se vendent sur notre place de marché.</p><span class="tick pop" style="--d:8.8s">✓ LOTS VENDUS</span>
             </div>
           </div>
         </div>
 
-        <!-- 6 -->
-        <div class="scene" data-i="5">
+        <!-- 6 · fin -->
+        <div class="scene" data-i="6">
           <div class="end">
             <span class="seal stamped" style="--d:.2s" data-seal="" data-id="s6"></span>
-            <p class="h rise" style="--d:.9s">Sécuriser chaque vente agricole.</p>
-            <span class="chip chip-or rise" style="--d:1.2s;align-self:center;margin:0 auto">Audit RDUE · Place de marché</span>
-            <span class="url rise" style="--d:1.5s">www.agrisecur.com</span>
-            <span class="legal fade" style="--d:2.2s">AgriSecur SARL · Abidjan · Cocody</span>
+            <p class="h rise" style="--d:.6s">Sécuriser chaque vente agricole.</p>
+            <span class="chip chip-or rise" style="--d:1.1s;align-self:center">Audit RDUE · Place de marché</span>
+            <span class="url rise" style="--d:3.5s;--d2:3.9s">www.agrisecur.com</span>
+            <span class="legal fade" style="--d:4.4s">AgriSecur SARL · Abidjan · Cocody</span>
           </div>
         </div>
 
+        <div class="cc" id="cc" aria-hidden="true"></div>
         <div class="flag" aria-hidden="true"><i></i><i></i><i></i></div>
-        <button class="start" id="startBtn" type="button" aria-label="Lancer le film avec la voix off"><span class="start-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg></span><span class="start-txt">Lancer le film</span><span class="start-sub" id="startSub">avec voix off · 51 s</span></button>
+        <button class="start" id="startBtn" type="button" aria-label="Lancer le film avec la voix off"><span class="start-ico" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg></span><span class="start-txt">Lancer le film</span><span class="start-sub" id="startSub">avec voix off · 1 min</span></button>
       </div>
     </div>
 
@@ -376,17 +472,27 @@ body{background:#FFFFFF}
       <button class="btn" id="replayBtn" type="button">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8a5 5 0 1 0 1.6-3.7"/><path d="M3 2.5v2.8h2.8"/></svg>Rejouer
       </button>
-      <button class="btn" id="voiceBtn" type="button" aria-pressed="true" hidden>
+      <button class="btn" id="voiceBtn" type="button" aria-pressed="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path id="voiceWaves" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg><span id="voiceTxt">Voix off</span>
       </button>
       <div class="bar" aria-hidden="true"><i id="bar"></i></div>
-      <span class="time" id="time">0:00 / 0:51</span>
+      <span class="time" id="time">0:00 / 1:05</span>
     </div>
     <ol class="scenes" id="chips"></ol>
     <div class="vo" aria-live="polite">
-      <span class="lab" id="voLab">Sous-titres · 1/6</span>
+      <span class="lab" id="voLab">Sous-titres</span>
       <p id="voTxt"></p>
-      
+    </div>
+  </section>
+
+  <section class="share">
+    <h2>Partagez le film</h2>
+    <p>Téléchargez la vidéo au bon format et envoyez-la à vos coopératives, exportateurs et partenaires. Les sous-titres sont incrustés : elle se comprend même sans le son.</p>
+    <div class="share-row">
+      <a class="dl" href="/film/agrisecur-vertical.mp4" download><b>WhatsApp · TikTok · Reels</b><span>Vertical 9:16 · MP4</span></a>
+      <a class="dl" href="/film/agrisecur-carre.mp4" download><b>LinkedIn · Facebook</b><span>Carré 1:1 · MP4</span></a>
+      <a class="dl" href="/film/agrisecur-16x9.mp4" download><b>YouTube · Présentations</b><span>Horizontal 16:9 · MP4</span></a>
+      <a class="dl" href="https://wa.me/?text=D%C3%A9couvrez%20AgriSecur%20en%201%20minute%20%3A%20https%3A%2F%2Fwww.agrisecur.com%2Fdecouvrir.html" target="_blank" rel="noopener"><b>Envoyer le lien sur WhatsApp</b><span>agrisecur.com/decouvrir</span></a>
     </div>
   </section>
 
@@ -401,123 +507,145 @@ body{background:#FFFFFF}
   </section>
 </div>
 
-
 <script>
 (function(){
-  // seals
+  // ---- cachets (logo) ----
   let n = 0;
   document.querySelectorAll('[data-seal]').forEach(el => {
     const id = 'arc-' + (el.dataset.id || n++);
     const center = el.dataset.seal;
     const mid = center
       ? `<text x="60" y="64.5" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="900" font-size="${center.length > 5 ? 11.5 : 14}" letter-spacing="1" fill="currentColor">${center}</text>`
-      : `<path d="M60 37c15 6 18 25 0 45c-18-20-15-39 0-45z" fill="currentColor"/><path class="rib" d="M60 47v31"/>`;
-    el.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><path id="${id}" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1.4"/><text font-family="IBM Plex Mono, monospace" font-size="9.4" font-weight="500" fill="currentColor"><textPath href="#${id}" textLength="276" lengthAdjust="spacing">AGRISECUR · CÔTE D'IVOIRE · MARCHÉ SÉCURISÉ ·</textPath></text>${mid}</svg>`;
+      : `<g class="leaf"><path d="M60 37c15 6 18 25 0 45c-18-20-15-39 0-45z" fill="currentColor"/><path class="rib" d="M60 47v31"/></g>`;
+    el.innerHTML = `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><path id="${id}" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs><circle class="ring" pathLength="1" cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="2.5"/><circle class="ring2" pathLength="1" cx="60" cy="60" r="34" fill="none" stroke="currentColor" stroke-width="1.4"/><g class="ringtxt"><text font-family="IBM Plex Mono, monospace" font-size="9.4" font-weight="500" fill="currentColor"><textPath href="#${id}" textLength="276" lengthAdjust="spacing">AGRISECUR · CÔTE D'IVOIRE · MARCHÉ SÉCURISÉ ·</textPath></text></g>${mid}</svg>`;
   });
 
-  // film
+  // ---- couvert forestier de la carte satellite (tirage fixe : même image à chaque fois) ----
+  let graine = 7;
+  const alea = () => (graine = (graine * 16807) % 2147483647) / 2147483647;
+  const verts = ['#123F2B','#17492F','#0E3625','#1B5335','#143F2C'];
+  let arbres = '';
+  for(let k = 0; k < 420; k++){
+    arbres += `<circle cx="${(alea()*330-5).toFixed(1)}" cy="${(alea()*230-5).toFixed(1)}" r="${(3+alea()*6).toFixed(1)}" fill="${verts[k%5]}" opacity="${(.6+alea()*.4).toFixed(2)}"/>`;
+  }
+  document.getElementById('canopy').innerHTML = arbres;
+
+  // ---- le film : minutage calé sur la voix off enregistrée ----
   const S = [
-    {name:'Le problème', dur:8500,
-     vo:"Soubré. Une coopérative, mille deux cents parcelles de cacao. Fin décembre, l'acheteur européen va demander des preuves. Est-ce que le fichier tiendra ?"},
-    {name:'La solution', dur:8500,
-     vo:"C'est là qu'on intervient. Vous nous envoyez votre fichier de parcelles, et on le passe au peigne fin : coordonnées, doublons, chevauchements."},
-    {name:'Le parcours', dur:9500,
-     vo:"Sous 48 heures, vous avez un premier avis. Après l'acompte, on lance l'analyse satellite. En 7 jours ouvrés, vous avez le rapport et un plan d'action.",
-     say:"Sous quarante-huit heures, vous avez un premier avis. Après l'acompte, on lance l'analyse satellite. En sept jours ouvrés, vous avez le rapport et un plan d'action."},
-    {name:'Satellite', dur:9500,
-     vo:"Chaque parcelle est vérifiée par satellite, avec l'outil WHISP de la FAO. Ça vous aide pour la diligence raisonnable. Ce n'est pas un certificat, on préfère être clairs."},
-    {name:'Impact', dur:8000,
-     vo:"Résultat : la coopérative corrige à temps, l'exportateur a des données fiables, et les lots se vendent en confiance sur notre place de marché."},
-    {name:'Contact', dur:7000,
-     vo:"AgriSecur. Sécuriser chaque vente agricole. Rendez-vous sur www.agrisecur.com",
-     say:"Agri-Sécure. Sécuriser chaque vente agricole. Rendez-vous sur agri-sécure point com."}
+    {name:'Ouverture', dur:2800, lines:[]},
+    {name:'Le problème', dur:12859, voix:1, lines:[
+      [350,"Soubré, en Côte d'Ivoire. Une coopérative, 1 200 parcelles de cacao."],
+      [5498,"Fin décembre 2026, l'acheteur européen va demander des preuves."],
+      [10351,"Est-ce que votre fichier tiendra ?"]]},
+    {name:'La solution', dur:9280, voix:2, lines:[
+      [350,"C'est là qu'intervient AgriSecur."],
+      [2860,"Vous nous envoyez votre fichier de parcelles."],
+      [5352,"On le passe au peigne fin : coordonnées, doublons, chevauchements."]]},
+    {name:'Le parcours', dur:10878, voix:3, lines:[
+      [350,"Sous 48 heures ouvrées, vous avez un premier avis."],
+      [3988,"Après l'acompte, on lance l'analyse satellite."],
+      [6873,"En 7 jours ouvrés, vous recevez le rapport et un plan d'action."]]},
+    {name:'Satellite', dur:11247, voix:4, lines:[
+      [350,"Chaque parcelle est vérifiée par satellite, avec l'outil WHISP de la FAO."],
+      [4985,"C'est une aide à la diligence raisonnable, pas un certificat."],
+      [8748,"On préfère être clairs."]]},
+    {name:'Impact', dur:12163, voix:5, lines:[
+      [350,"Résultat : la coopérative met son fichier en règle, à temps."],
+      [4279,"L'exportateur reçoit des données fiables."],
+      [6893,"Et vos lots, désormais conformes, se vendent en confiance sur notre place de marché."]]},
+    {name:'Contact', dur:8000, voix:6, lines:[
+      [350,"AgriSecur : sécuriser chaque vente agricole."],
+      [3569,"Rendez-vous sur www.agrisecur.com"]]}
   ];
+  const FONDU = 450;
   const total = S.reduce((a,s)=>a+s.dur,0);
+  const before = i => S.slice(0,i).reduce((a,s)=>a+s.dur,0);
   const stage = document.getElementById('stage');
   const scenes = [...stage.querySelectorAll('.scene')];
+  const cc = document.getElementById('cc');
+  const ligneA = (i, t) => { let txt = ''; for(const [d,l] of S[i].lines){ if(t >= d - 150) txt = l; } return txt; };
+
+  // ---- mode rendu : image par image, pour fabriquer les MP4 ----
+  const params = new URLSearchParams(location.search);
+  const fmt = params.get('render');
+  if(fmt){
+    document.body.classList.add('render', 'f' + fmt);
+    stage.classList.add('with-cc');
+    document.body.style.setProperty('--rw', (params.get('w') || 960) + 'px');
+    scenes.forEach(sc => sc.classList.add('play'));
+    const caler = (sc, t) => sc.getAnimations({subtree:true}).forEach(a => { a.currentTime = Math.max(0, t); });
+    window.__total = total;
+    window.__renderAt = ms => {
+      let i = 0; while(i < S.length - 1 && ms >= before(i + 1)) i++;
+      const t = ms - before(i);
+      scenes.forEach(sc => { sc.classList.remove('on'); sc.style.opacity = ''; });
+      scenes[i].classList.add('on'); caler(scenes[i], t);
+      if(i > 0 && t < FONDU){
+        const p = scenes[i-1]; p.classList.add('on'); caler(p, S[i-1].dur + t);
+        p.style.opacity = String(1 - t / FONDU); scenes[i].style.opacity = String(t / FONDU);
+      }
+      cc.textContent = ligneA(i, t);
+    };
+    window.__renderAt(0);
+    return;
+  }
+
+  // ---- lecture sur le site ----
   const bar = document.getElementById('bar'), time = document.getElementById('time');
   const playBtn = document.getElementById('playBtn'), playIco = document.getElementById('playIco'), playTxt = document.getElementById('playTxt');
   const chips = document.getElementById('chips');
-  const voLab = document.getElementById('voLab'), voTxt = document.getElementById('voTxt'), voShot = document.getElementById('voShot');
-  const fmt = ms => { const s = Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
-  time.textContent = '0:00 / ' + fmt(total);
+  const voLab = document.getElementById('voLab'), voTxt = document.getElementById('voTxt');
+  const startBtn = document.getElementById('startBtn');
+  const mmss = ms => { const s = Math.round(ms/1000); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+  time.textContent = '0:00 / ' + mmss(total);
 
   S.forEach((s,i)=>{
     const li = document.createElement('li');
-    li.innerHTML = `<button type="button"><span class="mono">${i+1}</span>${s.name}</button>`;
+    li.innerHTML = `<button type="button"><span class="mono">${i}</span>${s.name}</button>`;
     li.firstChild.addEventListener('click', ()=>{ playing = true; go(i, true); play(); });
     chips.appendChild(li);
   });
 
   let idx = 0, elapsed = 0, playing = false, last = 0, ended = false;
 
-  // ---- Voix off : synthèse vocale française du navigateur du visiteur ----
-  const synth = window.speechSynthesis;
+  // Voix off enregistrée : /film/voix-1.mp3 à voix-6.mp3 (une piste par scène).
   const voiceBtn = document.getElementById('voiceBtn'), voiceTxt = document.getElementById('voiceTxt'), voiceWaves = document.getElementById('voiceWaves');
-  let voixFr = null, voiceOn = !!synth, parle = false, finParole = 0;
-  function choisirVoix(){
-    if(!synth) return;
-    const fr = synth.getVoices().filter(v => /^fr(-|_|$)/i.test(v.lang));
-    // Voix d'homme d'abord, et de préférence les voix « naturelles » / « améliorées ».
-    const hommes = ['Henri','Remy','Rémy','Paul','Thomas','Daniel','Nicolas','Jacques','Antoine','Claude','Gerard','Gérard','Jean','Fabrice','Grégoire','Gregoire'];
-    const qualite = v => /natural|naturel|neural|premium|enhanced|améliorée|amelioree|online/i.test(v.name) ? 2 : 0;
-    const note = v => (hommes.some(n => v.name.includes(n)) ? 4 : 0) + qualite(v) + (/fr-FR/i.test(v.lang) ? 1 : 0);
-    voixFr = fr.slice().sort((a,b) => note(b) - note(a))[0] || null;
-    if(voixFr){ voiceBtn.hidden = false; }
-  }
-  if(synth){ choisirVoix(); synth.addEventListener?.('voiceschanged', choisirVoix); }
+  let voiceOn = true, audio = null;
+  const pistes = {};
+  S.forEach(s => { if(s.voix){ const a = new Audio(); a.preload = 'auto'; a.src = '/film/voix-' + s.voix + '.mp3'; pistes[s.voix] = a; } });
   function majBoutonVoix(){
     voiceBtn.setAttribute('aria-pressed', voiceOn ? 'true' : 'false');
     voiceTxt.textContent = voiceOn ? 'Voix off' : 'Voix coupée';
     voiceWaves.style.display = voiceOn ? '' : 'none';
   }
-  // Voix enregistrée (fichiers /film/voix-1.mp3 à voix-6.mp3) : utilisée à la
-  // place de la synthèse du navigateur dès que les fichiers sont en ligne.
-  let voixEnregistree = false, audio = null;
-  fetch('/film/voix-1.mp3', {method:'HEAD'}).then(r => { if(r.ok){ voixEnregistree = true; voiceBtn.hidden = false; } }).catch(()=>{});
+  function couper(){ if(audio){ audio.pause(); audio = null; } }
   function parler(i){
-    if(audio){ audio.pause(); audio = null; }
-    if(voixEnregistree){
-      if(synth) synth.cancel();
-      parle = false;
-      if(!voiceOn) return;
-      audio = new Audio('/film/voix-' + (i+1) + '.mp3');
-      audio.onplay = () => { parle = true; };
-      audio.onended = audio.onerror = () => { parle = false; };
-      parle = true; finParole = performance.now() + S[i].dur + 9000;
-      audio.play().catch(() => { parle = false; });
-      return;
-    }
-    if(!synth) return;
-    synth.cancel(); parle = false;
-    if(!voiceOn || !voixFr) return;
-    const u = new SpeechSynthesisUtterance((S[i].say || S[i].vo).replace(/AgriSecur/gi, 'Agri-Sécure'));
-    u.voice = voixFr; u.lang = voixFr.lang; u.rate = 0.96; u.pitch = 0.92;
-    u.onstart = () => { parle = true; };
-    u.onend = u.onerror = () => { parle = false; };
-    parle = true; finParole = performance.now() + S[i].dur + 9000; // garde-fou si la fin n'est jamais signalée
-    synth.speak(u);
+    couper();
+    if(!voiceOn || !S[i].voix) return;
+    audio = pistes[S[i].voix];
+    try { audio.currentTime = Math.min(elapsed, S[i].dur) / 1000; } catch(e) {}
+    audio.play().catch(() => {});
   }
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn; majBoutonVoix();
-    if(voiceOn && playing) parler(idx); else { if(synth) synth.cancel(); if(audio){ audio.pause(); audio = null; } parle = false; }
+    if(voiceOn && playing) parler(idx); else couper();
   });
-  const before = i => S.slice(0,i).reduce((a,s)=>a+s.dur,0);
 
   function go(i, animate){
     idx = i; elapsed = 0; ended = false;
     scenes.forEach((sc,j)=>{ sc.classList.toggle('on', j===i); sc.classList.remove('play'); });
     if(animate){ void scenes[i].offsetWidth; scenes[i].classList.add('play'); }
     [...chips.children].forEach((li,j)=>li.firstChild.setAttribute('aria-current', j===i ? 'true':'false'));
-    voLab.textContent = 'Sous-titres · ' + (i+1) + '/' + S.length;
-    voTxt.textContent = S[i].vo;
+    voLab.textContent = 'Sous-titres · ' + S[i].name;
+    voTxt.textContent = animate ? ligneA(i, 0) : S[1].lines.map(l => l[1]).join(' ');
     if(animate && playing) parler(i);
     paint();
   }
   function paint(){
     const t = Math.min(total, before(idx) + elapsed);
     bar.style.width = (t/total*100) + '%';
-    time.textContent = fmt(t) + ' / ' + fmt(total);
+    time.textContent = mmss(t) + ' / ' + mmss(total);
+    if(playing || elapsed > 0){ const l = ligneA(idx, elapsed); if(voTxt.textContent !== l) voTxt.textContent = l; }
   }
   function setBtn(){
     playIco.innerHTML = playing ? '<path d="M4 2.5h3v11H4zM9 2.5h3v11H9z"/>' : '<path d="M4 2.5v11l9-5.5z"/>';
@@ -526,9 +654,11 @@ body{background:#FFFFFF}
   }
   function tick(t){
     if(!playing) return;
-    elapsed = Math.min(elapsed + (t - last), S[idx].dur); last = t;
-    const voixEnCours = parle && performance.now() < finParole;
-    if(elapsed >= S[idx].dur && !voixEnCours){
+    // l'horloge suit la voix quand elle joue : image et son restent calés
+    if(audio && !audio.paused && !audio.ended && audio.currentTime > 0) elapsed = Math.min(audio.currentTime * 1000, S[idx].dur);
+    else elapsed = Math.min(elapsed + (t - last), S[idx].dur);
+    last = t;
+    if(elapsed >= S[idx].dur){
       if(idx < S.length-1){ go(idx+1, true); }
       else { elapsed = S[idx].dur; paint(); playing = false; ended = true; setBtn(); return; }
     }
@@ -541,24 +671,19 @@ body{background:#FFFFFF}
     playing = true;
     if(ended){ go(0, true); }
     else if(!reprise){ go(idx, true); }
-    else if(audio && audio.paused && !audio.ended){ audio.play().catch(()=>{}); }
-    else if(synth && synth.paused){ synth.resume(); }
-    else if(!parle && elapsed < S[idx].dur * .5){ parler(idx); }
+    else if(audio && audio.paused && voiceOn){ audio.play().catch(()=>{}); }
     stage.classList.remove('paused'); last = performance.now(); setBtn();
     requestAnimationFrame(tick);
   }
-  function pause(){ playing = false; stage.classList.add('paused'); if(audio) audio.pause(); else if(synth && parle) synth.pause(); setBtn(); }
+  function pause(){ playing = false; stage.classList.add('paused'); if(audio) audio.pause(); setBtn(); }
 
   playBtn.addEventListener('click', ()=> playing ? pause() : play());
   document.getElementById('replayBtn').addEventListener('click', ()=>{ stage.classList.remove('paused'); playing = true; go(0, true); play(); });
-
-  const startBtn = document.getElementById('startBtn');
-  startBtn.addEventListener('click', () => { choisirVoix(); playing = true; go(0, true); play(); });
+  startBtn.addEventListener('click', () => { playing = true; go(0, true); play(); });
   majBoutonVoix();
-  setTimeout(() => { if(!voixFr && !voixEnregistree) document.getElementById('startSub').textContent = 'sous-titré · 51 s'; }, 1200);
-  go(0, false); // image fixe complète en attendant le clic
-  window.addEventListener('pagehide', () => { if(synth) synth.cancel(); if(audio) audio.pause(); });
+  go(1, false); // image fixe (scène 1 complète) en attendant le clic
+  window.addEventListener('pagehide', couper);
 })();
 </script>
-
-</body></html>
+</body>
+</html>

@@ -20,7 +20,7 @@ const { envoyerBonCommandeParEmail } = require("./email");
 const { hashPassword, verifyPassword, createSession, getSession, supprimerSession, revoquerSessions, ADMIN_KEY } = require("./auth");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2", ".mp3": "audio/mpeg", ".m4a": "audio/mp4" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2", ".mp3": "audio/mpeg", ".m4a": "audio/mp4", ".mp4": "video/mp4" };
 
 function serveStatic(req, res, pathname) {
   const filePath = pathname === "/" ? "index.html" : pathname.slice(1);
@@ -31,7 +31,31 @@ function serveStatic(req, res, pathname) {
   // Pages, scripts et styles : toujours revalidés, pour que chaque mise à jour
   // du site soit visible tout de suite. Images et polices : cache d'un jour.
   const frais = [".html", ".js", ".css", ".webmanifest", ".json"].includes(ext);
-  res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream", "Cache-Control": frais ? "no-cache" : "public, max-age=86400" });
+  const entetes = { "Content-Type": MIME[ext] || "application/octet-stream", "Cache-Control": frais ? "no-cache" : "public, max-age=86400" };
+  // Sons et vidéos : lecture par morceaux (Range), indispensable à Safari et à
+  // l'iPhone pour lire une vidéo, et diffusés en flux plutôt que chargés en mémoire.
+  if (ext === ".mp4" || ext === ".mp3") {
+    const taille = fs.statSync(fullPath).size;
+    entetes["Accept-Ranges"] = "bytes";
+    const plage = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || "");
+    if (plage && (plage[1] || plage[2])) {
+      let debut = plage[1] ? parseInt(plage[1], 10) : taille - parseInt(plage[2], 10);
+      let fin = plage[1] && plage[2] ? parseInt(plage[2], 10) : taille - 1;
+      debut = Math.max(0, debut); fin = Math.min(fin, taille - 1);
+      if (debut > fin) {
+        res.writeHead(416, { "Content-Range": `bytes */${taille}` });
+        res.end();
+        return true;
+      }
+      res.writeHead(206, { ...entetes, "Content-Range": `bytes ${debut}-${fin}/${taille}`, "Content-Length": fin - debut + 1 });
+      fs.createReadStream(fullPath, { start: debut, end: fin }).pipe(res);
+      return true;
+    }
+    res.writeHead(200, { ...entetes, "Content-Length": taille });
+    fs.createReadStream(fullPath).pipe(res);
+    return true;
+  }
+  res.writeHead(200, entetes);
   res.end(fs.readFileSync(fullPath));
   return true;
 }
