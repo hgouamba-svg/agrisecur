@@ -395,6 +395,32 @@
     .ls-hero-cap { transition:none; transform:none; }
   }
 
+  /* --- Zones d'intervention : carte satellite + photos de terrain --- */
+  .ls-zones { background:var(--ls-green); color:#FFFFFF; padding:96px 0; border-bottom:2px solid var(--ls-ink); }
+  .ls-zones .ls-wrap { max-width:1160px; margin:0 auto; padding:0 max(20px, calc((100vw - 1120px) / 2)); }
+  .ls-zones .ls-eyebrow { color:#FFB877; }
+  .ls-zones h2 { margin:0 0 14px; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(34px,5vw,60px); line-height:.95; text-transform:uppercase; letter-spacing:.01em; }
+  .ls-zones .ls-zones-lead { margin:0 0 30px; max-width:760px; font-size:18px; line-height:1.6; color:#E7EFE9; }
+  .ls-zones-map { position:relative; margin:0 auto; border:2px solid var(--ls-ink); box-shadow:8px 8px 0 rgba(0,0,0,.35); line-height:0; }
+  .ls-zones-map > img { width:100%; height:auto; display:block; }
+  .zpin { position:absolute; transform:translate(-50%,-100%); z-index:1; cursor:pointer; border:0; background:none; padding:0; -webkit-tap-highlight-color:transparent; }
+  .zpin .zthumb { display:block; width:clamp(34px,5.2vw,66px); height:clamp(34px,5.2vw,66px); border-radius:50%; border:3px solid var(--ls-or); overflow:hidden; background:#12281B; box-shadow:0 4px 12px rgba(0,0,0,.45); transition:transform .2s cubic-bezier(.3,.7,.3,1.2); }
+  .zpin .zthumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .zpin::after { content:""; position:absolute; left:50%; top:100%; width:2px; height:12px; background:var(--ls-or); transform:translateX(-50%); }
+  .zpin .zname { position:absolute; left:50%; top:calc(100% + 12px); transform:translateX(-50%); white-space:nowrap; font-family:var(--ls-mono); font-size:11px; font-weight:600; letter-spacing:.04em; background:rgba(17,17,17,.85); color:#FFFFFF; padding:2px 7px; opacity:0; transition:opacity .2s ease; pointer-events:none; }
+  .zpin:hover, .zpin:focus-visible, .zpin.zopen { z-index:5; outline:none; }
+  .zpin:hover .zthumb, .zpin:focus-visible .zthumb, .zpin.zopen .zthumb { transform:scale(2.1); }
+  .zpin:hover .zname, .zpin:focus-visible .zname, .zpin.zopen .zname { opacity:1; }
+  .zpin.zdot .zthumb { width:16px; height:16px; background:var(--ls-or); border-width:2px; }
+  .zpin.zdot:hover .zthumb, .zpin.zdot.zopen .zthumb { transform:scale(1.5); }
+  .ls-zones-legend { margin:20px auto 0; display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center; font-family:var(--ls-mono); font-size:12px; color:#CFE0D5; }
+  .ls-zones-legend b { color:#FFFFFF; font-weight:700; }
+  .ls-zones-credit { margin:14px 0 0; text-align:center; font-family:var(--ls-mono); font-size:11px; color:#8FB39C; }
+  @media (max-width:760px){
+    .ls-zones { padding:64px 0; }
+    .zpin .zname { font-size:10px; }
+  }
+
   /* comment ça marche */
   .ls-how { background:var(--ls-green); color:#FFFFFF; padding:120px 0; }
   .ls-how-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:80px; align-items:start; }
@@ -824,6 +850,33 @@
       <figcaption><span class="ls-hero-cap is-on" data-i18n="hero.photo">Fèves de cacao au séchage · Côte d'Ivoire</span></figcaption>
       <div class="ls-hero-dots" aria-hidden="true"></div>
     </figure>
+  </section>
+
+  <section class="ls-zones">
+    <div class="ls-wrap">
+      <p class="ls-eyebrow">Nos zones d'intervention</p>
+      <h2>Le bassin cacao<br>ivoiro-ghanéen</h2>
+      <p class="ls-zones-lead">Côte d'Ivoire et Ghana produisent près des deux tiers du cacao mondial. Ces images, prises à travers les deux pays, racontent le terrain — des ports d'exportation aux villes de l'intérieur, du bloc forestier aux savanes du nord. Survolez ou touchez une photo pour l'agrandir.</p>
+      <div class="ls-zones-map">
+        <img src="/photos/carte-satellite.jpg" alt="Vue satellite de la Côte d'Ivoire et du Ghana, avec les principales villes du bassin cacao" width="1150" height="768" loading="lazy">
+        <button class="zpin" type="button" style="left:33%; top:16%"><span class="zthumb"><img src="/photos/lieu-korhogo.jpg" alt="Mont Korhogo, dans le nord de la Côte d'Ivoire"></span><span class="zname">Korhogo · nord</span></button>
+        <button class="zpin" type="button" style="left:15.5%; top:40%"><span class="zthumb"><img src="/photos/lieu-soubre.jpg" alt="Pont sur une rivière en pleine forêt, région de Soubré"></span><span class="zname">Soubré</span></button>
+        <button class="zpin" type="button" style="left:19%; top:51.5%"><span class="zthumb"><img src="/photos/lieu-daloa.jpg" alt="Monument et carrefour de Daloa, Côte d'Ivoire"></span><span class="zname">Daloa</span></button>
+        <button class="zpin" type="button" style="left:10.5%; top:54%"><span class="zthumb"><img src="/photos/lieu-man.jpg" alt="Man, ville dans une vallée entourée de montagnes"></span><span class="zname">Man</span></button>
+        <button class="zpin" type="button" style="left:44%; top:49.5%"><span class="zthumb"><img src="/photos/lieu-yamoussoukro.jpg" alt="Basilique Notre-Dame de la Paix de Yamoussoukro"></span><span class="zname">Yamoussoukro</span></button>
+        <button class="zpin" type="button" style="left:31%; top:85%"><span class="zthumb"><img src="/photos/lieu-abidjan.jpg" alt="Pont à haubans d'Abidjan sur la lagune"></span><span class="zname">Abidjan</span></button>
+        <button class="zpin" type="button" style="left:67%; top:63%"><span class="zthumb"><img src="/photos/lieu-kumasi.jpg" alt="Panorama de Kumasi, Ghana"></span><span class="zname">Kumasi</span></button>
+        <button class="zpin" type="button" style="left:59.6%; top:79.4%"><span class="zthumb"><img src="/photos/lieu-takoradi.jpg" alt="Rue coloniale en bord de mer, côte du Ghana"></span><span class="zname">Takoradi</span></button>
+        <button class="zpin" type="button" style="left:17.8%; top:83%"><span class="zthumb"><img src="/photos/lieu-sanpedro.jpg" alt="Grande rue de San-Pédro, premier port cacao du monde"></span><span class="zname">San-Pédro · port cacao</span></button>
+        <button class="zpin" type="button" style="left:48.3%; top:45%"><span class="zthumb"><img src="/photos/lieu-abengourou.jpg" alt="Marché vivrier d'Abengourou : tomates, gombos, oignons"></span><span class="zname">Abengourou · marché vivrier</span></button>
+        <button class="zpin zdot" type="button" style="left:59.1%; top:53%"><span class="zthumb"></span><span class="zname">Sefwi Wiawso</span></button>
+      </div>
+      <div class="ls-zones-legend">
+        <span><b>●</b> Ville avec photo de terrain — survolez</span>
+        <span><b>●</b> Autre place forte du cacao</span>
+      </div>
+      <p class="ls-zones-credit">Fond de carte : Google Maps · imagerie satellite © Google</p>
+    </div>
   </section>
 
   <section class="ls-rdue" id="landing-rdue">
@@ -3261,7 +3314,8 @@ async function telechargerBonCommande(id) {
     return d;
   });
   var i = 0, timer = null;
-  var DELAY = 4200;
+  var DELAY = 4200; // photos
+  function durOf(idx){ return parseInt(slides[idx].getAttribute('data-dur'), 10) || DELAY; }
   function show(n){
     slides[i].classList.remove('is-on');
     dots[i].classList.remove('is-on');
@@ -3274,8 +3328,10 @@ async function telechargerBonCommande(id) {
       window.setTimeout(function(){ cap.textContent = txt; cap.classList.add('is-on'); }, 260);
     }
   }
-  function start(){ stop(); timer = window.setInterval(function(){ show(i + 1); }, DELAY); }
-  function stop(){ if(timer){ window.clearInterval(timer); timer = null; } }
+  function tick(){ show(i + 1); schedule(); }
+  function schedule(){ stop(); timer = window.setTimeout(tick, durOf(i)); }
+  function start(){ schedule(); }
+  function stop(){ if(timer){ window.clearTimeout(timer); timer = null; } }
   // Pause au survol UNIQUEMENT sur les appareils à vraie souris : sur tactile,
   // un effleurement déclenchait un faux « survol » qui figeait le diaporama.
   var peutSurvoler = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -3286,6 +3342,22 @@ async function telechargerBonCommande(id) {
   // Met en pause quand l'onglet est masqué, reprend au retour (économe).
   document.addEventListener('visibilitychange', function(){ if(document.hidden){ stop(); } else { start(); } });
   start();
+})();
+</script>
+<script>
+(function(){
+  var pins = [].slice.call(document.querySelectorAll('.ls-zones .zpin'));
+  if(!pins.length) return;
+  pins.forEach(function(p){
+    p.addEventListener('click', function(e){
+      var wasOpen = p.classList.contains('zopen');
+      pins.forEach(function(q){ q.classList.remove('zopen'); });
+      if(!wasOpen) p.classList.add('zopen');
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.zpin')) pins.forEach(function(q){ q.classList.remove('zopen'); });
+  });
 })();
 </script>
 <script src="/agrisecur-micro.js"></script>
