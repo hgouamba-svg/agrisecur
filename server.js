@@ -20,7 +20,7 @@ const { envoyerBonCommandeParEmail } = require("./email");
 const { hashPassword, verifyPassword, createSession, getSession, supprimerSession, revoquerSessions, ADMIN_KEY } = require("./auth");
 
 const PUBLIC_DIR = path.join(__dirname, "public");
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png", ".svg": "image/svg+xml", ".ico": "image/x-icon", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".woff2": "font/woff2", ".mp3": "audio/mpeg", ".m4a": "audio/mp4" };
 
 function serveStatic(req, res, pathname) {
   const filePath = pathname === "/" ? "index.html" : pathname.slice(1);

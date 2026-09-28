@@ -417,19 +417,20 @@ body{background:#FFFFFF}
 
   // film
   const S = [
-    {name:'Le problème', dur:8000,
-     vo:"À Soubré, une coopérative vend le cacao de mille deux cents parcelles. À partir du 30 décembre 2026, l'acheteur européen devra prouver qu'aucune parcelle n'est issue de la déforestation. Le fichier tiendra-t-il ?"},
-    {name:'La solution', dur:9000,
-     vo:"AgriSecur audite le fichier de parcelles de votre coopérative. Vous le déposez en ligne, nous le vérifions parcelle par parcelle : coordonnées, doublons, chevauchements."},
-    {name:'Le parcours', dur:10000,
-     vo:"Premier avis sous quarante-huit heures ouvrées. Après l'acompte, l'analyse satellite est lancée, et le rapport avec son plan d'action arrive en sept jours ouvrés."},
-    {name:'Satellite', dur:9000,
-     vo:"Chaque parcelle est analysée par satellite avec l'outil WHISP de la FAO. Le rapport aide à préparer la diligence raisonnable européenne. Ce n'est pas une certification."},
+    {name:'Le problème', dur:8500,
+     vo:"Soubré. Une coopérative, mille deux cents parcelles de cacao. Fin décembre, l'acheteur européen va demander des preuves. Est-ce que le fichier tiendra ?"},
+    {name:'La solution', dur:8500,
+     vo:"C'est là qu'on intervient. Vous nous envoyez votre fichier de parcelles, et on le passe au peigne fin : coordonnées, doublons, chevauchements."},
+    {name:'Le parcours', dur:9500,
+     vo:"Sous 48 heures, vous avez un premier avis. Après l'acompte, on lance l'analyse satellite. En 7 jours ouvrés, vous avez le rapport et un plan d'action.",
+     say:"Sous quarante-huit heures, vous avez un premier avis. Après l'acompte, on lance l'analyse satellite. En sept jours ouvrés, vous avez le rapport et un plan d'action."},
+    {name:'Satellite', dur:9500,
+     vo:"Chaque parcelle est vérifiée par satellite, avec l'outil WHISP de la FAO. Ça vous aide pour la diligence raisonnable. Ce n'est pas un certificat, on préfère être clairs."},
     {name:'Impact', dur:8000,
-     vo:"La coopérative corrige son fichier à temps. L'exportateur reçoit des données fiables. Et sur notre place de marché, ces lots conformes se vendent en confiance."},
+     vo:"Résultat : la coopérative corrige à temps, l'exportateur a des données fiables, et les lots se vendent en confiance sur notre place de marché."},
     {name:'Contact', dur:7000,
-     vo:"AgriSecur. Sécuriser chaque vente agricole, de la parcelle à l'acheteur. www.agrisecur.com",
-     say:"Agri-Sécure. Sécuriser chaque vente agricole, de la parcelle à l'acheteur. Rendez-vous sur agri-sécure point com."}
+     vo:"AgriSecur. Sécuriser chaque vente agricole. Rendez-vous sur www.agrisecur.com",
+     say:"Agri-Sécure. Sécuriser chaque vente agricole. Rendez-vous sur agri-sécure point com."}
   ];
   const total = S.reduce((a,s)=>a+s.dur,0);
   const stage = document.getElementById('stage');
@@ -457,8 +458,11 @@ body{background:#FFFFFF}
   function choisirVoix(){
     if(!synth) return;
     const fr = synth.getVoices().filter(v => /^fr(-|_|$)/i.test(v.lang));
-    const pref = ['Google français','Amélie','Amelie','Thomas','Denise','Henri','Audrey','Marie','Microsoft'];
-    voixFr = fr.find(v => pref.some(n => v.name.includes(n)) && /fr-FR/i.test(v.lang)) || fr.find(v => /fr-FR/i.test(v.lang)) || fr[0] || null;
+    // Voix d'homme d'abord, et de préférence les voix « naturelles » / « améliorées ».
+    const hommes = ['Henri','Remy','Rémy','Paul','Thomas','Daniel','Nicolas','Jacques','Antoine','Claude','Gerard','Gérard','Jean','Fabrice','Grégoire','Gregoire'];
+    const qualite = v => /natural|naturel|neural|premium|enhanced|améliorée|amelioree|online/i.test(v.name) ? 2 : 0;
+    const note = v => (hommes.some(n => v.name.includes(n)) ? 4 : 0) + qualite(v) + (/fr-FR/i.test(v.lang) ? 1 : 0);
+    voixFr = fr.slice().sort((a,b) => note(b) - note(a))[0] || null;
     if(voixFr){ voiceBtn.hidden = false; }
   }
   if(synth){ choisirVoix(); synth.addEventListener?.('voiceschanged', choisirVoix); }
@@ -467,12 +471,28 @@ body{background:#FFFFFF}
     voiceTxt.textContent = voiceOn ? 'Voix off' : 'Voix coupée';
     voiceWaves.style.display = voiceOn ? '' : 'none';
   }
+  // Voix enregistrée (fichiers /film/voix-1.mp3 à voix-6.mp3) : utilisée à la
+  // place de la synthèse du navigateur dès que les fichiers sont en ligne.
+  let voixEnregistree = false, audio = null;
+  fetch('/film/voix-1.mp3', {method:'HEAD'}).then(r => { if(r.ok){ voixEnregistree = true; voiceBtn.hidden = false; } }).catch(()=>{});
   function parler(i){
+    if(audio){ audio.pause(); audio = null; }
+    if(voixEnregistree){
+      if(synth) synth.cancel();
+      parle = false;
+      if(!voiceOn) return;
+      audio = new Audio('/film/voix-' + (i+1) + '.mp3');
+      audio.onplay = () => { parle = true; };
+      audio.onended = audio.onerror = () => { parle = false; };
+      parle = true; finParole = performance.now() + S[i].dur + 9000;
+      audio.play().catch(() => { parle = false; });
+      return;
+    }
     if(!synth) return;
     synth.cancel(); parle = false;
     if(!voiceOn || !voixFr) return;
     const u = new SpeechSynthesisUtterance((S[i].say || S[i].vo).replace(/AgriSecur/gi, 'Agri-Sécure'));
-    u.voice = voixFr; u.lang = voixFr.lang; u.rate = 1; u.pitch = 1;
+    u.voice = voixFr; u.lang = voixFr.lang; u.rate = 0.96; u.pitch = 0.92;
     u.onstart = () => { parle = true; };
     u.onend = u.onerror = () => { parle = false; };
     parle = true; finParole = performance.now() + S[i].dur + 9000; // garde-fou si la fin n'est jamais signalée
@@ -480,7 +500,7 @@ body{background:#FFFFFF}
   }
   voiceBtn.addEventListener('click', () => {
     voiceOn = !voiceOn; majBoutonVoix();
-    if(voiceOn && playing) parler(idx); else if(synth){ synth.cancel(); parle = false; }
+    if(voiceOn && playing) parler(idx); else { if(synth) synth.cancel(); if(audio){ audio.pause(); audio = null; } parle = false; }
   });
   const before = i => S.slice(0,i).reduce((a,s)=>a+s.dur,0);
 
@@ -521,12 +541,13 @@ body{background:#FFFFFF}
     playing = true;
     if(ended){ go(0, true); }
     else if(!reprise){ go(idx, true); }
+    else if(audio && audio.paused && !audio.ended){ audio.play().catch(()=>{}); }
     else if(synth && synth.paused){ synth.resume(); }
     else if(!parle && elapsed < S[idx].dur * .5){ parler(idx); }
     stage.classList.remove('paused'); last = performance.now(); setBtn();
     requestAnimationFrame(tick);
   }
-  function pause(){ playing = false; stage.classList.add('paused'); if(synth && parle) synth.pause(); setBtn(); }
+  function pause(){ playing = false; stage.classList.add('paused'); if(audio) audio.pause(); else if(synth && parle) synth.pause(); setBtn(); }
 
   playBtn.addEventListener('click', ()=> playing ? pause() : play());
   document.getElementById('replayBtn').addEventListener('click', ()=>{ stage.classList.remove('paused'); playing = true; go(0, true); play(); });
@@ -534,9 +555,9 @@ body{background:#FFFFFF}
   const startBtn = document.getElementById('startBtn');
   startBtn.addEventListener('click', () => { choisirVoix(); playing = true; go(0, true); play(); });
   majBoutonVoix();
-  setTimeout(() => { if(!voixFr) document.getElementById('startSub').textContent = 'sous-titré · 51 s'; }, 1200);
+  setTimeout(() => { if(!voixFr && !voixEnregistree) document.getElementById('startSub').textContent = 'sous-titré · 51 s'; }, 1200);
   go(0, false); // image fixe complète en attendant le clic
-  window.addEventListener('pagehide', () => synth && synth.cancel());
+  window.addEventListener('pagehide', () => { if(synth) synth.cancel(); if(audio) audio.pause(); });
 })();
 </script>
 
