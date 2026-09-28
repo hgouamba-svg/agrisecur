@@ -3276,10 +3276,15 @@ async function telechargerBonCommande(id) {
   }
   function start(){ stop(); timer = window.setInterval(function(){ show(i + 1); }, DELAY); }
   function stop(){ if(timer){ window.clearInterval(timer); timer = null; } }
-  // Pause au survol / quand l'onglet n'est pas visible : plus doux, économe.
-  slider.addEventListener('mouseenter', stop);
-  slider.addEventListener('mouseleave', start);
-  document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+  // Pause au survol UNIQUEMENT sur les appareils à vraie souris : sur tactile,
+  // un effleurement déclenchait un faux « survol » qui figeait le diaporama.
+  var peutSurvoler = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if(peutSurvoler){
+    slider.addEventListener('mouseenter', stop);
+    slider.addEventListener('mouseleave', start);
+  }
+  // Met en pause quand l'onglet est masqué, reprend au retour (économe).
+  document.addEventListener('visibilitychange', function(){ if(document.hidden){ stop(); } else { start(); } });
   start();
 })();
 </script>
