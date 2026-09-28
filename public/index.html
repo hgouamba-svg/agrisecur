@@ -381,8 +381,8 @@
   .ls-eyebrow-light { color:#FFA64D; }
   .ls-h1 { margin:0; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(60px,7.6vw,112px); line-height:.88; text-transform:uppercase; color:var(--ls-ink); letter-spacing:.005em; }
   .ls-h1 span { color:var(--ls-green); }
-  .ls-h2 { margin:0; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(46px,5.6vw,84px); line-height:.9; text-transform:uppercase; }
-  .ls-h2-xl { font-size:clamp(56px,7vw,104px); }
+  .ls-h2 { margin:0; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(32px,3.6vw,50px); line-height:1.08; letter-spacing:-.015em; text-wrap:balance; }
+  .ls-h2-xl { font-size:clamp(36px,4.4vw,60px); }
   .ls-lead { margin:0; font-size:20px; line-height:1.5; color:#333333; max-width:34em; }
   .ls-body { margin:0; font-size:18px; line-height:1.6; color:#333333; max-width:34em; }
 
@@ -405,25 +405,17 @@
   .ls-hero-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
   .ls-hero-art figcaption { position:absolute; left:0; bottom:0; background:rgba(17,17,17,.78); color:#FFFFFF; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.06em; padding:8px 14px; }
 
-  /* ticket de chiffres */
-
   /* comment ça marche */
   .ls-how { background:var(--ls-green); color:#FFFFFF; padding:120px 0; }
   .ls-how-grid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:80px; align-items:start; }
   .ls-how-text { display:flex; flex-direction:column; gap:24px; padding-top:12px; }
   .ls-how .ls-body { color:#D5E2D8; }
   .ls-link-light { color:#FFFFFF; font-weight:700; text-decoration:underline; text-underline-offset:5px; align-self:flex-start; }
-  .ls-bordereau { position:relative; background:#FFFFFF; color:var(--ls-ink); border:2px solid var(--ls-ink); box-shadow:12px 12px 0 var(--ls-or); }
-  .ls-perf { height:14px; border-bottom:2px dashed var(--ls-ink); background-image:radial-gradient(circle at 9px 0, var(--ls-green) 6px, transparent 6.5px); background-size:18px 14px; background-repeat:repeat-x; }
-  .ls-bord-body { padding:26px 34px 30px; font-family:var(--ls-mono); }
-  .ls-bord-head { display:flex; justify-content:space-between; gap:12px; font-size:13px; font-weight:600; letter-spacing:.1em; padding-bottom:16px; border-bottom:2px solid var(--ls-ink); }
-  .ls-bord-row { display:grid; grid-template-columns:48px minmax(0,1fr) 26px; gap:16px; align-items:start; padding:20px 0; border-bottom:1px dashed #9A9A9A; }
-  .ls-bord-row b { display:block; font-family:'Archivo',sans-serif; font-size:19px; font-weight:800; }
-  .ls-bord-row small { display:block; font-size:14px; color:var(--ls-mute); margin-top:3px; }
-  .ls-bord-row svg { width:26px; height:26px; fill:none; stroke:var(--ls-ok); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-  .ls-bord-last { border-bottom:0; padding-bottom:40px; }
-  .ls-bord-n { font-size:22px; font-weight:600; color:var(--ls-or-txt); }
-  .ls-stamp-paid { position:absolute; right:28px; bottom:22px; transform:rotate(-11deg); border:5px double var(--ls-ok); color:var(--ls-ok); padding:6px 22px 2px; font-family:var(--ls-stencil); font-weight:900; font-size:56px; letter-spacing:.08em; line-height:1; }
+  .ls-steps { list-style:none; margin:0; padding:0; counter-reset:etape; border-top:1px solid rgba(255,255,255,.28); }
+  .ls-steps li { counter-increment:etape; display:grid; grid-template-columns:56px minmax(0,1fr); column-gap:8px; padding:22px 0; border-bottom:1px solid rgba(255,255,255,.28); }
+  .ls-steps li::before { content:counter(etape, decimal-leading-zero); grid-row:span 2; font-family:var(--ls-mono); font-size:20px; font-weight:600; color:#FFA64D; }
+  .ls-steps b { font-size:20px; font-weight:800; }
+  .ls-steps span { color:#D5E2D8; font-size:15px; margin-top:2px; }
 
   /* marché */
   .ls-market { padding:110px 0 90px; }
@@ -450,16 +442,17 @@
   .ls-lot-price { font-family:var(--ls-mono); font-size:20px; font-weight:600; }
   .ls-lot-price small { font-size:13px; color:var(--ls-mute); }
   .ls-empty { border:2px dashed var(--ls-ink); padding:48px 24px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:16px; }
-  .ls-empty b { font-family:var(--ls-stencil); font-weight:900; font-size:40px; text-transform:uppercase; line-height:1; }
+  .ls-empty b { font-weight:800; font-size:26px; line-height:1.15; }
   .ls-empty span { color:var(--ls-mute); font-size:16px; max-width:34em; }
 
   /* bande filières */
   .ls-band { background:var(--ls-or); border-top:2px solid var(--ls-ink); border-bottom:2px solid var(--ls-ink); padding:44px 0; }
   .ls-band-lab { margin:0 0 16px; font-family:var(--ls-mono); font-size:14px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; }
   .ls-band-list { display:flex; flex-wrap:wrap; gap:4px 26px; align-items:baseline; }
-  .ls-band-list button { all:unset; cursor:pointer; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(40px,5.2vw,76px); line-height:1.05; text-transform:uppercase; color:var(--ls-ink); position:relative; }
-  .ls-band-list button::after { content:"·"; color:#FFFFFF; margin-left:26px; }
-  .ls-band-list button:last-child::after { content:""; margin:0; }
+  .ls-band-list button, .ls-band-list span { all:unset; cursor:pointer; font-family:var(--ls-stencil); font-weight:900; font-size:clamp(40px,5.2vw,76px); line-height:1.05; text-transform:uppercase; color:var(--ls-ink); position:relative; }
+  .ls-band-list span { cursor:default; }
+  .ls-band-list > ::after { content:"·"; color:#FFFFFF; margin-left:26px; }
+  .ls-band-list > :last-child::after { content:""; margin:0; }
   .ls-band-list button:hover, .ls-band-list button.active { color:#FFFFFF; }
   .ls-band-list button:focus-visible { outline:3px solid var(--ls-ink); outline-offset:4px; }
 
@@ -501,7 +494,7 @@
   .ls-mission { padding:120px 0; }
   .ls-mission-grid { display:grid; grid-template-columns:360px minmax(0,1fr); gap:72px; align-items:center; }
   .ls-founder { width:100%; height:440px; object-fit:cover; object-position:50% 20%; border:2px solid var(--ls-ink); box-shadow:8px 8px 0 var(--ls-ink); display:block; }
-  .ls-mission .ls-h2 { font-size:clamp(44px,5vw,76px); margin-bottom:22px; }
+  .ls-mission .ls-h2 { margin-bottom:22px; }
   .ls-sign { display:flex; align-items:center; gap:24px; flex-wrap:wrap; border-top:2px solid var(--ls-ink); padding-top:20px; margin-top:24px; }
   .ls-sign b { display:block; font-size:20px; }
   .ls-sign span { display:block; font-family:var(--ls-mono); font-size:13px; color:var(--ls-mute); letter-spacing:.08em; }
@@ -510,8 +503,7 @@
   /* appel final + pied */
   .ls-cta { background:var(--ls-or); border-top:2px solid var(--ls-ink); padding:100px 0 90px; }
   .ls-cta-grid { display:flex; justify-content:space-between; align-items:flex-end; gap:60px; }
-  .ls-cta .ls-h2 span { color:transparent; -webkit-text-stroke:2.5px var(--ls-ink); }
-  .ls-cta .ls-body { color:var(--ls-ink); margin-top:18px; }
+    .ls-cta .ls-body { color:var(--ls-ink); margin-top:18px; }
   .ls-cta-btns { display:flex; flex-direction:column; gap:14px; flex-shrink:0; }
   .ls-foot { background:var(--ls-ink); color:#D6D6D6; }
   .ls-foot-row { display:flex; justify-content:space-between; align-items:center; gap:24px; flex-wrap:wrap; padding-top:30px; padding-bottom:30px; font-family:var(--ls-mono); font-size:13px; }
@@ -522,7 +514,7 @@
   @media (max-width: 1360px) {
     .ls-top-row { flex-wrap:wrap; row-gap:4px; }
     .ls-actions { margin-left:auto; }
-    nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; }
+    nav.ls-links { order:3; flex-basis:100%; overflow-x:auto; gap:20px; padding-bottom:2px; scrollbar-width:none; -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
     nav.ls-links::-webkit-scrollbar { display:none; }
     .ls-links a { font-size:14px; }
   }
@@ -538,18 +530,11 @@
     .ls-ctas .ls-btn { width:100%; }
     .ls-how, .ls-market, .ls-prices, .ls-field, .ls-pro, .ls-cta { padding:64px 0; }
     .ls-how-grid, .ls-pro-grid, .ls-mission-grid { grid-template-columns:minmax(0,1fr); gap:36px; }
-    .ls-bord-body { padding:18px 18px 22px; }
-    .ls-bord-row { grid-template-columns:34px minmax(0,1fr) 22px; gap:10px; padding:16px 0; }
-    .ls-bord-row b { font-size:17px; }
-    .ls-bord-row small { font-size:13px; }
-    .ls-bord-head { font-size:11px; }
-    .ls-stamp-paid { font-size:36px; right:16px; bottom:14px; }
-    .ls-bord-last { padding-bottom:76px; }
     .ls-sec-head { flex-direction:column; align-items:flex-start; gap:16px; }
     .ls-lots { grid-template-columns:1fr; gap:20px; }
     .ls-band { padding:32px 0; }
     .ls-band-list { gap:2px 14px; }
-    .ls-band-list button::after { margin-left:14px; }
+    .ls-band-list > ::after { margin-left:14px; }
     .ls-ticker .ticker-row { grid-template-columns:1.3fr 1fr .6fr; padding:14px 16px; font-size:14px; }
     .ls-ticker .ticker-row > span:nth-child(3), .ls-ticker .ticker-row > span:nth-child(4) { display:none; }
     .ls-photos { grid-template-columns:1fr; }
@@ -561,7 +546,6 @@
     .ls-mission { padding:64px 0; }
     .ls-founder { height:360px; }
     .ls-cta-grid { flex-direction:column; align-items:stretch; gap:32px; }
-    .ls-cta .ls-h2 span { -webkit-text-stroke:2px var(--ls-ink); }
     .ls-body { font-size:16px; }
     .ls-checks { font-size:16px; }
   }
@@ -578,17 +562,17 @@
   .fab:hover { transform:translate(-1px,-1px); box-shadow:4px 4px 0 #111111; }
   .fab:active { transform:translate(2px,2px); box-shadow:1px 1px 0 #111111; }
   .fab svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
-  .fab-report { bottom:20px; padding:0 16px; background:#111111; color:#FFFFFF; box-shadow:3px 3px 0 #F07E00; }
+  .fab-report { bottom:74px; padding:0 16px; background:#111111; color:#FFFFFF; box-shadow:3px 3px 0 #F07E00; }
   .fab-report:hover { box-shadow:4px 4px 0 #F07E00; }
   .fab-sq { width:44px; padding:0; }
-  .fab-voice { bottom:78px; }
-  .fab-top { bottom:132px; }
+  .fab-voice { bottom:20px; }
+  /* Sur la vitrine, « Signaler un problème » passe dans le pied de page. */
+  body:has(#landing-screen:not([style*="none"])) .fab-report { display:none; }
   @media (max-width: 600px) {
     .fab { right:12px; }
-    .fab-report { bottom:14px; width:44px; padding:0; }
+    .fab-report { bottom:66px; width:44px; padding:0; }
     .fab-report .fab-label { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-    .fab-voice { bottom:66px; }
-    .fab-top { bottom:118px; }
+    .fab-voice { bottom:14px; }
   }
   @media (prefers-reduced-motion: reduce) { .fab { transition:none; } }
 
@@ -662,7 +646,6 @@
 
 <button id="btn-lire-voix" class="fab fab-sq fab-voice" onclick="basculerLectureVoix()" title="Écouter cette page" aria-label="Écouter cette page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
 
-<button id="btn-retour-haut" class="fab fab-sq fab-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut" aria-label="Retour en haut" style="display:none;"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
 
 <div id="modale-signalement" style="display:none; position:fixed; inset:0; background:rgba(36,26,18,.45); z-index:600; align-items:center; justify-content:center;">
   <div style="background:var(--paper); border-radius:16px; padding:26px; width:92%; max-width:440px; box-shadow:0 20px 60px rgba(0,0,0,.3);">
@@ -815,22 +798,15 @@
   <section class="ls-how" id="landing-comment">
     <div class="ls-wrap ls-how-grid">
       <div class="ls-how-text">
-        <p class="ls-eyebrow ls-eyebrow-light" data-i18n="how.eyebrow">Comment ça marche</p>
         <h2 class="ls-h2" data-i18n="how.title">Du fichier au rapport, en 7 jours ouvrés.</h2>
         <p class="ls-body" data-i18n="diff.text">Vous déposez le fichier de parcelles sur notre page sécurisée. Nous le contrôlons, nous analysons chaque parcelle par satellite avec l'outil WHISP de la FAO, puis nous vous remettons un rapport clair avec les corrections à faire. Le rapport aide à préparer la diligence raisonnable européenne ; ce n'est pas une certification.</p>
-        <a class="ls-link-light" href="/depot" data-i18n="how.link">Déposer mon fichier</a>
       </div>
-      <div class="ls-bordereau">
-        <div class="ls-perf"></div>
-        <div class="ls-bord-body">
-          <div class="ls-bord-head"><span data-i18n="bord.title">BORDEREAU D'AUDIT</span><span>N° AS-0142</span></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">01</span><span><b data-i18n="bord.s1">Dépôt du fichier</b><small data-i18n="bord.s1t">Sur agrisecur.com/depot, en quelques minutes</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">02</span><span><b data-i18n="bord.s2">Premier avis</b><small data-i18n="bord.s2t">Sous 48 heures ouvrées</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row"><span class="ls-bord-n">03</span><span><b data-i18n="bord.s3">Analyse satellite</b><small data-i18n="bord.s3t">Après l'acompte de 50 %</small></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-          <div class="ls-bord-row ls-bord-last"><span class="ls-bord-n">04</span><span><b data-i18n="bord.s4">Rapport et plan d'action</b><small data-i18n="bord.s4t">En 7 jours ouvrés</small></span></div>
-        </div>
-        <div class="ls-stamp-paid" data-i18n="bord.paid">LIVRÉ</div>
-      </div>
+      <ol class="ls-steps">
+        <li><b data-i18n="bord.s1">Dépôt du fichier</b><span data-i18n="bord.s1t">Sur agrisecur.com/depot, en quelques minutes</span></li>
+        <li><b data-i18n="bord.s2">Premier avis</b><span data-i18n="bord.s2t">Sous 48 heures ouvrées</span></li>
+        <li><b data-i18n="bord.s3">Analyse satellite</b><span data-i18n="bord.s3t">Après l'acompte de 50 %</span></li>
+        <li><b data-i18n="bord.s4">Rapport et plan d'action</b><span data-i18n="bord.s4t">En 7 jours ouvrés</span></li>
+      </ol>
     </div>
   </section>
 
@@ -838,7 +814,6 @@
     <div class="ls-wrap">
       <div class="ls-sec-head">
         <div>
-          <p class="ls-eyebrow" data-i18n="filieres.eyebrow">Au marché en ce moment</p>
           <h2 class="ls-h2" data-i18n="filieres.title">Des lots vérifiés, parcelle comprise</h2>
         </div>
         <button class="ls-btn ls-btn-line" onclick="goToAuth('register')" data-i18n="filieres.all">Tout le catalogue</button>
@@ -858,7 +833,6 @@
     <div class="ls-wrap">
       <div class="ls-sec-head">
         <div>
-          <p class="ls-eyebrow" data-i18n="prices.eyebrow">Prix du jour</p>
           <h2 class="ls-h2" data-i18n="prices.title">Les vrais prix, filière par filière</h2>
         </div>
         <p class="ls-body ls-sec-note" data-i18n="prices.lead">Prix officiels fixés par l'État et cours des bourses mondiales, actualisés en continu.</p>
@@ -911,7 +885,6 @@
     <div class="ls-wrap ls-mission-grid">
       <img class="ls-founder" src="/photos/fondateur.jpg" alt="Houle Gouamba, fondateur d'AgriSecur" loading="lazy" width="800" height="1067">
       <div>
-        <p class="ls-eyebrow" data-i18n="mission.eyebrow">Notre mission</p>
         <h2 class="ls-h2" data-i18n="mission.title">Sécuriser chaque vente agricole, de la parcelle à l'acheteur</h2>
         <p class="ls-body" data-i18n="mission.lead">AgriSecur est né d'un constat simple : une vente agricole échoue pour deux raisons, une parcelle non conforme ou un paiement qui n'arrive pas. Nous commençons par la conformité, parce que sans elle le cacao ne part plus vers l'Europe : audit RDUE, cartographie et suivi annuel des parcelles. Ensuite, notre place de marché aide ces coopératives à vendre leurs lots conformes en confiance, sans jamais devenir acheteur ni vendeur nous-mêmes.</p>
         <div class="ls-sign">
@@ -945,6 +918,7 @@
         <a onclick="afficherInstallationApp()" data-i18n="footer.install">Installer l'app</a>
         <a onclick="ouvrirAidePublique('cookies')" data-i18n="footer.cookies">Cookies</a>
         <a onclick="ouvrirAidePublique('contact')" data-i18n="footer.contact">Nous contacter</a>
+        <a onclick="ouvrirModaleSignalement()" data-i18n="report.button">Signaler un problème</a>
       </div>
     </div>
     <div class="ls-flag" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -1851,7 +1825,8 @@ function goToLanding() {
 }
 
 function landingScrollTo(id) {
-  const el = document.getElementById(id);
+  let el = document.getElementById(id);
+  if (el && el.hidden) el = el.nextElementSibling;
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   setActiveNavLink(id);
 }
@@ -1910,9 +1885,8 @@ async function loadMarketTicker() {
   }).join("");
 
   const mondiaux = d.mondiaux || [];
-  let blocMondial;
+  let blocMondial = "";
   if (!mondiaux.length) {
-    blocMondial = `<div class="ls-px-wait">${en ? "Connecting to the exchanges — quotes will appear in a moment." : "Connexion aux bourses en cours — les cours s'afficheront dans un instant."}</div>`;
     clearTimeout(window._pxRetry); window._pxRetry = setTimeout(loadMarketTicker, 20000);
   } else {
     const lignes = mondiaux.map((m) => {
@@ -1951,21 +1925,13 @@ async function loadMarketTicker() {
       <div class="ls-px-head"><b>${en ? "OFFICIAL FARM-GATE PRICES" : "PRIX OFFICIELS BORD CHAMP"}</b><span>${en ? "Set by the State · Côte d'Ivoire" : "Fixés par l'État · Côte d'Ivoire"}</span></div>
       <div class="ls-px-cards">${officiels}</div>
     </div>
-    <div class="ls-px-block">
-      <div class="ls-px-head"><b>${en ? "WORLD MARKETS" : "COURS MONDIAUX"}</b>${mondiaux.length ? `<span class="ls-px-live"><i></i>${en ? "LIVE" : "EN DIRECT"} · ${en ? "updated at" : "mis à jour à"} ${heure(d.mondiaux_calcules_le)}</span>` : ""}</div>
+    ${blocMondial ? `<div class="ls-px-block">
+      <div class="ls-px-head"><b>${en ? "WORLD MARKETS" : "COURS MONDIAUX"}</b><span class="ls-px-live"><i></i>${en ? "LIVE" : "EN DIRECT"} · ${en ? "updated at" : "mis à jour à"} ${heure(d.mondiaux_calcules_le)}</span></div>
       ${blocMondial}
-    </div>
+    </div>` : ""}
     ${blocLots}`;
 }
 
-// Bouton "retour en haut" — apparaît après un défilement significatif,
-// pour ne pas encombrer l'écran dès l'arrivée sur la page.
-const btnRetourHaut = document.getElementById("btn-retour-haut");
-if (btnRetourHaut) {
-  window.addEventListener("scroll", () => {
-    btnRetourHaut.style.display = window.scrollY > 600 ? "flex" : "none";
-  });
-}
 
 loadMarketTicker();
 setInterval(loadMarketTicker, 60000); // rafraîchi chaque minute, tant que la page d'accueil reste ouverte
@@ -2152,6 +2118,14 @@ async function loadLandingCatalogue() {
     const visibles = landingFiltreActif === "tous" ? landingProductsCache : landingProductsCache.filter((p) => p.filiere === landingFiltreActif);
     const filtreNom = landingFiltreActif === "tous" ? "" : filiereLabel(landingFiltreActif);
 
+    const marcheVide = landingProductsCache.length === 0;
+    document.getElementById("landing-filieres").hidden = marcheVide;
+    if (marcheVide) {
+      chipsEl.innerHTML = toutesLesFilieres.map((f) => `<span>${filiereLabel(f)}</span>`).join("");
+      const lab = document.querySelector(".ls-band-lab");
+      if (lab) lab.textContent = en ? "8 sectors covered" : "8 filières accompagnées";
+      return;
+    }
     if (visibles.length === 0) {
       const titre = landingFiltreActif === "tous"
         ? (en ? "The market opens" : "Le marché ouvre")
