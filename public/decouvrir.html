@@ -570,7 +570,7 @@ body.render.f11 .s4 .fig svg{max-height:calc(19*var(--u))}
   const fmt = params.get('render');
   if(fmt){
     document.body.classList.add('render', 'f' + fmt);
-    stage.classList.add('with-cc');
+    if(params.get('cc') !== '0') stage.classList.add('with-cc');
     document.body.style.setProperty('--rw', (params.get('w') || 960) + 'px');
     scenes.forEach(sc => sc.classList.add('play'));
     const caler = (sc, t) => sc.getAnimations({subtree:true}).forEach(a => { a.currentTime = Math.max(0, t); });

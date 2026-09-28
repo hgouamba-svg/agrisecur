@@ -401,30 +401,11 @@
   .ls-ctas-mini .ls-btn { padding:10px 16px; font-size:13.5px; }
   @media (max-width:760px){ .ls-doors { grid-template-columns:1fr; } }
 
-  .ls-hero-art { background:var(--ls-or); border-left:2px solid var(--ls-ink); padding:64px max(48px, calc((100vw - 1248px) / 2 + 48px)) 56px 64px; display:flex; flex-direction:column; justify-content:center; gap:12px; }
-  .ls-sack { position:relative; min-height:560px; padding:44px 44px 40px; border:2px solid var(--ls-ink); box-shadow:12px 12px 0 var(--ls-ink); overflow:hidden; color:#2A2016; display:flex; flex-direction:column; gap:12px;
-    background-color:var(--ls-jute);
-    background-image:repeating-linear-gradient(0deg, rgba(70,45,15,.13) 0 2px, transparent 2px 6px), repeating-linear-gradient(90deg, rgba(70,45,15,.11) 0 2px, transparent 2px 6px); }
-  .ls-sack-stitch { position:absolute; left:0; right:0; top:14px; border-top:3px dashed rgba(42,32,22,.55); }
-  .ls-sack p { margin:0; font-family:var(--ls-stencil); opacity:.88; }
-  .ls-sack-origin { margin-top:16px !important; font-weight:800; font-size:24px; letter-spacing:.2em; }
-  .ls-sack-name { font-weight:900; font-size:clamp(96px,11vw,160px); line-height:.82; }
-  .ls-sack-grade { font-weight:800; font-size:32px; letter-spacing:.12em; }
-  .ls-sack-rule { border-top:3px solid rgba(42,32,22,.6); margin-top:8px; }
-  .ls-sack-data { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 24px; font-family:var(--ls-mono); font-size:16px; font-weight:600; opacity:.9; }
-  .ls-stamp-held { position:absolute; right:30px; bottom:56px; transform:rotate(-9deg); border:4px solid #B35A00; color:#B35A00; background:rgba(255,255,255,.3); padding:10px 18px 8px; font-family:var(--ls-stencil); font-weight:900; font-size:34px; line-height:.95; letter-spacing:.06em; text-align:center; }
-  .ls-stamp-held small { display:block; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.1em; }
-  .ls-stamp-kyc { position:absolute; left:40px; bottom:44px; transform:rotate(5deg); border:3px solid var(--ls-ok); color:var(--ls-ok); border-radius:999px; padding:8px 16px; font-family:var(--ls-mono); font-size:13px; font-weight:600; letter-spacing:.1em; }
-  .ls-art-note { margin:8px 0 0; font-family:var(--ls-mono); font-size:12px; font-weight:600; color:var(--ls-ink); }
+  .ls-hero-art { position:relative; margin:0; min-height:560px; border-left:2px solid var(--ls-ink); background:#3A2A1C; overflow:hidden; }
+  .ls-hero-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
+  .ls-hero-art figcaption { position:absolute; left:0; bottom:0; background:rgba(17,17,17,.78); color:#FFFFFF; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.06em; padding:8px 14px; }
 
   /* ticket de chiffres */
-  .ls-ticket { background:var(--ls-ink); color:#FFFFFF; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); padding:0 max(16px, calc((100vw - 1248px) / 2 + 16px)); }
-  .ls-ticket > div { padding:30px 32px; display:flex; flex-direction:column; gap:6px; }
-  .ls-ticket > div + div { border-left:2px dashed rgba(255,255,255,.35); }
-  .ls-t-lab { font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.14em; color:#BDBDBD; }
-  .ls-t-val { font-family:var(--ls-stencil); font-weight:900; font-size:64px; line-height:1; }
-  .ls-t-val.ls-or { color:var(--ls-or); }
-  .ls-t-txt { font-size:15px; color:#D6D6D6; }
 
   /* comment ça marche */
   .ls-how { background:var(--ls-green); color:#FFFFFF; padding:120px 0; }
@@ -495,9 +476,10 @@
   .ls-field { background:var(--ls-ink); color:#FFFFFF; padding:100px 0; }
   .ls-field .ls-h2 span { color:var(--ls-or); }
   .ls-field .ls-body { color:#D6D6D6; }
-  .ls-photos { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:20px; }
+  .ls-photos { display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:20px; }
   .ls-photos figure { margin:0; display:flex; flex-direction:column; gap:12px; }
-  .ls-photos img { width:100%; height:380px; object-fit:cover; display:block; border:2px solid #FFFFFF; }
+  .ls-photos img { width:100%; height:420px; object-fit:cover; display:block; border:2px solid #FFFFFF; }
+  .ls-photos figure:first-child img { object-position:50% 30%; }
   .ls-photos figcaption { font-family:var(--ls-mono); font-size:13px; color:#D6D6D6; }
 
   /* vendeur pro */
@@ -516,7 +498,7 @@
   .ls-card-pro .ls-btn-orange { box-shadow:none; }
 
   /* mission */
-  .ls-mission { padding:0 0 120px; }
+  .ls-mission { padding:120px 0; }
   .ls-mission-grid { display:grid; grid-template-columns:360px minmax(0,1fr); gap:72px; align-items:center; }
   .ls-founder { width:100%; height:440px; object-fit:cover; object-position:50% 20%; border:2px solid var(--ls-ink); box-shadow:8px 8px 0 var(--ls-ink); display:block; }
   .ls-mission .ls-h2 { font-size:clamp(44px,5vw,76px); margin-bottom:22px; }
@@ -551,22 +533,9 @@
     .ls-seal { width:36px; height:36px; }
     .ls-hero { grid-template-columns:minmax(0,1fr); }
     .ls-hero-text { padding:40px 20px 44px; gap:20px; }
-    .ls-hero-art { border-left:0; border-top:2px solid var(--ls-ink); padding:32px 28px 28px 20px; }
-    .ls-sack { min-height:0; padding:30px 22px 110px; box-shadow:7px 7px 0 var(--ls-ink); }
-    .ls-sack-origin { font-size:16px; }
-    .ls-sack-grade { font-size:22px; }
-    .ls-sack-data { font-size:13px; }
-    .ls-stamp-held { right:16px; bottom:22px; font-size:24px; padding:6px 12px 5px; }
-    .ls-stamp-held small { font-size:10px; }
+    .ls-hero-art { order:-1; min-height:0; height:300px; border-left:0; border-bottom:2px solid var(--ls-ink); }
     .ls-lead { font-size:17px; }
     .ls-ctas .ls-btn { width:100%; }
-    .ls-ticket { grid-template-columns:repeat(2,minmax(0,1fr)); padding:0; }
-    .ls-ticket > div { padding:18px 16px; }
-    .ls-ticket > div + div { border-left:0; }
-    .ls-ticket > div:nth-child(even) { border-left:2px dashed rgba(255,255,255,.35); }
-    .ls-ticket > div:nth-child(-n+2) { border-bottom:2px dashed rgba(255,255,255,.35); }
-    .ls-t-val { font-size:44px; }
-    .ls-t-txt { font-size:13px; }
     .ls-how, .ls-market, .ls-prices, .ls-field, .ls-pro, .ls-cta { padding:64px 0; }
     .ls-how-grid, .ls-pro-grid, .ls-mission-grid { grid-template-columns:minmax(0,1fr); gap:36px; }
     .ls-bord-body { padding:18px 18px 22px; }
@@ -584,13 +553,12 @@
     .ls-ticker .ticker-row { grid-template-columns:1.3fr 1fr .6fr; padding:14px 16px; font-size:14px; }
     .ls-ticker .ticker-row > span:nth-child(3), .ls-ticker .ticker-row > span:nth-child(4) { display:none; }
     .ls-photos { grid-template-columns:1fr; }
-    .ls-photos img { height:260px; }
-    .ls-photos figure:nth-child(2) { display:none; }
+    .ls-photos img { height:280px; }
     .ls-card-pro { padding:22px 20px; min-height:0; box-shadow:7px 7px 0 var(--ls-or); }
     .ls-card-name { font-size:34px; }
     .ls-card-price { font-size:26px; }
     .ls-seal-or { width:60px; height:60px; }
-    .ls-mission { padding-bottom:64px; }
+    .ls-mission { padding:64px 0; }
     .ls-founder { height:360px; }
     .ls-cta-grid { flex-direction:column; align-items:stretch; gap:32px; }
     .ls-cta .ls-h2 span { -webkit-text-stroke:2px var(--ls-ink); }
@@ -813,19 +781,10 @@
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
-    <div class="ls-hero-art">
-      <div class="ls-sack">
-        <div class="ls-sack-stitch"></div>
-        <p class="ls-sack-origin" data-i18n="sack.origin">PRODUIT DE CÔTE D'IVOIRE</p>
-        <p class="ls-sack-name" data-i18n="sack.name">CACAO</p>
-        <p class="ls-sack-grade" data-i18n="sack.grade">FÈVES · GRADE I</p>
-        <div class="ls-sack-rule"></div>
-        <div class="ls-sack-data"><span>LOT AS-0142</span><span>62,5 KG NET</span><span class="ls-hide-xs">PARCELLE P-0317</span><span class="ls-hide-xs">SOUBRÉ</span></div>
-        <div class="ls-stamp-held" data-i18n="sack.stamp">PARCELLES<small>VÉRIFIÉES PAR SATELLITE</small></div>
-        <div class="ls-stamp-kyc ls-hide-xs" data-i18n="sack.kyc">GÉOLOCALISÉE</div>
-      </div>
-      <p class="ls-art-note" data-i18n="sack.note">Marquage d'exemple — lot fictif</p>
-    </div>
+    <figure class="ls-hero-art">
+      <img src="/photos/mains-feves-cacao.jpg" alt="Mains tenant des fèves de cacao séchées, dans un village de Côte d'Ivoire" width="1600" height="1066" fetchpriority="high">
+      <figcaption data-i18n="hero.photo">Fèves de cacao au séchage · Côte d'Ivoire</figcaption>
+    </figure>
   </section>
 
   <section class="ls-rdue" id="landing-rdue">
@@ -851,13 +810,6 @@
         <p class="ls-rdue-note" data-i18n="rdue.note">Le rapport aide à préparer la diligence raisonnable européenne ; il ne constitue pas une certification.</p>
       </div>
     </div>
-  </section>
-
-  <section class="ls-ticket" aria-label="L'audit en chiffres">
-    <div><span class="ls-t-lab" data-i18n="stats.l1">PREMIER AVIS</span><span class="ls-t-val">48 h</span><span class="ls-t-txt" data-i18n="stats.filieres">Ouvrées, dès le dépôt du fichier</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l2">RAPPORT</span><span class="ls-t-val ls-or" data-i18n="stats.v2">7 jours</span><span class="ls-t-txt" data-i18n="stats.commission">Ouvrés, après fichier exploitable et acompte</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l3">PRIX</span><span class="ls-t-val">250 000</span><span class="ls-t-txt" data-i18n="stats.escrow">FCFA jusqu'à 500 parcelles</span></div>
-    <div><span class="ls-t-lab" data-i18n="stats.l4">ÉCHÉANCE UE</span><span class="ls-t-val">30.12.26</span><span class="ls-t-txt" data-i18n="stats.delay">Grandes et moyennes entreprises · petites : 30.06.2027</span></div>
   </section>
 
   <section class="ls-how" id="landing-comment">
@@ -924,8 +876,8 @@
         <p class="ls-body ls-sec-note" data-i18n="field.lead">Chaque lot publié vient d'un vendeur dont l'identité a été vérifiée, avec la position GPS de sa parcelle.</p>
       </div>
       <div class="ls-photos">
-        <figure><img src="/photos/sechage-cacao.jpg" alt="Producteur étalant des fèves de cacao sur une claie de séchage" loading="lazy" width="1200" height="800"><figcaption data-i18n="field.c1">Séchage des fèves sur claies</figcaption></figure>
-        <figure><img src="/photos/feves-sechage.jpg" alt="Fèves de cacao étalées au séchage" loading="lazy" width="1200" height="800"><figcaption data-i18n="field.c2">Fèves de cacao au soleil</figcaption></figure>
+        <figure><img src="/photos/agricultrice-panier.jpg" alt="Agricultrice souriante, panier sur le dos, au travail dans son champ" loading="lazy" width="1100" height="1456"><figcaption data-i18n="field.c1">Au champ, le travail de toute une saison</figcaption></figure>
+        <figure><img src="/photos/etalage-feves.jpg" alt="Mains étalant des fèves de cacao sur une claie de séchage" loading="lazy" width="1400" height="933"><figcaption data-i18n="field.c2">Les fèves étalées au séchage</figcaption></figure>
         <figure><img src="/photos/sacs-jute.jpg" alt="Sacs de jute empilés dans un entrepôt" loading="lazy" width="1200" height="673"><figcaption data-i18n="field.c3">Sacs prêts à partir</figcaption></figure>
       </div>
     </div>
@@ -1643,8 +1595,9 @@ Object.assign(TRADUCTIONS.en, {
   "prices.lead": "Official prices set by the State and world exchange quotes, updated continuously.",
   "field.title": "From the field<br><span>to the truck</span>",
   "field.lead": "Every published lot comes from a seller whose identity has been verified, with the GPS position of their plot.",
-  "field.c1": "Drying beans on racks",
-  "field.c2": "Cocoa beans in the sun",
+  "field.c1": "In the field, a whole season's work",
+  "field.c2": "Beans spread out to dry",
+  "hero.photo": "Cocoa beans drying · Côte d'Ivoire",
   "field.c3": "Bags ready to ship",
   "pro.title": "Pro Seller",
   "pro.f1.text": "<b>Trust badge</b> visible to all buyers, on your listings.",
