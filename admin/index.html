@@ -742,6 +742,12 @@
       <h1>Revenus des services à valeur ajoutée</h1>
       <p class="sub">Mises en avant de lots et abonnements Vendeur Pro — le complément de marge à la commission de 4%.</p>
       <div class="grid" id="sva-kpis" style="margin-bottom:16px;"></div>
+      <div class="card" id="sva-attente-card" style="display:none; padding:0; overflow:hidden;">
+        <div style="padding:16px 20px 0;"><strong>Demandes en attente de paiement</strong>
+          <p class="sub" style="margin:6px 0 0;">Confirmez la réception du paiement (Mobile Money ou virement) pour activer l'avantage du vendeur. Vérifiez la référence indiquée par le vendeur.</p>
+        </div>
+        <div id="sva-attente-list"></div>
+      </div>
       <div class="card" style="padding:0; overflow:hidden;">
         <div style="padding:16px 20px 0;"><strong>Achats récents</strong></div>
         <div class="list-row list-row-head" style="grid-template-columns: 2fr 1fr 1fr 1fr;">
@@ -1135,10 +1141,12 @@ async function loadAdminSva() {
     const boost = d.par_type.find((t) => t.type === "boost") || { n: 0, total: 0 };
     const pro = d.par_type.find((t) => t.type === "abonnement_pro") || { n: 0, total: 0 };
     kpis.innerHTML = `
-      <div class="kpi-card"><div class="kpi-label">Revenu SVA total</div><div class="kpi-val">${fmt(d.total_fcfa)} FCFA</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revenu SVA encaissé</div><div class="kpi-val">${fmt(d.total_fcfa)} FCFA</div></div>
       <div class="kpi-card"><div class="kpi-label">Mises en avant</div><div class="kpi-val">${fmt(boost.total)} FCFA <span style="font-size:12px;color:var(--ink-soft);">(${boost.n})</span></div></div>
       <div class="kpi-card"><div class="kpi-label">Abonnements Pro</div><div class="kpi-val">${fmt(pro.total)} FCFA <span style="font-size:12px;color:var(--ink-soft);">(${pro.n})</span></div></div>
+      ${d.nb_en_attente ? `<div class="kpi-card" style="border-color:var(--gold);"><div class="kpi-label">En attente de paiement</div><div class="kpi-val">${fmt(d.en_attente_fcfa)} FCFA <span style="font-size:12px;color:var(--ink-soft);">(${d.nb_en_attente})</span></div></div>` : ""}
     `;
+    loadDemandesSvaAdmin();
     list.innerHTML = d.recents.length === 0
       ? `<div class="empty-state">Aucun achat SVA pour l'instant.</div>`
       : d.recents.map((r) => `
@@ -1151,6 +1159,49 @@ async function loadAdminSva() {
       `).join("");
   } catch (e) {
     kpis.innerHTML = "";
+  }
+}
+
+async function loadDemandesSvaAdmin() {
+  const card = document.getElementById("sva-attente-card");
+  const list = document.getElementById("sva-attente-list");
+  try {
+    const rows = await adminApi("/api/admin/sva-demandes");
+    if (!rows.length) { card.style.display = "none"; list.innerHTML = ""; return; }
+    card.style.display = "block";
+    list.innerHTML = rows.map((r) => `
+      <div class="list-row" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto auto; align-items:center; gap:10px;">
+        <span><b>${esc(r.vendeur_nom)}</b><br><span style="font-size:12px;color:var(--ink-soft);">${esc(SVA_TYPE_LABEL[r.type] || r.type)}${r.produit_nom ? " — " + esc(r.produit_nom) : ""}</span></span>
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:13px;">${esc(r.reference)}<br>${fmt(r.montant_fcfa)} FCFA</span>
+        <button class="primary" onclick="confirmerPaiementSva(${Number(r.id)}, ${jsArg(r.reference)}, ${Number(r.montant_fcfa)})">Confirmer le paiement</button>
+        <button class="danger-outline" onclick="rejeterSva(${Number(r.id)}, ${jsArg(r.reference)})">Rejeter</button>
+      </div>
+    `).join("");
+  } catch (e) {
+    card.style.display = "none";
+  }
+}
+
+async function confirmerPaiementSva(id, reference, montant) {
+  const choix = prompt(`Confirmer avoir reçu ${fmt(montant)} FCFA pour la demande ${reference} ?\n\nMode de paiement reçu — tapez :\n1 = Mobile Money\n2 = Virement\n3 = Espèces\n4 = Autre`, "1");
+  if (!choix) return;
+  const modes = { "1": "mobile_money", "2": "virement", "3": "especes", "4": "autre" };
+  const mode = modes[choix.trim()] || "autre";
+  try {
+    await adminApi(`/api/admin/sva-demandes/${id}/confirmer`, { method: "POST", body: JSON.stringify({ mode_paiement: mode }) });
+    loadAdminSva();
+  } catch (e) {
+    alert("Confirmation impossible : " + e.message);
+  }
+}
+
+async function rejeterSva(id, reference) {
+  if (!confirm(`Rejeter la demande ${reference} ? Le vendeur devra la refaire s'il paie plus tard.`)) return;
+  try {
+    await adminApi(`/api/admin/sva-demandes/${id}/rejeter`, { method: "POST" });
+    loadAdminSva();
+  } catch (e) {
+    alert("Rejet impossible : " + e.message);
   }
 }
 
