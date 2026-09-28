@@ -380,10 +380,20 @@
   @media (max-width:760px){ .ls-doors { grid-template-columns:1fr; } }
 
   .ls-hero-art { position:relative; margin:0; min-height:560px; border-left:2px solid var(--ls-ink); background:#3A2A1C; overflow:hidden; }
-  .ls-hero-art img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; transform-origin:60% 42%; animation:ls-hero-kb 26s ease-in-out infinite alternate; will-change:transform; }
-  @keyframes ls-hero-kb { from { transform:scale(1); } to { transform:scale(1.08) translate(-1.4%, -1%); } }
-  @media (prefers-reduced-motion:reduce) { .ls-hero-art img { animation:none; } }
-  .ls-hero-art figcaption { position:absolute; left:0; bottom:0; background:rgba(17,17,17,.78); color:#FFFFFF; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.06em; padding:8px 14px; }
+  .ls-hero-slide { position:absolute; inset:0; opacity:0; transform:scale(1.06); transition:opacity 1.3s ease, transform 6s ease; will-change:opacity, transform; }
+  .ls-hero-slide img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 45%; display:block; }
+  .ls-hero-slide.is-on { opacity:1; transform:scale(1); }
+  .ls-hero-art figcaption { position:absolute; left:0; bottom:0; z-index:2; background:rgba(17,17,17,.78); color:#FFFFFF; font-family:var(--ls-mono); font-size:12px; font-weight:600; letter-spacing:.06em; padding:8px 14px; max-width:80%; }
+  .ls-hero-cap { display:inline-block; opacity:0; transform:translateY(6px); transition:opacity .5s ease, transform .5s ease; }
+  .ls-hero-cap.is-on { opacity:1; transform:none; }
+  .ls-hero-dots { position:absolute; right:12px; bottom:12px; z-index:2; display:flex; gap:6px; }
+  .ls-hero-dots span { width:7px; height:7px; border:1px solid rgba(255,255,255,.85); background:transparent; transition:background .3s ease; }
+  .ls-hero-dots span.is-on { background:#FFFFFF; }
+  @media (prefers-reduced-motion:reduce) {
+    .ls-hero-slide { transition:opacity .3s ease; transform:none; }
+    .ls-hero-slide.is-on { transform:none; }
+    .ls-hero-cap { transition:none; transform:none; }
+  }
 
   /* comment ça marche */
   .ls-how { background:var(--ls-green); color:#FFFFFF; padding:120px 0; }
@@ -798,9 +808,21 @@
       </div>
       <div id="promo-banner" style="display:none; margin-top:10px;"></div>
     </div>
-    <figure class="ls-hero-art">
-      <img src="/photos/mains-feves-cacao.jpg" alt="Mains tenant des fèves de cacao séchées, dans un village de Côte d'Ivoire" width="1600" height="1066" fetchpriority="high">
-      <figcaption data-i18n="hero.photo">Fèves de cacao au séchage · Côte d'Ivoire</figcaption>
+    <figure class="ls-hero-art" id="heroSlider">
+      <div class="ls-hero-slide is-on" data-cap="Fèves de cacao au séchage · Côte d'Ivoire">
+        <img src="/photos/mains-feves-cacao.jpg" alt="Mains tenant des fèves de cacao séchées, dans un village de Côte d'Ivoire" width="1600" height="1066" fetchpriority="high">
+      </div>
+      <div class="ls-hero-slide" data-cap="Fèves triées, prêtes pour l'acheteur">
+        <img src="/photos/etalage-feves.jpg" alt="Étalage de fèves de cacao triées" width="1600" height="1066" loading="lazy">
+      </div>
+      <div class="ls-hero-slide" data-cap="Lots ensachés, traçés jusqu'à la parcelle">
+        <img src="/photos/sacs-jute.jpg" alt="Sacs de jute de cacao prêts à l'expédition" width="1600" height="1066" loading="lazy">
+      </div>
+      <div class="ls-hero-slide" data-cap="Productrices au cœur de la filière">
+        <img src="/photos/agricultrice-panier.jpg" alt="Agricultrice portant un panier de récolte" width="1600" height="1066" loading="lazy">
+      </div>
+      <figcaption><span class="ls-hero-cap is-on" data-i18n="hero.photo">Fèves de cacao au séchage · Côte d'Ivoire</span></figcaption>
+      <div class="ls-hero-dots" aria-hidden="true"></div>
     </figure>
   </section>
 
@@ -3224,6 +3246,43 @@ async function telechargerBonCommande(id) {
 }
 </script>
 <link rel="stylesheet" href="/agrisecur-micro.css">
+<script>
+(function(){
+  var slider = document.getElementById('heroSlider');
+  if(!slider) return;
+  var slides = [].slice.call(slider.querySelectorAll('.ls-hero-slide'));
+  var cap = slider.querySelector('.ls-hero-cap');
+  var dotsBox = slider.querySelector('.ls-hero-dots');
+  if(slides.length < 2) return;
+  var dots = slides.map(function(_, k){
+    var d = document.createElement('span');
+    if(k === 0) d.className = 'is-on';
+    dotsBox.appendChild(d);
+    return d;
+  });
+  var i = 0, timer = null;
+  var DELAY = 4200;
+  function show(n){
+    slides[i].classList.remove('is-on');
+    dots[i].classList.remove('is-on');
+    i = (n + slides.length) % slides.length;
+    slides[i].classList.add('is-on');
+    dots[i].classList.add('is-on');
+    if(cap){
+      cap.classList.remove('is-on');
+      var txt = slides[i].getAttribute('data-cap');
+      window.setTimeout(function(){ cap.textContent = txt; cap.classList.add('is-on'); }, 260);
+    }
+  }
+  function start(){ stop(); timer = window.setInterval(function(){ show(i + 1); }, DELAY); }
+  function stop(){ if(timer){ window.clearInterval(timer); timer = null; } }
+  // Pause au survol / quand l'onglet n'est pas visible : plus doux, économe.
+  slider.addEventListener('mouseenter', stop);
+  slider.addEventListener('mouseleave', start);
+  document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+  start();
+})();
+</script>
 <script src="/agrisecur-micro.js"></script>
 <script src="/agrisecur-branchement.js"></script>
 </body>
