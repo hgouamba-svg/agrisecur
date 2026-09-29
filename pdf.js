@@ -102,10 +102,10 @@ function genererBonCommandePDF(commande) {
     { texte: `${fmtFcfa(commande.montant_total_fcfa + commande.frais_paiement_fcfa)} FCFA`, x: 490, y: y0 + 330, taille: 11, gras: true },
 
     { texte: "Protection AgriSecur", x: 50, y: y0 + 380, taille: 12, gras: true },
-    { texte: "Vos fonds restent bloques en compte sequestre jusqu'a votre validation", x: 50, y: y0 + 398, taille: 10 },
-    { texte: "de la conformite du lot, ou pendant le delai de contestation en vigueur.", x: 50, y: y0 + 412, taille: 10 },
-    { texte: "En cas de desaccord, notre mediation interne tranche avant toute", x: 50, y: y0 + 426, taille: 10 },
-    { texte: "liberation des fonds.", x: 50, y: y0 + 440, taille: 10 },
+    { texte: "AgriSecur ne detient jamais les fonds de ses clients. Le vendeur est", x: 50, y: y0 + 398, taille: 10 },
+    { texte: "paye une fois la reception du lot confirmee par l'acheteur.", x: 50, y: y0 + 412, taille: 10 },
+    { texte: "En cas de desaccord, notre mediation interne intervient avant tout", x: 50, y: y0 + 426, taille: 10 },
+    { texte: "versement au vendeur.", x: 50, y: y0 + 440, taille: 10 },
 
     { texte: "Document genere automatiquement - AgriSecur Cote d'Ivoire", x: 50, y: 800, taille: 8 },
   ];

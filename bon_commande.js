@@ -54,8 +54,8 @@ function genererPdfBonCommande(commande) {
     { texte: `Montant total : ${Math.round(commande.montant_total_fcfa).toLocaleString("fr-FR")} FCFA`, taille: 12, espaceApres: 18 },
     { texte: `Mode de paiement : ${commande.mode_paiement === "virement" ? "Virement bancaire" : "Mobile money"}`, espaceApres: 18 },
     { texte: `Statut : ${commande.statut}`, espaceApres: 30 },
-    { texte: "Vos fonds restent bloqués en compte séquestre jusqu'à validation", taille: 9, espaceApres: 14 },
-    { texte: "de la conformité de la marchandise, conformément aux CGU/CGV AgriSecur.", taille: 9, espaceApres: 14 },
+    { texte: "AgriSecur ne détient jamais les fonds de ses clients. Le vendeur est payé", taille: 9, espaceApres: 14 },
+    { texte: "une fois la réception confirmée, conformément aux CGU/CGV AgriSecur.", taille: 9, espaceApres: 14 },
   ];
   const contenu = construireContenu(lignes);
 

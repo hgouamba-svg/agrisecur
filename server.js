@@ -255,6 +255,7 @@ function instructionsPaiementSva(reference, montant) {
   const lignes = [];
   if (SVA_PAIEMENT_MOMO) lignes.push(`Mobile Money : ${SVA_PAIEMENT_MOMO}`);
   if (SVA_PAIEMENT_INFO) lignes.push(SVA_PAIEMENT_INFO);
+  lignes.push("Le paiement est encaissé sur un compte au nom d'AgriSecur SARL.");
   lignes.push(`Indiquez la référence « ${reference} » lors du paiement, puis prévenez-nous sur WhatsApp (+${SVA_WHATSAPP}). Votre avantage est activé dès que le paiement est confirmé.`);
   return { reference, montant_fcfa: montant, whatsapp: SVA_WHATSAPP, momo: SVA_PAIEMENT_MOMO || null, details: lignes.join("\n") };
 }

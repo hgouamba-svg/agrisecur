@@ -1296,7 +1296,7 @@
         </details>
         <details class="help-item">
           <summary>Quelle commission est prélevée ?</summary>
-          <p>4% HT sur chaque transaction réussie, prélevés automatiquement au moment de la libération des fonds. La consultation du catalogue est gratuite.</p>
+          <p>4% HT sur chaque transaction réussie, prélevés au moment du règlement du vendeur. La consultation du catalogue est gratuite.</p>
         </details>
         <details class="help-item">
           <summary>Pourquoi dois-je valider mon identité avant de vendre ?</summary>
@@ -1341,7 +1341,7 @@
         </details>
         <details class="help-item">
           <summary>Article 4 — Processus de transaction et de paiement</summary>
-          <p>Commande → paiement enregistré → expédition → délai de contestation (24 à 48h) → libération des fonds nets au vendeur, sauf réclamation motivée.</p>
+          <p>Commande → paiement enregistré → expédition → délai de contestation (24 à 48h) → règlement du vendeur, sauf réclamation motivée. AgriSecur ne détient jamais les fonds de ses clients.</p>
         </details>
         <details class="help-item">
           <summary>Article 4 bis — Transport et livraison</summary>
@@ -1353,7 +1353,7 @@
         </details>
         <details class="help-item">
           <summary>Article 5 — Gestion des litiges</summary>
-          <p>Toute réclamation doit être motivée et accompagnée de preuves. Le blocage des fonds est prolongé pendant l'instruction ; la médiation interne statue en équité.</p>
+          <p>Toute réclamation doit être motivée et accompagnée de preuves. Le règlement du vendeur est suspendu pendant l'instruction ; la médiation interne statue en équité.</p>
         </details>
         <details class="help-item">
           <summary>Article 6 — Modèle économique et commissions</summary>
@@ -2499,7 +2499,7 @@ function refreshProCard(d) {
   } else {
     pill.textContent = "Inactif";
     pill.className = "status-pill st-en_attente";
-    hint.textContent = "Débloquez le badge Vendeur Pro, la comparaison de vos prix avec le marché, et une meilleure visibilité dans le catalogue. Activé après paiement (Mobile Money ou virement).";
+    hint.textContent = "Débloquez le badge Vendeur Pro, la comparaison de vos prix avec le marché, et une meilleure visibilité dans le catalogue. Activé après paiement (Mobile Money ou virement), encaissé sur un compte au nom d'AgriSecur SARL.";
     btn.textContent = "Demander l'abonnement — 10 000 FCFA / mois";
     analytics.style.display = "none";
   }
@@ -3038,7 +3038,7 @@ function renderOrder(o) {
   if (isSeller && o.statut === "sequestre") actions.push(`<button class="dark" onclick="expedierLot(${o.id})">Expédier le lot</button>`);
   if (isBuyer && o.statut === "expedie") actions.push(`<button class="dark" onclick="action(${o.id},'confirmer-reception')">Confirmer la réception</button>`);
   if (isBuyer && ["expedie", "en_controle"].includes(o.statut)) {
-    actions.push(`<button class="dark" onclick="action(${o.id},'cloturer')">Valider la conformité et libérer les fonds</button>`);
+    actions.push(`<button class="dark" onclick="action(${o.id},'cloturer')">Valider la conformité et déclencher le règlement du vendeur</button>`);
     actions.push(`<button class="outline" onclick="reclamer(${o.id})">Ouvrir une réclamation</button>`);
   }
   if (isBuyer && o.statut === "cloture") {
@@ -3086,14 +3086,14 @@ function renderOrderStepper(o) {
     return `<div class="msg" style="background:#F8DADA;color:#8A2C2C;margin:12px 0;">Litige en cours d'instruction — le versement au vendeur reste suspendu jusqu'à la décision de médiation.</div>`;
   }
   if (o.statut === "rembourse") {
-    return `<div class="msg" style="background:#EFEFEF;color:var(--ink-soft);margin:12px 0;">Litige tranché en faveur de l'acheteur — fonds remboursés.</div>`;
+    return `<div class="msg" style="background:#EFEFEF;color:var(--ink-soft);margin:12px 0;">Litige tranché en faveur de l'acheteur — remboursement de l'acheteur.</div>`;
   }
 
   const steps = [
     { key: "paiement", label: "Paiement sécurisé" },
     { key: "expedition", label: "Expédition" },
     { key: "controle", label: "Délai de contrôle" },
-    { key: "libere", label: "Fonds libérés" },
+    { key: "libere", label: "Vendeur réglé" },
   ];
   let currentIdx;
   if (o.statut === "attente_virement") currentIdx = -1;
