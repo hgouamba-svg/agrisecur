@@ -1830,7 +1830,7 @@ const CSP = [
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
   "media-src 'self'",
-  "connect-src 'self'",
+  "connect-src 'self' https://api.open-meteo.com",
   "manifest-src 'self'",
   "worker-src 'self'",
   "object-src 'none'",

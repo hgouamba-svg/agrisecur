@@ -326,6 +326,19 @@
 
   /* en-tête */
   .ls-top { position:sticky; top:0; z-index:20; background:#FFFFFF; border-bottom:2px solid var(--ls-ink); }
+  .ls-weather { background:var(--ls-green); color:#FFFFFF; border-bottom:2px solid var(--ls-ink); overflow:hidden; font-family:var(--ls-mono); font-size:13px; }
+  .ls-weather-track { display:flex; align-items:center; gap:22px; padding:8px max(20px, calc((100vw - 1248px) / 2 + 20px)); white-space:nowrap; overflow-x:auto; scrollbar-width:none; }
+  .ls-weather-track::-webkit-scrollbar { display:none; }
+  .ls-weather-lab { font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ls-jute); flex-shrink:0; }
+  .ls-weather-city { display:inline-flex; align-items:center; gap:7px; flex-shrink:0; }
+  .ls-weather-city b { font-weight:600; }
+  .ls-weather-city .wt { color:#FFE7C2; font-weight:700; }
+  .ls-weather-ico { font-size:15px; line-height:1; }
+  .ls-weather-load { color:var(--ls-jute); }
+  @media (prefers-reduced-motion: no-preference) {
+    .ls-weather-city { opacity:0; animation:wfade .5s ease forwards; }
+  }
+  @keyframes wfade { to { opacity:1; } }
   .ls-top-row { max-width:1560px; margin:0 auto; padding:14px 48px; display:flex; align-items:center; gap:32px; }
   .ls-brand { display:flex; align-items:center; gap:12px; color:var(--ls-ink); text-decoration:none; flex-shrink:0; }
   .ls-brand span { font-family:var(--ls-stencil); font-weight:900; font-size:30px; letter-spacing:.04em; line-height:1; }
@@ -808,6 +821,13 @@
       </div>
     </div>
   </header>
+
+  <div class="ls-weather" id="ls-weather" aria-label="Météo des zones cacao">
+    <div class="ls-weather-track" id="ls-weather-track">
+      <span class="ls-weather-lab" data-i18n="weather.lab">Météo cacao en direct</span>
+      <span class="ls-weather-load" id="ls-weather-load" data-i18n="weather.load">chargement…</span>
+    </div>
+  </div>
 
   <section class="ls-hero">
     <div class="ls-hero-text">
@@ -1581,6 +1601,8 @@ function t(cle) {
 
 // Textes anglais de la page d'accueil (version bordereau / sac de cacao).
 Object.assign(TRADUCTIONS.en, {
+  "weather.lab": "Live cocoa-region weather",
+  "weather.load": "loading…",
   "nav.rdue": "EUDR audit",
   "rdue.eyebrow": "Cocoa cooperatives · EU deadline 30.12.2026",
   "rdue.title": "Express EUDR audit: <span>your plot file checked in 7 working days</span>",
@@ -2056,6 +2078,80 @@ document.getElementById("form-signalement").addEventListener("submit", async (e)
 });
 
 // ---------------- Installation en tant qu'app (PWA) ----------------
+
+// ---------------- Météo cacao en direct (Open-Meteo, sans clé API) ----------------
+// Appelée depuis le navigateur du visiteur ; aucune donnée personnelle,
+// aucune clé. Si le service ne répond pas, la bande se masque discrètement.
+(function () {
+  var VILLES = [
+    { nom: "Soubré", lat: 5.79, lon: -6.59 },
+    { nom: "San-Pédro", lat: 4.75, lon: -6.64 },
+    { nom: "Daloa", lat: 6.88, lon: -6.45 },
+    { nom: "Abidjan", lat: 5.35, lon: -4.02 },
+    { nom: "Kumasi", lat: 6.69, lon: -1.62 }
+  ];
+  // Codes météo WMO → icône + libellé FR/EN.
+  function meteo(code) {
+    var m = {
+      0:["☀️","Ciel clair","Clear sky"], 1:["🌤️","Peu nuageux","Mainly clear"],
+      2:["⛅","Nuageux","Partly cloudy"], 3:["☁️","Couvert","Overcast"],
+      45:["🌫️","Brouillard","Fog"], 48:["🌫️","Brouillard givrant","Rime fog"],
+      51:["🌦️","Bruine","Light drizzle"], 53:["🌦️","Bruine","Drizzle"], 55:["🌦️","Bruine dense","Dense drizzle"],
+      61:["🌦️","Pluie faible","Light rain"], 63:["🌧️","Pluie","Rain"], 65:["🌧️","Forte pluie","Heavy rain"],
+      66:["🌧️","Pluie verglaçante","Freezing rain"], 67:["🌧️","Pluie verglaçante","Freezing rain"],
+      71:["🌨️","Neige","Snow"], 73:["🌨️","Neige","Snow"], 75:["🌨️","Neige","Snow"],
+      80:["🌦️","Averses","Showers"], 81:["🌧️","Averses","Showers"], 82:["⛈️","Fortes averses","Violent showers"],
+      95:["⛈️","Orage","Thunderstorm"], 96:["⛈️","Orage, grêle","Thunder, hail"], 99:["⛈️","Orage, grêle","Thunder, hail"]
+    };
+    return m[code] || ["🌡️","", ""];
+  }
+  function estEn() { return (localStorage.getItem("agrisecur_lang") || "fr") === "en"; }
+  function rendre(resultats) {
+    var track = document.getElementById("ls-weather-track");
+    var load = document.getElementById("ls-weather-load");
+    if (!track) return;
+    var ok = resultats.filter(function (r) { return r && r.t != null; });
+    if (!ok.length) { var b = document.getElementById("ls-weather"); if (b) b.style.display = "none"; return; }
+    if (load) load.remove();
+    var en = estEn();
+    ok.forEach(function (r, i) {
+      var mo = meteo(r.code);
+      var el = document.createElement("span");
+      el.className = "ls-weather-city";
+      el.style.animationDelay = (i * 0.08) + "s";
+      el.innerHTML = '<span class="ls-weather-ico" aria-hidden="true">' + mo[0] + '</span>' +
+        '<b>' + r.nom + '</b> <span class="wt">' + Math.round(r.t) + '°C</span>' +
+        '<span style="opacity:.7">' + (en ? mo[2] : mo[1]) + '</span>';
+      track.appendChild(el);
+    });
+  }
+  function charger() {
+    var reqs = VILLES.map(function (v) {
+      var url = "https://api.open-meteo.com/v1/forecast?latitude=" + v.lat + "&longitude=" + v.lon +
+        "&current=temperature_2m,weather_code&timezone=auto";
+      return fetch(url).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) {
+          if (!d || !d.current) return null;
+          return { nom: v.nom, t: d.current.temperature_2m, code: d.current.weather_code };
+        }).catch(function () { return null; });
+    });
+    Promise.all(reqs).then(rendre).catch(function () {
+      var b = document.getElementById("ls-weather"); if (b) b.style.display = "none";
+    });
+  }
+  // On charge après le rendu, sans bloquer la page.
+  if (document.getElementById("ls-weather-track")) {
+    if (window.requestIdleCallback) requestIdleCallback(charger, { timeout: 1500 });
+    else setTimeout(charger, 300);
+    // Rafraîchit toutes les 15 minutes tant que l'onglet est ouvert.
+    setInterval(function () {
+      var track = document.getElementById("ls-weather-track");
+      if (!track) return;
+      [].slice.call(track.querySelectorAll(".ls-weather-city")).forEach(function (n) { n.remove(); });
+      charger();
+    }, 15 * 60 * 1000);
+  }
+})();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
