@@ -1786,14 +1786,28 @@ router.get("/api/health", (req, res) => send(res, 200, { ok: true, filiere_v1: "
 
 // ---------- Plomberie HTTP ----------
 
+// CORS restreint : le site et l'API sont servis par la même origine, donc les
+// appels du site n'ont pas besoin de CORS. On n'ouvre l'API qu'aux origines de
+// production (liste blanche, réglable via CORS_ORIGINS). Un site tiers ne peut
+// donc plus lire les réponses de l'API depuis le navigateur d'un utilisateur
+// connecté. Aucun identifiant n'est émis par cookie (jeton Bearter), donc pas
+// d'Access-Control-Allow-Credentials.
+const ORIGINES_AUTORISEES = (process.env.CORS_ORIGINS ||
+  "https://www.agrisecur.com,https://agrisecur.com").split(",").map((s) => s.trim()).filter(Boolean);
+
+function appliquerCors(req, res) {
+  const origine = req.headers.origin;
+  if (origine && ORIGINES_AUTORISEES.includes(origine)) {
+    res.setHeader("Access-Control-Allow-Origin", origine);
+    res.setHeader("Vary", "Origin");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  }
+}
+
 function send(res, status, body) {
   const json = JSON.stringify(body, null, 2);
-  res.writeHead(status, {
-    "Content-Type": "application/json",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  });
+  res.writeHead(status, { "Content-Type": "application/json" });
   res.end(json);
 }
 
@@ -1862,6 +1876,7 @@ const server = http.createServer((req, res) => {
 
 function traiterRequete(req, res) {
   for (const [nom, valeur] of Object.entries(EN_TETES_SECURITE)) res.setHeader(nom, valeur);
+  appliquerCors(req, res);
   if (req.method === "OPTIONS") return send(res, 204, {});
   // /api/health reste accessible pour le contrôle de santé de l'hébergeur.
   if (!req.url.startsWith("/api/health") && !verifierAccesSite(req, res)) return;
