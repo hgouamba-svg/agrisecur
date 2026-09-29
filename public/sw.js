@@ -8,7 +8,7 @@
 // direct, jamais d'un cache local, pour ne jamais afficher une
 // information financière périmée.
 
-const CACHE_NAME = "agrisecur-static-v7";
+const CACHE_NAME = "agrisecur-static-v7x";
 const FICHIERS_A_METTRE_EN_CACHE = [
   "/",
   "/index.html",
