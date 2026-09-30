@@ -1782,7 +1782,7 @@ router.get("/api/stats-publiques", (req, res) => {
   });
 });
 
-router.get("/api/health", (req, res) => send(res, 200, { ok: true, filiere_v1: "cacao", commission: COMMISSION_TAUX }));
+router.get("/api/health", (req, res) => send(res, 200, { ok: true })); // réponse minimale : ne divulgue aucun paramètre interne
 
 // ---------- Plomberie HTTP ----------
 
@@ -1857,7 +1857,7 @@ const EN_TETES_SECURITE = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "same-origin",
-  "Strict-Transport-Security": "max-age=31536000",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains; preload",
   "Permissions-Policy": "camera=(), microphone=(self), geolocation=(self)",
   "Cross-Origin-Opener-Policy": "same-origin",
 };
