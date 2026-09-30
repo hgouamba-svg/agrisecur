@@ -326,19 +326,20 @@
 
   /* en-tête */
   .ls-top { position:sticky; top:0; z-index:20; background:#FFFFFF; border-bottom:2px solid var(--ls-ink); }
-  .ls-weather { background:var(--ls-green); color:#FFFFFF; border-bottom:2px solid var(--ls-ink); overflow:hidden; font-family:var(--ls-mono); font-size:13px; }
-  .ls-weather-track { display:flex; align-items:center; gap:22px; padding:8px max(20px, calc((100vw - 1248px) / 2 + 20px)); white-space:nowrap; overflow-x:auto; scrollbar-width:none; }
-  .ls-weather-track::-webkit-scrollbar { display:none; }
+  .ls-weather { background:var(--ls-green); color:#FFFFFF; border-bottom:2px solid var(--ls-ink); overflow:hidden; font-family:var(--ls-mono); font-size:13px; display:flex; align-items:center; gap:18px; padding:8px max(20px, calc((100vw - 1248px) / 2 + 20px)); }
   .ls-weather-lab { font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--ls-jute); flex-shrink:0; }
-  .ls-weather-city { display:inline-flex; align-items:center; gap:7px; flex-shrink:0; }
+  .ls-weather-viewport { flex:1 1 auto; min-width:0; overflow:hidden; }
+  .ls-weather-marquee { display:flex; align-items:center; width:max-content; white-space:nowrap; }
+  .ls-weather-city { display:inline-flex; align-items:center; gap:7px; flex-shrink:0; margin-right:34px; }
   .ls-weather-city b { font-weight:600; }
   .ls-weather-city .wt { color:#FFE7C2; font-weight:700; }
   .ls-weather-ico { font-size:15px; line-height:1; }
   .ls-weather-load { color:var(--ls-jute); }
   @media (prefers-reduced-motion: no-preference) {
-    .ls-weather-city { opacity:0; animation:wfade .5s ease forwards; }
+    .ls-weather-marquee.anime { animation:wmarquee linear infinite; }
+    .ls-weather:hover .ls-weather-marquee.anime { animation-play-state:paused; }
   }
-  @keyframes wfade { to { opacity:1; } }
+  @keyframes wmarquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
   .ls-top-row { max-width:1560px; margin:0 auto; padding:14px 48px; display:flex; align-items:center; gap:32px; }
   .ls-brand { display:flex; align-items:center; gap:12px; color:var(--ls-ink); text-decoration:none; flex-shrink:0; }
   .ls-brand span { font-family:var(--ls-stencil); font-weight:900; font-size:30px; letter-spacing:.04em; line-height:1; }
@@ -823,9 +824,11 @@
   </header>
 
   <div class="ls-weather" id="ls-weather" aria-label="Météo des zones cacao">
-    <div class="ls-weather-track" id="ls-weather-track">
-      <span class="ls-weather-lab" data-i18n="weather.lab">Météo cacao en direct</span>
-      <span class="ls-weather-load" id="ls-weather-load" data-i18n="weather.load">chargement…</span>
+    <span class="ls-weather-lab" data-i18n="weather.lab">Météo cacao en direct</span>
+    <div class="ls-weather-viewport">
+      <div class="ls-weather-marquee" id="ls-weather-track">
+        <span class="ls-weather-load" id="ls-weather-load" data-i18n="weather.load">chargement…</span>
+      </div>
     </div>
   </div>
 
@@ -2106,24 +2109,27 @@ document.getElementById("form-signalement").addEventListener("submit", async (e)
     return m[code] || ["🌡️","", ""];
   }
   function estEn() { return (localStorage.getItem("agrisecur_lang") || "fr") === "en"; }
+  function villeHTML(r, en) {
+    var mo = meteo(r.code);
+    return '<span class="ls-weather-city">' +
+      '<span class="ls-weather-ico" aria-hidden="true">' + mo[0] + '</span>' +
+      '<b>' + r.nom + '</b> <span class="wt">' + Math.round(r.t) + '°C</span>' +
+      '<span style="opacity:.7">' + (en ? mo[2] : mo[1]) + '</span></span>';
+  }
   function rendre(resultats) {
     var track = document.getElementById("ls-weather-track");
-    var load = document.getElementById("ls-weather-load");
     if (!track) return;
     var ok = resultats.filter(function (r) { return r && r.t != null; });
     if (!ok.length) { var b = document.getElementById("ls-weather"); if (b) b.style.display = "none"; return; }
-    if (load) load.remove();
     var en = estEn();
-    ok.forEach(function (r, i) {
-      var mo = meteo(r.code);
-      var el = document.createElement("span");
-      el.className = "ls-weather-city";
-      el.style.animationDelay = (i * 0.08) + "s";
-      el.innerHTML = '<span class="ls-weather-ico" aria-hidden="true">' + mo[0] + '</span>' +
-        '<b>' + r.nom + '</b> <span class="wt">' + Math.round(r.t) + '°C</span>' +
-        '<span style="opacity:.7">' + (en ? mo[2] : mo[1]) + '</span>';
-      track.appendChild(el);
-    });
+    // Un seul jeu de villes, écrit DEUX fois bout à bout : quand le ruban se
+    // décale de la moitié de sa largeur, la seconde copie prend exactement la
+    // place de la première → boucle continue sans saut.
+    var jeu = ok.map(function (r) { return villeHTML(r, en); }).join("");
+    track.innerHTML = jeu + jeu;
+    track.classList.add("anime");
+    // Vitesse constante quel que soit le nombre de villes (~5 s par ville).
+    track.style.animationDuration = (ok.length * 5) + "s";
   }
   function charger() {
     var reqs = VILLES.map(function (v) {
