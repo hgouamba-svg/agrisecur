@@ -1850,27 +1850,56 @@ function trouverEcranVisible() {
 
 const ICONE_VOIX = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 const ICONE_STOP = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" fill="currentColor" stroke="none"/></svg>';
+// Texte de présentation lu à voix haute sur l'accueil (clair et fidèle au
+// site), au lieu de dicter tout le contenu brut de la page en vrac.
+const PRESENTATION_VOIX = {
+  fr: "Agri-Sécure. Sécuriser chaque vente agricole, de la parcelle à l'acheteur. Nous vérifions les parcelles de votre coopérative pour le règlement européen contre la déforestation : un premier avis sous quarante-huit heures ouvrées, puis le rapport en sept jours ouvrés. Ensuite, notre place de marché vous aide à vendre vos lots vérifiés en confiance. Rendez-vous sur agri-sécure point com.",
+  en: "AgriSecur. Securing every farm sale, from the plot to the buyer. We check your cooperative's plots for the European deforestation regulation: a first opinion within forty-eight working hours, then the report in seven working days. Our marketplace then helps you sell your verified lots with confidence."
+};
+// Même voix que le film : homme et naturelle en priorité.
+function choisirVoixLecture(fr) {
+  const liste = window.speechSynthesis.getVoices().filter(v => (fr ? /^fr/i : /^en/i).test(v.lang));
+  if (!fr) return liste.find(v => /en-US/i.test(v.lang)) || liste[0] || null;
+  const hommes = ['Henri','Remy','Rémy','Paul','Thomas','Daniel','Nicolas','Jacques','Antoine','Claude','Gerard','Gérard','Jean','Fabrice','Grégoire','Gregoire'];
+  const qualite = v => /natural|naturel|neural|premium|enhanced|améliorée|amelioree|online/i.test(v.name) ? 2 : 0;
+  const note = v => (hommes.some(n => v.name.includes(n)) ? 4 : 0) + qualite(v) + (/fr-FR/i.test(v.lang) ? 1 : 0);
+  return liste.slice().sort((a, b) => note(b) - note(a))[0] || null;
+}
+function rendreBoutonVoix(btn, lecture) {
+  if (!btn) return;
+  const en = (localStorage.getItem("agrisecur_lang") || "fr") === "en";
+  const txt = lecture ? (en ? "Stop" : "Arrêter") : (en ? "Listen" : "Écouter");
+  btn.innerHTML = (lecture ? ICONE_STOP : ICONE_VOIX) + "<span>" + txt + "</span>";
+}
 function basculerLectureVoix() {
   const btn = document.getElementById("btn-lire-voix");
   if (!window.speechSynthesis) return;
   if (_lectureEnCours) {
     window.speechSynthesis.cancel();
     _lectureEnCours = false;
-    if (btn) btn.innerHTML = ICONE_VOIX;
+    rendreBoutonVoix(btn, false);
     return;
   }
-  const el = trouverEcranVisible();
-  const texte = el.innerText.trim().slice(0, 3000);
+  const fr = (localStorage.getItem("agrisecur_lang") || "fr") !== "en";
+  let texte;
+  const landing = document.getElementById("landing-screen");
+  if (landing && getComputedStyle(landing).display !== "none") {
+    texte = fr ? PRESENTATION_VOIX.fr : PRESENTATION_VOIX.en;
+  } else {
+    texte = trouverEcranVisible().innerText.replace(/\s+/g, " ").trim().slice(0, 2500);
+  }
   if (!texte) return;
-  const lang = localStorage.getItem("agrisecur_lang") || "fr";
   const utterance = new SpeechSynthesisUtterance(texte);
-  utterance.lang = lang === "en" ? "en-US" : "fr-FR";
-  utterance.rate = 0.95;
-  utterance.onend = () => { _lectureEnCours = false; if (btn) btn.innerHTML = ICONE_VOIX; };
-  utterance.onerror = () => { _lectureEnCours = false; if (btn) btn.innerHTML = ICONE_VOIX; };
+  utterance.lang = fr ? "fr-FR" : "en-US";
+  const v = choisirVoixLecture(fr);
+  if (v) utterance.voice = v;
+  utterance.rate = 0.96;
+  utterance.pitch = 0.92;
+  utterance.onend = () => { _lectureEnCours = false; rendreBoutonVoix(btn, false); };
+  utterance.onerror = () => { _lectureEnCours = false; rendreBoutonVoix(btn, false); };
   window.speechSynthesis.speak(utterance);
   _lectureEnCours = true;
-  if (btn) btn.innerHTML = ICONE_STOP;
+  rendreBoutonVoix(btn, true);
 }
 
 function basculerLangue() {
